@@ -1,0 +1,42 @@
+import React from 'react'
+import { Controller, type Control, type FormState, type UseFormReturn } from 'react-hook-form';
+import BgWrapper from '~/components/common/bg-wrapper';
+import ErrorMessage from '~/components/ui/error-message';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
+
+type Props = { form :UseFormReturn<any>};
+
+export default function Status({ form }: Props) {
+  return (
+    <BgWrapper>
+            <div className="p-4 w-full">
+              <h1 className="text-sm font-semibold mb-2">Status</h1>
+              <div>
+                <Controller
+                  control={form?.control}
+                  name="status"
+                  render={({ field }) => {
+                    return (
+                      <Select>
+                        <SelectTrigger
+                          size="sm"
+                          className="w-full rounded-sm py-0"
+                        >
+                          <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="active">Active</SelectItem>
+                            <SelectItem value="inactive">Inactive</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    );
+                  }}
+                />
+                <ErrorMessage error={""} />
+              </div>
+            </div>
+          </BgWrapper>
+  )
+}
