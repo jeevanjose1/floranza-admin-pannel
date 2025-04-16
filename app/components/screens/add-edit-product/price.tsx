@@ -33,7 +33,7 @@ export default function Price({ form }: Props) {
                       <Checkbox
                         checked={field.value}
                         onCheckedChange={(e) => {
-                          form.watch('is_variants')
+                          form.watch("is_variants");
                           field.onChange(e);
                         }}
                         id="varients"
@@ -47,7 +47,11 @@ export default function Price({ form }: Props) {
               />
             </div>
             <Separator className="my-6 bg-muted/70" />
-           {form.getValues('is_variants')?<VariantsSelect  form={form}/> : <SingleProduct form={form} />}
+            {form.getValues("is_variants") ? (
+              <VariantsSelect form={form} />
+            ) : (
+              <SingleProduct form={form} />
+            )}
           </TabsContent>
           <TabsContent value="password">
             <Inventory control={form?.control} formState={form?.formState} />

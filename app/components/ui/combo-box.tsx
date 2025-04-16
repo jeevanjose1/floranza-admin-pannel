@@ -25,7 +25,7 @@ export function Combobox({options}:props) {
           role="combobox"
           size={'sm'}
           aria-expanded={open}
-          className=" w-full justify-between"
+          className=" w-full md:text-sm font-normal px-4 justify-between"
         >
           {value
             ? options.find((data:any) => data.value === value)?.label

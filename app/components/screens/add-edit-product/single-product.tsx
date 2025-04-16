@@ -11,7 +11,8 @@ export default function SingleProduct({form}: Props) {
    
       <div className="flex w-full items-center gap-3">
         <div className='w-full'>
-          <Label>Price</Label>
+          <Label>Regular Price	
+          </Label>
           <Controller
             control={form?.control}
             name="catogery"
@@ -22,12 +23,23 @@ export default function SingleProduct({form}: Props) {
           <ErrorMessage error={""} />
         </div>
         <div className='w-full'>
-          <Label>Sales price</Label>
+          <Label>Sale price</Label>
           <Controller
             control={form?.control}
             name="catogery"
             render={({ field }) => {
               return <Input type="text" className='w-full' placeholder="0.0" />;
+            }}
+          />
+          <ErrorMessage error={""} />
+        </div>
+        <div className='w-full'>
+          <Label>Quandity</Label>
+          <Controller
+            control={form?.control}
+            name="catogery"
+            render={({ field }) => {
+              return <Input type="text" className='w-full' placeholder="0" />;
             }}
           />
           <ErrorMessage error={""} />

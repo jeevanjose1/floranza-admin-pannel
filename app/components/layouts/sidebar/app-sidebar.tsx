@@ -4,6 +4,7 @@ import {
   Frame,
   Framer,
   Home,
+  ImagePlay,
   Map,
   PieChart,
   Settings2,
@@ -46,12 +47,28 @@ const data = {
           url: "/products",
         },
         {
-          title: "Catogery",
-          url: "#",
+          title: "Catogeries",
+          url: "/catogery",
+        },
+        {
+          title: "Brands",
+          url: "/brands",
+        },
+        {
+          title: "Materials",
+          url: "/materials",
+        },
+        {
+          title: "Attributes",
+          url: "/attributes",
         },
       ],
     },
-
+    {
+      title: "Media",
+      url: "/media",
+      icon: ImagePlay,
+    },
     {
       title: "Orders",
       url: "#",

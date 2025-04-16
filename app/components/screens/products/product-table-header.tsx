@@ -149,7 +149,7 @@ export default function ProductTableHeader({}: Props) {
   return (
     <>
       <div className="w-full flex items-center gap-3 pt-4 pb-3 px-4 justify-end">
-        <Input placeholder="Search product" className="max-w-96 mr-auto" />
+        <Input placeholder="Search catogery" className="max-w-96 mr-auto" />
         <Button
           onClick={handleToggle}
           variant={"transparent"}
@@ -181,3 +181,6 @@ export default function ProductTableHeader({}: Props) {
     </>
   );
 }
+
+
+

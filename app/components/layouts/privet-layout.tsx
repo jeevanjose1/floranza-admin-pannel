@@ -6,8 +6,9 @@ import { BadgeCheck, Bell, CreditCard, LogOut, Sparkles } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Outlet, useLocation } from 'react-router'
+import { Navigate, Outlet, useLocation } from 'react-router'
 import { ScrollArea } from '../ui/scroll-area'
+import { is_auth } from '~/lib/utils'
 
 type Props = {}
 
@@ -45,7 +46,12 @@ const AnimatedOutlet = () => {
   );
 };
 
+
 export default function PrivateLayout({}: Props) {
+  const is_authenticated = is_auth()
+  if(!is_authenticated){
+    return <Navigate to={'/login'}/>
+  }
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -107,7 +113,7 @@ export default function PrivateLayout({}: Props) {
             </DropdownMenu>
           </div>
         </header>
-        <div className="p-4 w-full h-[calc(100vh-70px)] overflow-y-auto">
+        <div className="p-4 w-full ">
           <AnimatedOutlet />
         </div>
       </SidebarInset>
