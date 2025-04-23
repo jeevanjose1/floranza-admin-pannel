@@ -9,11 +9,11 @@ import { Input } from "~/components/ui/input";
 import { useListMedia, useUploadMedia } from "~/services/queries";
 
 type Props = {};
-
+export type MediaProp = {id:string,url:string,file:string}
 export default function Media({}: Props) {
   const { mutateAsync: upload } = useUploadMedia();
   const { data: media_data, isFetching, isLoading } = useListMedia({ page: 1 });
-  const [select, setSelected] = useState<string[]>([]);
+  const [select, setSelected] = useState<MediaProp[]>([]);
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files) return;

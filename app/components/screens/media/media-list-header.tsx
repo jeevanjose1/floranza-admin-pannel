@@ -31,10 +31,11 @@ import { Separator } from "~/components/ui/separator";
 import { useDeleteMedia } from "~/services/queries";
 import { PopConfirm } from "~/components/ui/pop-confirm";
 import { toast } from "sonner";
+import type { MediaProp } from "~/routes/inventory/media";
 
 type Props = {
-  select: string[];
-  setSelect: React.Dispatch<React.SetStateAction<string[]>>;
+  select: MediaProp[];
+  setSelect: React.Dispatch<React.SetStateAction<MediaProp[]>>;
 };
 
 const Filter = () => {
@@ -103,7 +104,7 @@ export default function MediaListHeader({ select, setSelect }: Props) {
   const handleDelete = () => {
     const form_data = new FormData();
     select.forEach((item,index)=>{
-      form_data.append(`ids[${index}]`, item);
+      form_data.append(`ids[${index}]`, item.id);
 
     })
     toast.promise(delete_medias(form_data), {

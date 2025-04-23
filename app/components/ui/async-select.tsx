@@ -1,6 +1,6 @@
 import React from "react";
 import AsyncSelect, { type AsyncProps } from "react-select/async";
-import type { StylesConfig, GroupBase } from "react-select";
+import type {  GroupBase } from "react-select";
 
 export type OptionType = {
   label: string;

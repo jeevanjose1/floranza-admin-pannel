@@ -358,7 +358,6 @@ const HtmlPligin = ({ onContentChange }:EditorProp) => {
           const rootElement = editor._rootElement;
           if (rootElement) {
             const html = rootElement.innerHTML;
-            console.log("HTML Content:", html);
 
             if (onContentChange) {
               onContentChange(html);

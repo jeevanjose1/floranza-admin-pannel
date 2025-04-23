@@ -1,0 +1,92 @@
+import { z } from "zod";
+
+// Attribute schema for variant mode
+const attribute_schema = z.object({
+  name: z.string().min(1, "Attribute name is required"),
+  value: z.array(
+    z.union([
+      z.string(),
+      z.object({}).passthrough()
+    ])
+  ).min(1, "At least one value is required"),
+  is_add: z.boolean().default(false),
+});
+
+const product_form_schema = z.object({
+  title: z.string().min(1, "Title is required"),
+  slug: z.string().min(1, "Slug is required"),
+  description: z.string().min(1, "Description is required"),
+  media: z.array(z.any()).min(1, "Media is required"),
+  sku: z.string().min(1, "SKU is required"),
+  hsn: z.string().min(1, "HSN is required"),
+  catogery: z.string().optional(),
+  price: z.string().optional(),
+  sale_price: z.string().optional(),
+  quandity: z.string().optional(),
+  weight: z.string().min(1, "Weight is required"),
+  length: z.string().min(1, "Length is required"),
+  width: z.string().min(1, "Width is required"),
+  height: z.string().min(1, "Height is required"),
+  stock_notification: z.boolean().default(false),
+  page_title: z.string().min(1, "Page title is required"),
+  page_description: z.string().min(1, "Page description is required"),
+  status: z.string().optional(),
+  categories: z.array(z.any()).min(1, "Category is required"),
+  catogery_search: z.string().optional(),
+  is_variants: z.boolean().default(false),
+  attributes: z.any().optional(), // NOTE: no schema yet
+  attribute_items: z.any().optional(),
+  notification_qty: z.string().optional(),
+  variations: z.array(z.any())
+}).superRefine((data, ctx) => {
+  console.log('====================================');
+  console.log(data,'data');
+  console.log('====================================');
+  if (!data.is_variants) {
+    // Validate flat product
+    if (!data.price?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Price is required",
+        path: ["price"]
+      });
+    }
+    if (!data.sale_price?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Sale price is required",
+        path: ["sale_price"]
+      });
+    }
+    if (!data.quandity?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "quantity is required",
+        path: ["quandity"]
+      });
+    }
+  } else {
+    // Validate variant attributes
+    if (!Array.isArray(data.attributes) || data.attributes.length === 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "At least one attribute is required",
+        path: ["attributes"]
+      });
+    } else {
+      data.attributes.forEach((attr, index) => {
+        const result = attribute_schema.safeParse(attr);
+        if (!result.success) {
+          result.error.issues.forEach((issue) => {
+            ctx.addIssue({
+              ...issue,
+              path: ["attributes", index, ...issue.path],
+            });
+          });
+        }
+      });
+    }
+  }
+});
+
+export { product_form_schema };

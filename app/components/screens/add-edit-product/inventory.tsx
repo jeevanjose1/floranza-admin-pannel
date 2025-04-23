@@ -5,6 +5,7 @@ import { Combobox } from "~/components/ui/combo-box";
 import ErrorMessage from "~/components/ui/error-message";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { input_restrictions } from "~/lib/utils";
 
 type Props = { control: Control<any>; formState: FormState<any> };
 
@@ -58,7 +59,13 @@ export default function Inventory({ control, formState }: Props) {
       <div>
         <div>
           <div className="flex my-4 items-center gap-2">
-            <Checkbox id="terms" />
+            <Controller
+              control={control}
+              name="stock_notification"
+              render={({ field }) => {
+                return <Checkbox {...field} id="terms" />;
+              }}
+            />
             <label htmlFor="terms" className="text-[13px] ">
               Notify when low stock quandity
             </label>
@@ -67,9 +74,20 @@ export default function Inventory({ control, formState }: Props) {
             <Label>Quandity</Label>
             <Controller
               control={control}
-              name="catogery"
+              name="notification_qty"
               render={({ field }) => {
-                return <Input className="" type="text" placeholder="0" />;
+                return (
+                  <Input
+                    {...field}
+                    onChange={(e) => {
+                      input_restrictions.numbersOnly(e);
+                      field.onChange(e);
+                    }}
+                    className=""
+                    type="text"
+                    placeholder="0"
+                  />
+                );
               }}
             />
             <ErrorMessage error={""} />

@@ -18,7 +18,6 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -34,68 +33,28 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import { Link } from "react-router";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Badge } from "~/components/ui/badge";
+import Loader from "~/components/ui/loader";
 
-// Updated sample data with product information
-const data: Product[] = [
-  {
-    id: "m5gr84i9",
-    name: "Laptop Pro",
-    price: 1299,
-    status: "Active",
-    category: "Electronics",
-    stock: 42,
-    email: "sales@techstore.com",
-  },
-  {
-    id: "3u1reuv4",
-    name: "Wireless Headphones",
-    price: 249,
-    status: "Active",
-    category: "Audio",
-    stock: 78,
-    email: "audio@techstore.com",
-  },
-  {
-    id: "derv1ws0",
-    name: "Smart Watch",
-    price: 349,
-    status: "Inactive",
-    category: "Wearables",
-    stock: 5,
-    email: "wearables@techstore.com",
-  },
-  {
-    id: "5kma53ae",
-    name: "4K Monitor",
-    price: 599,
-    status: "Active",
-    category: "Displays",
-    stock: 23,
-    email: "displays@techstore.com",
-  },
-  {
-    id: "bhqecj4p",
-    name: "Mechanical Keyboard",
-    price: 129,
-    status: "Inactive",
-    category: "Peripherals",
-    stock: 0,
-    email: "peripherals@techstore.com",
-  },
-];
 
+type props = {
+  table_data: Product[];
+  loading: boolean;
+};
 // Updated type definition
 export type Product = {
   id: string;
   name: string;
+  sku:string;
+  catogery:string;
+  brand:string;
   price: number;
   status: string;
   category: string;
+  date:string;
   stock: number;
-  email: string;
+  image: string;
 };
 
 export const columns: ColumnDef<Product>[] = [
@@ -127,12 +86,19 @@ export const columns: ColumnDef<Product>[] = [
     cell: ({ row }) => (
       <div className="font-medium text-[13px] flex items-center gap-2">
         <Avatar className="rounded-md">
+          <AvatarImage src={row.original.image}/>
           <AvatarFallback className="rounded-md">CS</AvatarFallback>
         </Avatar>
         {row.getValue("name")}
       </div>
     ),
   },
+  {
+    accessorKey: "sku",
+    header: "Sku",
+    cell: ({ row }) => <div className="text-[13px]">{row.getValue("sku")}</div>,
+  },
+ 
   {
     accessorKey: "status",
     header: "Status",
@@ -178,6 +144,13 @@ export const columns: ColumnDef<Product>[] = [
     ),
   },
   {
+    accessorKey: "date",
+    header: () => <div className="text-right ">Date</div>,
+    cell: ({ row }) => (
+      <div className="text-right text-[13px]">{row.getValue("date")}</div>
+    ),
+  },
+  {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
@@ -208,7 +181,7 @@ export const columns: ColumnDef<Product>[] = [
   },
 ];
 
-export function ProductTable() {
+export function ProductTable({ loading, table_data}:props) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -218,7 +191,8 @@ export function ProductTable() {
   const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
-    data,
+    data: table_data,
+  
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -235,7 +209,12 @@ export function ProductTable() {
       rowSelection,
     },
   });
-
+if (loading)
+    return (
+      <div className="w-full h-80 flex items-center justify-center">
+        <Loader />
+      </div>
+    );
   return (
     <div className="w-full">
       <div>

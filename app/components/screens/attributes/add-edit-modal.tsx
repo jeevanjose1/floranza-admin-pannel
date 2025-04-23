@@ -35,7 +35,6 @@ type FormValues = z.infer<typeof formSchema>;
 type Props = { children: ReactNode; data?: Attribute };
 
 export default function AddEditModal({ children, data }: Props) {
-  console.log(data);
 
   const [open, setOpen] = useState(false);
   const { mutateAsync: add_attribute, isPending: addPending } =

@@ -1,48 +1,87 @@
-import { Controller, type Control,type UseFormReturn } from 'react-hook-form';
-import ErrorMessage from '~/components/ui/error-message';
-import { Input } from '~/components/ui/input';
-import { Label } from '~/components/ui/label';
+import { Controller, type Control, type UseFormReturn } from "react-hook-form";
+import ErrorMessage from "~/components/ui/error-message";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import { input_restrictions } from "~/lib/utils";
 
-type Props = { form :UseFormReturn<any>};
+type Props = { form: UseFormReturn<any> };
 
-export default function SingleProduct({form}: Props) {
+export default function SingleProduct({ form }: Props) {
   return (
-    <div className='w-full'>
-   
+    <div className="w-full">
       <div className="flex w-full items-center gap-3">
-        <div className='w-full'>
-          <Label>Regular Price	
-          </Label>
+        <div className="w-full">
+          <Label>Regular Price</Label>
           <Controller
             control={form?.control}
-            name="catogery"
+            name="price"
             render={({ field }) => {
-              return <Input type="text" className='w-full' placeholder="0.0" />;
+              return (
+                <Input
+                  {...field}
+                  onChange={(e) => {
+                    input_restrictions.numbersOnly(e);
+                    field.onChange(e);
+                  }}
+             
+                  type="text"
+                  className="w-full"
+                  placeholder="0.0"
+                />
+              );
             }}
           />
-          <ErrorMessage error={""} />
+          <ErrorMessage
+            error={form?.formState?.errors?.price?.message as string}
+          />
         </div>
-        <div className='w-full'>
+        <div className="w-full">
           <Label>Sale price</Label>
           <Controller
             control={form?.control}
-            name="catogery"
+            name="sale_price"
             render={({ field }) => {
-              return <Input type="text" className='w-full' placeholder="0.0" />;
+              return (
+                <Input
+                {...field}
+                onChange={(e) => {
+                  input_restrictions.numbersOnly(e);
+                  field.onChange(e);
+                }}
+                  type="text"
+                  className="w-full"
+                  placeholder="0.0"
+                />
+              );
             }}
           />
-          <ErrorMessage error={""} />
+          <ErrorMessage
+            error={form?.formState?.errors?.sale_price?.message as string}
+          />
         </div>
-        <div className='w-full'>
+        <div className="w-full">
           <Label>Quandity</Label>
           <Controller
             control={form?.control}
-            name="catogery"
+            name="quandity"
             render={({ field }) => {
-              return <Input type="text" className='w-full' placeholder="0" />;
+              return (
+                <Input
+                {...field}
+                onChange={(e) => {
+                  input_restrictions.numbersOnly(e);
+                  field.onChange(e);
+                }}
+                  type="text"
+                  className="w-full"
+                  placeholder="0"
+                />
+              );
             }}
           />
-          <ErrorMessage error={""} />
+          <ErrorMessage
+            error={form?.formState?.errors?.quandity?.message as string}
+          />
         </div>
       </div>
       {/* <div className="flex mt-3 mb-4 items-center gap-2">
@@ -78,8 +117,6 @@ export default function SingleProduct({form}: Props) {
         />
         <ErrorMessage error={""} />
       </div> */}
-
-      
     </div>
-  )
+  );
 }

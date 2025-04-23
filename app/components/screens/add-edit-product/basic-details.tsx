@@ -5,21 +5,27 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import MediaInput from "~/components/ui/media-input";
 import LexicalEditor from "~/components/ui/editor";
-import AsyncSelect from "react-select/async";
 import AsyncSelectCustom from "~/components/ui/async-select";
+import { fetcher, queryFilter } from "~/lib/utils";
+import { BRAND } from "~/shared/urls";
 
-const options = [
-  { value: "chocolate", label: "Chocolate" },
-  { value: "strawberry", label: "Strawberry" },
-  { value: "vanilla", label: "Vanilla" },
-];
 type Props = { form: UseFormReturn<any> };
-const promiseOptions = (inputValue: string) =>
-  new Promise<any>((resolve) => {
-    setTimeout(() => {
-      return resolve(options);
-    }, 1000);
-  });
+
+const promiseOptions = async (inputValue: string) => {
+  try {
+    const response = await fetcher({
+      url: `${BRAND.LIST}${queryFilter({ page: 1 })}`,
+      type: "get",
+    });
+
+    return response?.data?.data?.map((item: any) => ({
+      value: item?.id,
+      label: `${item?.name} - ${item?.hsn_code}`,
+    }));
+  } catch (error) {
+    return [];
+  }
+};
 const BasicDetails = ({ form }: Props) => {
   return (
     <BgWrapper>
@@ -45,14 +51,14 @@ const BasicDetails = ({ form }: Props) => {
         <div className="mb-5">
           <Controller
             control={form?.control}
-            name="catogery"
+            name="slug"
             render={({ field }) => {
               return (
                 <div className=" flex items-center text-foreground/70  text-[13px] ">
                   <p>http://localhost:5173/products/</p>
                   <Input
                     className="ring-0 border-0 px-0 focus-visible:ring-0  md:text-[13px] underline"
-                    value={"asdas"}
+                    {...field}
                     type="text"
                     placeholder="Url"
                   />
@@ -60,36 +66,44 @@ const BasicDetails = ({ form }: Props) => {
               );
             }}
           />
-          <ErrorMessage error={""} />
+          <ErrorMessage
+            error={form?.formState?.errors?.slug?.message as string}
+          />
         </div>
         <div className="mb-5">
           <Label>Description</Label>
           <Controller
             control={form?.control}
-            name="title"
-            render={({ field }) => <LexicalEditor />}
+            name="description"
+            render={({ field }) => (
+              <LexicalEditor onContentChange={(e) => field.onChange(e)} />
+            )}
           />
           <ErrorMessage
-            error={form?.formState?.errors?.title?.message as string}
+            error={form?.formState?.errors?.description?.message as string}
           />
         </div>
         <div className="mb-5">
           <Label>Media</Label>
-          <MediaInput />
+          <MediaInput form={form} />
           <ErrorMessage
-            error={form?.formState?.errors?.title?.message as string}
+            error={form?.formState?.errors?.media?.message as string}
           />
         </div>
         <div className="mb-5">
           <Label>SKU (Stock Keeping Unit)</Label>
           <Controller
             control={form.control}
-            name="catogery"
+            name="sku"
             render={({ field }) => {
-              return <Input className="" type="text" placeholder="SKU" />;
+              return (
+                <Input {...field} className="" type="text" placeholder="SKU" />
+              );
             }}
           />
-          <ErrorMessage error={""} />
+          <ErrorMessage
+            error={form?.formState?.errors?.sku?.message as string}
+          />
         </div>
         <div>
           <Label>HSN</Label>
@@ -98,15 +112,17 @@ const BasicDetails = ({ form }: Props) => {
             name="hsn"
             render={({ field }) => (
               <AsyncSelectCustom
-               
                 cacheOptions
+                onChange={(e: any) => field.onChange(e.value)}
                 defaultOptions
                 loadOptions={promiseOptions}
               />
             )}
           />
 
-          <ErrorMessage error={""} />
+          <ErrorMessage
+            error={form?.formState?.errors?.hsn?.message as string}
+          />
         </div>
       </div>
     </BgWrapper>

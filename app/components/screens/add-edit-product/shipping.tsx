@@ -1,17 +1,25 @@
-import React from 'react'
-import { Controller, type Control, type FormState } from 'react-hook-form';
-import BgWrapper from '~/components/common/bg-wrapper';
-import { Checkbox } from '~/components/ui/checkbox';
-import { Combobox } from '~/components/ui/combo-box';
-import ErrorMessage from '~/components/ui/error-message';
-import { Input } from '~/components/ui/input';
-import { Label } from '~/components/ui/label';
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '~/components/ui/select';
-import { Separator } from '~/components/ui/separator';
+import React from "react";
+import { Controller, type Control, type FormState } from "react-hook-form";
+import BgWrapper from "~/components/common/bg-wrapper";
+import { Checkbox } from "~/components/ui/checkbox";
+import { Combobox } from "~/components/ui/combo-box";
+import ErrorMessage from "~/components/ui/error-message";
+import { Input } from "~/components/ui/input";
+import { Label } from "~/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
+import { Separator } from "~/components/ui/separator";
+import { input_restrictions } from "~/lib/utils";
 
-type Props = {control:Control<any>,formState:FormState<any>}
+type Props = { control: Control<any>; formState: FormState<any> };
 
-export default function Shipping({control,formState}: Props) {
+export default function Shipping({ control, formState }: Props) {
   return (
     <div className=" w-full mt-4">
       <div className="  mb-4">
@@ -19,49 +27,63 @@ export default function Shipping({control,formState}: Props) {
           <Label>Weight (Kg)</Label>
           <Controller
             control={control}
-            name="catogery"
+            name="weight"
             render={({ field }) => {
-              return <Input type="text" placeholder="0" />;
+              return <Input {...field}
+                                onChange={(e) => {
+                                  input_restrictions.numbersOnly(e);
+                                  field.onChange(e);
+                                }} type="text" placeholder="0" />;
             }}
           />
-          <ErrorMessage error={""} />
+          <ErrorMessage error={formState?.errors?.weight?.message as string}/>
         </div>
-        
       </div>
       <div className="grid grid-cols-3 gap-3 mb-4">
         <div>
           <Label>Dimensions (cm)</Label>
           <Controller
             control={control}
-            name="catogery"
+            name="length"
             render={({ field }) => {
-              return <Input type="text" placeholder="0.0" />;
+              return <Input {...field}
+                  onChange={(e) => {
+                    input_restrictions.numbersOnly(e);
+                    field.onChange(e);
+                  }} type="text" placeholder="Lenght" />;
             }}
           />
-          <ErrorMessage error={""} />
+          <ErrorMessage error={formState?.errors?.length?.message as string} />
         </div>
         <div className="mt-auto">
           <Controller
             control={control}
-            name="catogery"
+            name="width"
             render={({ field }) => {
-              return <Input type="text" placeholder="0" />;
+              return <Input {...field}
+                  onChange={(e) => {
+                    input_restrictions.numbersOnly(e);
+                    field.onChange(e);
+                  }} type="text" placeholder="Width" />;
             }}
           />
-          <ErrorMessage error={""} />
-        </div>
+          <ErrorMessage error={formState?.errors?.width?.message as string} />
+          </div>
         <div className="mt-auto">
           <Controller
             control={control}
-            name="catogery"
+            name="height"
             render={({ field }) => {
-              return <Input type="text" placeholder="0" />;
+              return <Input {...field}
+                  onChange={(e) => {
+                    input_restrictions.numbersOnly(e);
+                    field.onChange(e);
+                  }} type="text" placeholder="Height" />;
             }}
           />
-          <ErrorMessage error={""} />
-        </div>
+          <ErrorMessage error={formState?.errors?.height?.message as string} />
+          </div>
       </div>
-     
     </div>
-  )
+  );
 }

@@ -1,4 +1,3 @@
-import React from 'react'
 import { Controller, type Control, type FormState, type UseFormReturn } from 'react-hook-form';
 import BgWrapper from '~/components/common/bg-wrapper';
 import ErrorMessage from '~/components/ui/error-message';
@@ -17,7 +16,7 @@ export default function Status({ form }: Props) {
                   name="status"
                   render={({ field }) => {
                     return (
-                      <Select>
+                      <Select onValueChange={(e)=>field.onChange(e)}>
                         <SelectTrigger
                           size="sm"
                           className="w-full rounded-sm py-0"

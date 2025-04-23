@@ -19,29 +19,30 @@ export default function Seo({ form }: Props) {
           <Label>Page title</Label>
           <Controller
             control={form?.control}
-            name="catogery"
+            name="page_title"
             render={({ field }) => {
-              return <Input type="text" placeholder="title" />;
+              return <Input {...field} type="text" placeholder="title" />;
             }}
           />
-          <ErrorMessage error={""} />
+          <ErrorMessage error={form?.formState?.errors?.page_title?.message as string} />
         </div>
         <div className="mb-3">
           <Label>Meta description</Label>
           <Controller
             control={form?.control}
-            name="catogery"
+            name="page_description"
             render={({ field }) => {
               return (
                 <Textarea
+                {...field}
                   className="resize-none"
                   placeholder="Description"
                 />
               );
             }}
           />
-          <ErrorMessage error={""} />
-        </div>
+          <ErrorMessage error={form?.formState?.errors?.page_description?.message as string} />
+          </div>
 
       </div>
 

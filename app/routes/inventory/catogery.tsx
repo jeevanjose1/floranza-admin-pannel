@@ -10,7 +10,6 @@ type Props = {};
 
 export default function Catogery({}: Props) {
   const {data:catogery_data,isLoading,isFetching} = useListCatogery({page:1})
-  console.log(catogery_data);
   
   const filterd_catogery = catogery_data?.data?.data?.map((item:any)=>{
     return {

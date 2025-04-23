@@ -33,6 +33,11 @@ import {
   useUpadtePositionValue
 } from "./attribute";
 
+import {
+ useCreateProduct,
+ useListProduct
+} from "./product";
+
 export {
   useLogin,
   useDeleteMedia,
@@ -60,5 +65,7 @@ export {
   useUpadteAttribute,
   useDeleteAttributeItem,
   useUpadtePositionAttribute,
-  useUpadtePositionValue
+  useUpadtePositionValue,
+  useCreateProduct,
+  useListProduct
 };

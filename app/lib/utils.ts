@@ -66,3 +66,55 @@ export const is_auth = () => {
   const details = localStorage.getItem("token")
   return !!details
 }
+
+export const input_restrictions = {
+  numbersOnly: (e: any) => {
+    e.target.value = e.target.value.replace(/[^0-9]/g, "");
+  },
+
+  textOnly: (e: any) => {
+    e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+  },
+
+  lettersOnly: (e: any) => {
+    e.target.value = e.target.value.replace(/[^a-zA-Z]/g, "");
+  },
+
+  alphanumericOnly: (e: any) => {
+    e.target.value = e.target.value.replace(/[^a-zA-Z0-9]/g, "");
+  },
+
+  emailFormat: (e: any) => {
+    e.target.value = e.target.value.replace(/[^a-zA-Z0-9@._-]/g, "");
+  },
+
+  currencyFormat: (e: any) => {
+    let value = e.target.value.replace(/[^0-9.]/g, "");
+
+    const parts = value.split(".");
+    if (parts.length > 2) {
+      value = parts[0] + "." + parts.slice(1).join("");
+    }
+
+    e.target.value = value;
+  },
+
+  phoneFormat: (e: any) => {
+    e.target.value = e.target.value.replace(/[^0-9+-\s()]/g, "");
+  },
+
+  dateFormat: (e: any) => {
+    e.target.value = e.target.value.replace(/[^0-9/.-]/g, "");
+  },
+
+  urlFormat: (e: any) => {
+    e.target.value = e.target.value.replace(
+      /[^a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=]/g,
+      ""
+    );
+  },
+
+  hexFormat: (e: any) => {
+    e.target.value = e.target.value.replace(/[^0-9a-fA-F#]/g, "");
+  },
+};

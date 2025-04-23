@@ -12,6 +12,8 @@ type Attribute = {
 
 type Variation = {
   id: string;
+  attribute_id: string;
+  value_id: string;
   name: string;
   sku: string;
   price: string;
@@ -64,8 +66,14 @@ function ProductVariationsTable({ form }:Props) {
       const name = combo.map((item: { name: any; value: any; }) => `${item.name}: ${item.value}`).join(", ");
       const sku = combo.map((item: { valueId: any; }) => item.valueId).join("-");
       
+      // Extract attribute IDs and value IDs
+      const attribute_ids = combo.map((item: { id: any; }) => item.id);
+      const value_ids = combo.map((item: { valueId: any; }) => item.valueId);
+
       return {
         id: index.toString(),
+        attribute_id: attribute_ids.join(","),
+        value_id: value_ids.join(","),
         name,
         sku,
         price: "",
@@ -131,7 +139,7 @@ function ProductVariationsTable({ form }:Props) {
           <div key={variation.id} className="grid grid-cols-4 gap-2 p-3 border-t border-gray-100">
             <div>
               <div className="text-sm font-medium">{variation.name}</div>
-              <div className="text-xs text-gray-500">SKU: {variation.sku}</div>
+              {/* <div className="text-xs text-gray-500">SKU: {variation.sku}</div> */}
             </div>
             
             <div>
@@ -148,7 +156,7 @@ function ProductVariationsTable({ form }:Props) {
                 type="number"
                 placeholder="0.00"
                 value={variation.salesPrice}
-                onChange={(e) => handleInputChange(index, 'salesPrice', e.target.value)}
+                onChange={(e) => {handleInputChange(index, 'salesPrice', e.target.value)}}
               />
             </div>
             
