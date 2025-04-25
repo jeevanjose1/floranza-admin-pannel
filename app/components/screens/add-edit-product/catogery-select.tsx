@@ -1,9 +1,6 @@
 import { ChevronDown, ChevronRight, Search } from "lucide-react";
 import React from "react";
-import {
-  Controller,
-  type UseFormReturn,
-} from "react-hook-form";
+import { Controller, type UseFormReturn } from "react-hook-form";
 import BgWrapper from "~/components/common/bg-wrapper";
 import { Checkbox } from "~/components/ui/checkbox";
 import ErrorMessage from "~/components/ui/error-message";
@@ -15,7 +12,7 @@ type Props = { form: UseFormReturn<any> };
 
 export default function CatogerySelect({ form }: Props) {
   const { data: catogery } = useListCatogery({ page: 0 });
-  
+
   const filtered_categories =
     catogery?.data?.data?.map((item: any) => ({
       value: item?.id,
@@ -55,12 +52,13 @@ export default function CatogerySelect({ form }: Props) {
               <div className="border border-muted rounded-md p-2 max-h-60 overflow-y-auto">
                 {filtered_categories.length ? (
                   filtered_categories.map((category: any) => {
-                    
                     const isChecked = field.value.includes(category.value);
                     const handleChange = (checked: boolean) => {
                       const newValue = checked
                         ? [...field.value, category.value]
-                        : field.value.filter((id: string) => id !== category.value);
+                        : field.value.filter(
+                            (id: string) => id !== category.value
+                          );
                       field.onChange(newValue);
                     };
 
@@ -91,8 +89,26 @@ export default function CatogerySelect({ form }: Props) {
               </div>
             )}
           />
-          <ErrorMessage error={form?.formState?.errors?.categories?.message as string} />
+          <ErrorMessage
+            error={form?.formState?.errors?.categories?.message as string}
+          />
         </div>
+        <Controller
+          control={form.control}
+          name="is_featured"
+          render={({ field }) => (
+            <div className="flex items-center mt-4 gap-2 px-2 rounded-sm">
+              <Checkbox
+                id={`is_featured`}
+                {...field}
+                onCheckedChange={(e) => field.onChange(e)}
+              />
+              <Label htmlFor={`is_featured`} className="text-sm mb-0 cursor-pointer">
+                Is Featured
+              </Label>
+            </div>
+          )}
+        />
       </div>
     </BgWrapper>
   );

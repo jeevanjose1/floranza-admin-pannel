@@ -28,6 +28,7 @@ const product_form_schema = z.object({
   width: z.string().min(1, "Width is required"),
   height: z.string().min(1, "Height is required"),
   stock_notification: z.boolean().default(false),
+  is_featured:z.boolean().default(false),
   page_title: z.string().min(1, "Page title is required"),
   page_description: z.string().min(1, "Page description is required"),
   status: z.string().optional(),
@@ -38,10 +39,9 @@ const product_form_schema = z.object({
   attribute_items: z.any().optional(),
   notification_qty: z.string().optional(),
   variations: z.array(z.any())
+  
 }).superRefine((data, ctx) => {
-  console.log('====================================');
-  console.log(data,'data');
-  console.log('====================================');
+
   if (!data.is_variants) {
     // Validate flat product
     if (!data.price?.trim()) {

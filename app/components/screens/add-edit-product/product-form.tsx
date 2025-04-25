@@ -30,6 +30,7 @@ export default function ProductForm({}: Props) {
       sale_price: "",
       quandity: "",
       weight: "",
+      is_featured:false,
       length: "",
       width: "",
       height: "",
@@ -54,9 +55,7 @@ export default function ProductForm({}: Props) {
     resolver: zodResolver(product_form_schema as any),
   });
 
- console.log('====================================');
- console.log(form.formState.errors);
- console.log('====================================');
+
   const handleAdd = (values: FormValues) => {
     const form_data = new FormData();
     form_data.append("name", values.title);
@@ -78,6 +77,7 @@ export default function ProductForm({}: Props) {
     form_data.append("ship_length", values.length);
     form_data.append("ship_width", values.width);
     form_data.append("ship_height", values.height);
+    form_data.append("is_featured", values.is_featured ? '1' : '0');
 
     const media = values.media?.map((e) => {
       return e.file;

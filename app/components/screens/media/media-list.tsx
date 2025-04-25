@@ -66,9 +66,7 @@ export default function MediaList({
   setSelect,
   select,
 }: Props) {
-  console.log('====================================');
-  console.log(media_data,'medis');
-  console.log('====================================');
+
   const handleSelect = (item: MediaProp) => {
     setSelect(prev => {
       const exists = prev.some(prevItem => prevItem.id === item.id);

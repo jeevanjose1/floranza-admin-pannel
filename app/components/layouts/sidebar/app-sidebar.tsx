@@ -23,6 +23,7 @@ import {
 } from "~/components/ui/sidebar";
 import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
+import { images } from "~/shared/images/image";
 
 const data = {
   user: {
@@ -123,13 +124,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
             >
               <a href="#">
-                <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Framer />
-                </div>
+              
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium text-lg italic">
-                    Lorenza
-                  </span>
+                  <img className="w-35" src={images.logo} alt="" />
                 </div>
               </a>
             </SidebarMenuButton>
