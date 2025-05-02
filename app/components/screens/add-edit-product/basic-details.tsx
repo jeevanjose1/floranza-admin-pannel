@@ -8,13 +8,31 @@ import LexicalEditor from "~/components/ui/editor";
 import AsyncSelectCustom from "~/components/ui/async-select";
 import { fetcher, queryFilter } from "~/lib/utils";
 import { BRAND } from "~/shared/urls";
+import { Textarea } from "~/components/ui/textarea";
+import { SUPPLIER } from "~/shared/urls/supplier";
 
 type Props = { form: UseFormReturn<any> };
 
-const promiseOptions = async (inputValue: string) => {
+const promiseOptionsBrand = async (inputValue: string) => {
   try {
     const response = await fetcher({
       url: `${BRAND.LIST}${queryFilter({ page: 1 })}`,
+      type: "get",
+    });
+
+    return response?.data?.data?.map((item: any) => ({
+      value: item?.id,
+      label: `${item?.name}`,
+    }));
+  } catch (error) {
+    return [];
+  }
+};
+
+const promiseOptionsHsn = async (inputValue: string) => {
+  try {
+    const response = await fetcher({
+      url: `${SUPPLIER.LIST}${queryFilter({ page: 1 })}`,
       type: "get",
     });
 
@@ -28,9 +46,9 @@ const promiseOptions = async (inputValue: string) => {
 };
 const BasicDetails = ({ form }: Props) => {
   return (
-    <BgWrapper>
+    <BgWrapper >
       <div className="p-4 w-full">
-        <div className="mb-1">
+        <div className="mb-5">
           <Label>Title</Label>
           <Controller
             control={form?.control}
@@ -48,35 +66,14 @@ const BasicDetails = ({ form }: Props) => {
             error={form?.formState?.errors?.title?.message as string}
           />
         </div>
-        <div className="mb-5">
-          <Controller
-            control={form?.control}
-            name="slug"
-            render={({ field }) => {
-              return (
-                <div className=" flex items-center text-foreground/70  text-[13px] ">
-                  <p>http://localhost:5173/products/</p>
-                  <Input
-                    className="ring-0 border-0 px-0 focus-visible:ring-0  md:text-[13px] underline"
-                    {...field}
-                    type="text"
-                    placeholder="Url"
-                  />
-                </div>
-              );
-            }}
-          />
-          <ErrorMessage
-            error={form?.formState?.errors?.slug?.message as string}
-          />
-        </div>
+    
         <div className="mb-5">
           <Label>Description</Label>
           <Controller
             control={form?.control}
             name="description"
             render={({ field }) => (
-              <LexicalEditor onContentChange={(e) => field.onChange(e)} />
+              <Textarea  className="h-44" placeholder="Type here..." onChange={(e) => field.onChange(e)} />
             )}
           />
           <ErrorMessage
@@ -105,23 +102,42 @@ const BasicDetails = ({ form }: Props) => {
             error={form?.formState?.errors?.sku?.message as string}
           />
         </div>
-        <div>
-          <Label>HSN</Label>
+        <div className="mb-5">
+          <Label>HSN / Supplier</Label>
           <Controller
             control={form.control}
-            name="hsn"
+            name="supplier"
             render={({ field }) => (
               <AsyncSelectCustom
                 cacheOptions
                 onChange={(e: any) => field.onChange(e.value)}
                 defaultOptions
-                loadOptions={promiseOptions}
+                loadOptions={promiseOptionsHsn}
               />
             )}
           />
 
           <ErrorMessage
             error={form?.formState?.errors?.hsn?.message as string}
+          />
+        </div>
+        <div>
+          <Label>Brand</Label>
+          <Controller
+            control={form.control}
+            name="brand"
+            render={({ field }) => (
+              <AsyncSelectCustom
+                cacheOptions
+                onChange={(e: any) => field.onChange(e.value)}
+                defaultOptions
+                loadOptions={promiseOptionsBrand}
+              />
+            )}
+          />
+
+          <ErrorMessage
+            error={form?.formState?.errors?.brand?.message as string}
           />
         </div>
       </div>

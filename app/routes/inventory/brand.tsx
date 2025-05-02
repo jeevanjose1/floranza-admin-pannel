@@ -19,10 +19,9 @@ export default function Brand({}: Props) {
       status:item?.status  ===1 ? 'Active':'Inactive',
       image:item?.image?.mini,
       slug:item?.slug,
-      hsn:item?.hsn_code,
       count:45
     }
-  })
+  }) || []
   return (
     <div>
       <PageHeader title="Brand">

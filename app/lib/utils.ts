@@ -69,7 +69,7 @@ export const is_auth = () => {
 
 export const input_restrictions = {
   numbersOnly: (e: any) => {
-    e.target.value = e.target.value.replace(/[^0-9]/g, "");
+    e.target.value = e.target.value.replace(/[^0-9 .]/g, "");
   },
 
   textOnly: (e: any) => {

@@ -26,6 +26,11 @@ body {
   margin-inline: auto !important;
   max-width: 1000px;
 }
+@utility container-lg {
+
+  margin-inline: auto !important;
+  max-width: 1100px;
+}
 :root {
   --radius: 0.625rem;
   --background: oklch(0.98 0.003 0);

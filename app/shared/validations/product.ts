@@ -14,11 +14,12 @@ const attribute_schema = z.object({
 
 const product_form_schema = z.object({
   title: z.string().min(1, "Title is required"),
-  slug: z.string().min(1, "Slug is required"),
+  slug: z.string().optional(),
   description: z.string().min(1, "Description is required"),
   media: z.array(z.any()).min(1, "Media is required"),
   sku: z.string().min(1, "SKU is required"),
-  hsn: z.string().min(1, "HSN is required"),
+  supplier: z.string().min(1, "HSN / Supplier is required"),
+  brand: z.string().min(1, "Brand is required"),
   catogery: z.string().optional(),
   price: z.string().optional(),
   sale_price: z.string().optional(),
@@ -28,6 +29,10 @@ const product_form_schema = z.object({
   width: z.string().min(1, "Width is required"),
   height: z.string().min(1, "Height is required"),
   stock_notification: z.boolean().default(false),
+  is_schedule: z.boolean().default(false),
+  shedule_date: z.string().optional(),
+  shedule_time: z.string().optional(),
+
   is_featured:z.boolean().default(false),
   page_title: z.string().min(1, "Page title is required"),
   page_description: z.string().min(1, "Page description is required"),
@@ -41,7 +46,23 @@ const product_form_schema = z.object({
   variations: z.array(z.any())
   
 }).superRefine((data, ctx) => {
-
+  if(data?.is_schedule){
+    if (!data.shedule_date?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Schedule date is required",
+        path: ["shedule_date"]
+      });
+    }
+    
+    if (!data.shedule_time?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Schedule time is required",
+        path: ["shedule_time"]
+      });
+    }
+  }
   if (!data.is_variants) {
     // Validate flat product
     if (!data.price?.trim()) {

@@ -10,6 +10,8 @@ import type { z } from "zod";
 import { product_form_schema } from "~/shared/validations";
 import { useCreateProduct } from "~/services/queries";
 import { toast } from "sonner";
+import Advance from "./advance";
+import dayjs from "dayjs";
 
 type Props = {};
 type FormValues = z.infer<typeof product_form_schema>;
@@ -24,13 +26,18 @@ export default function ProductForm({}: Props) {
       description: "",
       media: [],
       sku: "",
-      hsn: "",
+      supplier: "",
+      brand: "",
       catogery: "",
       price: "",
       sale_price: "",
       quandity: "",
+      is_schedule: false,
+      shedule_date: "",
+      shedule_time: "",
+
       weight: "",
-      is_featured:false,
+      is_featured: false,
       length: "",
       width: "",
       height: "",
@@ -38,7 +45,7 @@ export default function ProductForm({}: Props) {
       notification_qty: "",
       page_title: "",
       page_description: "",
-      status: '',
+      status: "",
       categories: [],
       catogery_search: "",
       is_variants: false,
@@ -55,18 +62,34 @@ export default function ProductForm({}: Props) {
     resolver: zodResolver(product_form_schema as any),
   });
 
-
   const handleAdd = (values: FormValues) => {
+    console.log(values);
+    const schedule_date = dayjs(values.shedule_date).format("YYYY-MM-DD");
+    const schedule_time = `${values.shedule_time}:00`;
+
+    const slug =
+      values.slug !== ""
+        ? values.slug?.toLowerCase().replace(/[\s-]+/g, "-")
+        : values.title?.toLowerCase().replace(/[\s-]+/g, "-");
+
     const form_data = new FormData();
     form_data.append("name", values.title);
-    form_data.append("slug", values.slug);
+    form_data.append("slug", slug as string);
     form_data.append("description", values.description);
     form_data.append("sku", values.sku);
-    form_data.append("hsn", values.hsn);
+    form_data.append("supplier", values.supplier);
+    form_data.append("brand", values.brand);
+
     form_data.append("status", "1");
     form_data.append(`category`, JSON.stringify(values.categories));
     form_data.append("is_variation", values.is_variants ? "1" : "0");
-    if(!values.is_variants){
+
+    if (values.is_schedule) {
+      form_data.append("is_scheduled", values.is_schedule ? "1" : "0");
+      form_data.append("scheduled_at", `${schedule_date} ${schedule_time}`);
+    }
+
+    if (!values.is_variants) {
       form_data.append("reg_price", values.price as string);
       form_data.append("sale_price", values.sale_price as string);
       form_data.append("qty", values.quandity as string);
@@ -77,7 +100,7 @@ export default function ProductForm({}: Props) {
     form_data.append("ship_length", values.length);
     form_data.append("ship_width", values.width);
     form_data.append("ship_height", values.height);
-    form_data.append("is_featured", values.is_featured ? '1' : '0');
+    form_data.append("is_featured", values.is_featured ? "1" : "0");
 
     const media = values.media?.map((e) => {
       return e.file;
@@ -94,6 +117,8 @@ export default function ProductForm({}: Props) {
           reg_price: item.price,
           sale_price: item.salesPrice,
           qty: item.quantity,
+          is_unlimited_qty:item?.qty_infinity ? 1:0,
+          option_title:item?.new_title
         };
       });
 
@@ -110,7 +135,7 @@ export default function ProductForm({}: Props) {
     });
   };
   return (
-    <div className="container-md">
+    <div className="">
       <form
         onSubmit={form?.handleSubmit(handleAdd)}
         action=""
@@ -120,9 +145,10 @@ export default function ProductForm({}: Props) {
           <BasicDetails form={form} />
           <Price form={form} />
           <Seo form={form} />
-          <div className="flex justify-end">
-            <Button loading={isPending} type="submit">
-              Add Product
+          <Advance form={form} />
+          <div className="flex justify-end gap-3">
+            <Button loading={isPending} variant={"secondary"} type="submit">
+              Save
             </Button>
           </div>
         </div>

@@ -7,7 +7,6 @@ import {
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "~/components/ui/button";
-import { DatePickerWithRange } from "~/components/ui/date-picker";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +26,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { Separator } from "~/components/ui/separator";
+import { DatePicker } from "~/components/ui/date-picker";
 
 type Props = {};
 
@@ -58,7 +58,7 @@ const Filter = () => {
           </SelectGroup>
         </SelectContent>
       </Select>
-      <DatePickerWithRange />
+<DatePicker   />
     </div>
   );
 };

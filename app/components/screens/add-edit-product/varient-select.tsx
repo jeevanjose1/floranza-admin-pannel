@@ -9,13 +9,7 @@ import { Separator } from "~/components/ui/separator";
 import ProductVariationsTable from "./product-variation-table";
 import { ATTRIBUTE } from "~/shared/urls";
 import { fetcher, queryFilter } from "~/lib/utils";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
+
 import SelectCustom from "~/components/ui/custom-select";
 
 type Props = { form: UseFormReturn<any> };
@@ -84,7 +78,7 @@ function VariantsSelect({ form }: Props) {
     <div className="w-full">
       <div className="flex w-full justify-between mb-4 items-center">
         <h1 className="text-sm font-semibold">Attributes</h1>
-        <Button onClick={appendAttribute} size="sm" variant="secondary">
+        <Button type='button' onClick={appendAttribute} size="sm" variant="secondary">
           Add attribute
         </Button>
       </div>

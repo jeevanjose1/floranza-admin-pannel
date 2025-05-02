@@ -25,8 +25,8 @@ export default function Status({ form }: Props) {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectItem value="active">Active</SelectItem>
-                            <SelectItem value="inactive">Inactive</SelectItem>
+                            <SelectItem value="active">Published</SelectItem>
+                            <SelectItem value="inactive">Unpublished</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>

@@ -93,22 +93,7 @@ export default function CatogerySelect({ form }: Props) {
             error={form?.formState?.errors?.categories?.message as string}
           />
         </div>
-        <Controller
-          control={form.control}
-          name="is_featured"
-          render={({ field }) => (
-            <div className="flex items-center mt-4 gap-2 px-2 rounded-sm">
-              <Checkbox
-                id={`is_featured`}
-                {...field}
-                onCheckedChange={(e) => field.onChange(e)}
-              />
-              <Label htmlFor={`is_featured`} className="text-sm mb-0 cursor-pointer">
-                Is Featured
-              </Label>
-            </div>
-          )}
-        />
+       
       </div>
     </BgWrapper>
   );
