@@ -65,7 +65,7 @@ export default function CatogerySelect({ form }: Props) {
                     return (
                       <div
                         key={category.value}
-                        className="flex items-center gap-2 hover:bg-muted px-2 py-1 rounded-sm"
+                        className="flex items-center mb-1 gap-2 hover:bg-muted px-2 py-1 rounded-sm"
                       >
                         <Checkbox
                           id={`category-${category.value}`}
@@ -74,7 +74,7 @@ export default function CatogerySelect({ form }: Props) {
                         />
                         <Label
                           htmlFor={`category-${category.value}`}
-                          className="text-sm cursor-pointer"
+                          className="text-sm mb-0 cursor-pointer"
                         >
                           {category.label}
                         </Label>

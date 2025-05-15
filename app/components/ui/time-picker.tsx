@@ -211,7 +211,7 @@ export default function TimePicker({
             {formattedTime()}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-100 p-0" align="start">
+        <PopoverContent className="w-100 p-0" align="end">
           <div className="p-4 space-y-4">
             <div className="flex justify-between items-center">
               <div className="text-sm font-medium">Select Time</div>

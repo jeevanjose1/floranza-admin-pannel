@@ -4,6 +4,7 @@ import BgWrapper from '~/components/common/bg-wrapper'
 import ErrorMessage from '~/components/ui/error-message';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
+import Inventory from './inventory';
 
 type Props = { form: UseFormReturn<any> };
 
@@ -15,9 +16,10 @@ export default function Advance({ form }: Props) {
   return (
     <BgWrapper defaultCollapsed={true} collapsible title='Advance options'>
         <div className="p-4 w-full">
-        <Label>Slug</Label>
 
         <div>
+        <Label>Slug</Label>
+
           <Controller
             control={form?.control}
             name="slug"
@@ -42,6 +44,7 @@ export default function Advance({ form }: Props) {
             error={form?.formState?.errors?.slug?.message as string}
           />
         </div>
+                 <Inventory control={form?.control} formState={form?.formState} />
      
       </div>
     </BgWrapper>

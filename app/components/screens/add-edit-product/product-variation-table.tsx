@@ -6,6 +6,7 @@ import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
 import { Badge } from "~/components/ui/badge";
+import ErrorMessage from "~/components/ui/error-message";
 
 type Props = { form: UseFormReturn<any> };
 type Attribute = {
@@ -32,9 +33,7 @@ type Variation = {
 
 function ProductVariationsTable({ form }: Props) {
   const [variations, setVariations] = useState<Variation[]>([]);
-  const [expandedVariation, setExpandedVariation] = useState<string | null>(
-    null
-  );
+  const [expandedVariation, setExpandedVariation] = useState<string | null>(null);
 
   // Update variations when attributes change
   useEffect(() => {
@@ -128,6 +127,11 @@ function ProductVariationsTable({ form }: Props) {
 
     setVariations(finalVariations);
     form.setValue("variations", finalVariations);
+    
+    // Auto-expand the first variation when variations are generated for the first time
+    if (finalVariations.length > 0 && expandedVariation === null) {
+      setExpandedVariation(finalVariations[0].id);
+    }
   }, [form.watch("attributes")]);
 
   // Handle input change for a field
@@ -139,9 +143,7 @@ function ProductVariationsTable({ form }: Props) {
       | "quantity"
       | "qty_infinity"
       | "new_title"
-      | "tempNewTitle"
-      ,
-
+      | "tempNewTitle",
     value: any
   ) => {
     const newVariations = [...variations];
@@ -195,25 +197,20 @@ function ProductVariationsTable({ form }: Props) {
     setExpandedVariation(expandedVariation === id ? null : id);
   };
 
-  // Get display name (original name + new_title if exists)
-  const getDisplayName = (variation: Variation) => {
-    if (variation.new_title) {
-      return variation.new_title;
-    }
-    return variation.name;
-  };
-
   // If no variations, show message
   if (variations.length === 0) {
     return (
       <div className="mt-8">
-        <h2 className="text-lg font-medium mb-2">Product Variations</h2>
+        <h2 className="text-sm font-medium mb-2">Product Variations</h2>
         <div className="rounded-lg bg-muted/20 p-6 text-center">
           <p className="text-sm text-accent-foreground">
             Add at least one attribute with values to generate product
             variations.
           </p>
         </div>
+        <ErrorMessage
+          error={form?.formState?.errors?.attributes?.root?.message as string}
+        />
       </div>
     );
   }
@@ -221,7 +218,7 @@ function ProductVariationsTable({ form }: Props) {
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-base font-medium">
+        <h2 className="text-sm font-medium">
           Product Variations ({variations.length})
         </h2>
       </div>
@@ -244,7 +241,9 @@ function ProductVariationsTable({ form }: Props) {
             }}
           >
             <div
-              className="flex items-center justify-between px-4 py-2 cursor-pointer"
+              className={`flex items-center justify-between px-4 py-2 cursor-pointer ${
+                expandedVariation === variation.id ? "bg-muted/30" : ""
+              }`}
               onClick={() => toggleExpandVariation(variation.id)}
             >
               <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -293,8 +292,8 @@ function ProductVariationsTable({ form }: Props) {
                     <div className="font-medium text-[13px] flex gap-1 text-slate-800 truncate ">
                       <span>{variation.name}</span>
 
-                      {variation?.tempNewTitle && (
-                        <span>({variation?.tempNewTitle})</span>
+                      {variation?.new_title && (
+                        <span>({variation?.new_title})</span>
                       )}
                     </div>
                     <Button
@@ -375,7 +374,7 @@ function ProductVariationsTable({ form }: Props) {
                           onChange={(e) =>
                             handleInputChange(index, "price", e.target.value)
                           }
-                          className="h-9 text-sm"
+                          className="h-9 text-sm bg-white"
                         />
                       </div>
 
@@ -394,7 +393,7 @@ function ProductVariationsTable({ form }: Props) {
                               e.target.value
                             )
                           }
-                          className="h-9 text-sm"
+                          className="h-9 text-sm bg-white"
                         />
                       </div>
 
@@ -414,6 +413,7 @@ function ProductVariationsTable({ form }: Props) {
                                   checked
                                 )
                               }
+                              className="bg-white"
                             />
                             <label
                               htmlFor={`qty-infinity-${index}`}
@@ -431,7 +431,7 @@ function ProductVariationsTable({ form }: Props) {
                           onChange={(e) =>
                             handleInputChange(index, "quantity", e.target.value)
                           }
-                          className="h-9 text-sm"
+                          className="h-9 text-sm bg-white"
                         />
                       </div>
                     </div>

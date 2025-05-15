@@ -1,27 +1,23 @@
-import React from "react";
 import { Controller, type Control, type FormState } from "react-hook-form";
 import BgWrapper from "~/components/common/bg-wrapper";
-import { Checkbox } from "~/components/ui/checkbox";
-import { Combobox } from "~/components/ui/combo-box";
+
 import ErrorMessage from "~/components/ui/error-message";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
-import { Separator } from "~/components/ui/separator";
+
 import { input_restrictions } from "~/lib/utils";
 
 type Props = { control: Control<any>; formState: FormState<any> };
 
 export default function Shipping({ control, formState }: Props) {
   return (
-    <div className=" w-full mt-4">
+    <BgWrapper>
+
+   
+    <div className=" w-full p-4">
+    <h1 className="text-sm font-semibold mb-4">
+        Shipping
+      </h1>
       <div className="  mb-4">
         <div>
           <Label>Weight (Kg)</Label>
@@ -85,5 +81,6 @@ export default function Shipping({ control, formState }: Props) {
           </div>
       </div>
     </div>
+    </BgWrapper>
   );
 }
