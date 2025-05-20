@@ -14,5 +14,15 @@ const useLogin = () => {
       }),
   });
 };
+const useLogout = ()=>{
+	return useMutation({
+		mutationFn:()=>fetcher({
+			url:`${AUTH.LOGOUT}`,
+			type:'post',
+		}),
+		onSuccess:(data)=>data,
+		onError:(error)=>error
+		})
+}
 
-export { useLogin };
+export { useLogin,useLogout };

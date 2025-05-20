@@ -9,6 +9,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router'
 import { ScrollArea } from '../ui/scroll-area'
 import { is_auth } from '~/lib/utils'
+import { useLogout } from '~/services/queries/auth'
 
 type Props = {}
 
@@ -49,14 +50,18 @@ const AnimatedOutlet = () => {
 
 export default function PrivateLayout({}: Props) {
   const is_authenticated = is_auth()
+  const {mutateAsync:logout} = useLogout()
   const navigate = useNavigate()
   if(!is_authenticated){
     return <Navigate to={'/login'}/>
   }
 
   const handleLogout = ()=>{
-    localStorage.clear()
+    logout().then(()=>{
+ localStorage.clear()
     navigate('/')
+    })
+   
   }
   return (
     <SidebarProvider>
