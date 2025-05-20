@@ -1,6 +1,7 @@
 import * as React from "react";
 import {
   ChartNetwork,
+  Component,
   Frame,
   Framer,
   Home,
@@ -88,6 +89,18 @@ const data = {
       title: "Customers",
       url: "#",
       icon: Users,
+    },
+     {
+      title: "Others",
+      url: "#",
+      icon: Component,
+      items: [
+        {
+          title: "Slider",
+          url: "/slider",
+        },
+      
+      ],
     },
   ],
   navSecondary: [

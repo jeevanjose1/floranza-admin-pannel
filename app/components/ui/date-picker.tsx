@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { format, addDays, isValid } from "date-fns";
+import { format, isValid } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import type { DateRange } from "react-day-picker";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
@@ -29,12 +29,25 @@ export function DatePicker({
 } & React.HTMLAttributes<HTMLDivElement>) {
   // Initialize state based on picker type
   const [date, setDate] = React.useState<Date | undefined>(
-    defaultDate && isValid(defaultDate) ? defaultDate : undefined
+    undefined
   );
 
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(
     defaultDateRange && defaultDateRange.from ? defaultDateRange : undefined
   );
+
+  // Update state when defaultDate or defaultDateRange changes
+  React.useEffect(() => {
+    if (defaultDate && isValid(defaultDate)) {
+      setDate(defaultDate);
+    }
+  }, [defaultDate]);
+
+  React.useEffect(() => {
+    if (defaultDateRange && defaultDateRange.from) {
+      setDateRange(defaultDateRange);
+    }
+  }, [defaultDateRange]);
 
   const [open, setOpen] = React.useState(false);
 
@@ -69,7 +82,7 @@ export function DatePicker({
 
   return (
     <div className={cn("flex flex-col w-full space-y-4", className)} {...props}>
-      <Popover  open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger className="w-full" asChild>
           <Button
             variant="outline"

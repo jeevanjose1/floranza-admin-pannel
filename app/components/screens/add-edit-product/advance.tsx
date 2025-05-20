@@ -5,11 +5,11 @@ import ErrorMessage from '~/components/ui/error-message';
 import { Input } from '~/components/ui/input';
 import { Label } from '~/components/ui/label';
 import Inventory from './inventory';
+import { input_restrictions } from '~/lib/utils';
 
 type Props = { form: UseFormReturn<any> };
 
 export default function Advance({ form }: Props) {
-    console.log(form.watch('slug'));
     
     const slug = form.watch('title')?.toLowerCase().replace(/[\s-]+/g, '-');
 
@@ -44,7 +44,29 @@ export default function Advance({ form }: Props) {
             error={form?.formState?.errors?.slug?.message as string}
           />
         </div>
-                 <Inventory control={form?.control} formState={form?.formState} />
+        <div className='mt-4'>
+                    <Label>Display order</Label>
+                    <Controller
+                      control={form.control}
+                      name="order"
+                      render={({ field }) => {
+                        return (
+                          <Input
+                            {...field}
+                            onChange={(e) => {
+                              input_restrictions.numbersOnly(e);
+                              field.onChange(e);
+                            }}
+                            className=""
+                            type="number"
+                            placeholder="0"
+                          />
+                        );
+                      }}
+                    />
+                    <ErrorMessage error={""} />
+                  </div>
+        <Inventory control={form?.control} formState={form?.formState} />
      
       </div>
     </BgWrapper>

@@ -33,22 +33,45 @@ type Variation = {
 function ProductVariationsTable({ form }: Props) {
   const [variations, setVariations] = useState<Variation[]>([]);
   const [expandedVariation, setExpandedVariation] = useState<string | null>(null);
+  const [dataSource, setDataSource] = useState<"api" | "attributes">("attributes");
+
+  // Check if we have variations from the parent form (from API)
+  useEffect(() => {
+    const existingVariations = form.getValues("variations");
+    
+    if (existingVariations && existingVariations.length > 0) {
+      setVariations(existingVariations);
+      setDataSource("api");
+      
+      // Auto-expand the first variation
+      if (expandedVariation === null) {
+        setExpandedVariation(existingVariations[0].id);
+      }
+    }
+  }, [form]);
 
   // Update variations when attributes change
   useEffect(() => {
-    // Get only the active attributes (ones that are added and have values)
     const attributes = form.getValues("attributes") || [];
     const activeAttributes = attributes.filter(
       (attr: Attribute) =>
         attr.is_add && Array.isArray(attr.value) && attr.value.length > 0
     );
+    
 
-    // If no active attributes, return empty array
+    // If no active attributes, clear variations
     if (activeAttributes.length === 0) {
-      setVariations([]);
-      form.setValue("variations", []);
+      // Only clear variations if we're not using API data
+      if (dataSource !== "api" || variations.length === 0) {
+        setVariations([]);
+        form.setValue("variations", []);
+      }
       return;
     }
+
+    // Set data source to attributes when we have active attributes
+    // This ensures we use attribute-based variations for add mode
+    setDataSource("attributes");
 
     // Create an array of attribute values
     const attrValues = activeAttributes.map((attr: Attribute) =>
@@ -104,8 +127,10 @@ function ProductVariationsTable({ form }: Props) {
 
     const finalVariations = newVariations.map((newVar) => {
       const existingVar = existingVariations.find(
-        (v: { sku: any }) => v.sku === newVar.sku
+        (v: { attribute_id: string; value_id: string }) => 
+          v.attribute_id === newVar.attribute_id && v.value_id === newVar.value_id
       );
+      
       if (existingVar) {
         return {
           ...newVar,
@@ -113,10 +138,7 @@ function ProductVariationsTable({ form }: Props) {
           price: existingVar.price || "",
           salesPrice: existingVar.salesPrice || "",
           quantity: existingVar.quantity || "",
-          qty_infinity:
-            existingVar.qty_infinity !== undefined
-              ? existingVar.qty_infinity
-              : true,
+          qty_infinity: existingVar.qty_infinity !== undefined ? existingVar.qty_infinity : false,
           isEditing: false,
           tempNewTitle: existingVar.new_title || "",
         };
@@ -195,6 +217,7 @@ function ProductVariationsTable({ form }: Props) {
   const toggleExpandVariation = (id: string) => {
     setExpandedVariation(expandedVariation === id ? null : id);
   };
+  
 
   // If no variations, show message
   if (variations.length === 0) {

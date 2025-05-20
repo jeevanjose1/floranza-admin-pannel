@@ -11,50 +11,105 @@ import { product_form_schema } from "~/shared/validations";
 import { useCreateProduct } from "~/services/queries";
 import { toast } from "sonner";
 import Advance from "./advance";
-import dayjs from "dayjs";
 import Shipping from "./shipping";
 import PreBook from "./pre-book";
+import { useSingleProduct, useUpdateProduct } from "~/services/queries/product";
+import { useParams } from "react-router";
 
 type Props = {};
 type FormValues = z.infer<typeof product_form_schema>;
 
 export default function ProductForm({}: Props) {
-	const { mutateAsync: add_product, isPending } = useCreateProduct();
+	const params = useParams() as any
+	const {data} = useSingleProduct(params?.product_id)
+	const {mutateAsync: add_product, isPending:addPending } = useCreateProduct();
+	const {mutateAsync:edit_product,isPending:editPending} = useUpdateProduct()
+	const product = data?.data
+	const media = product?.images?.map((item:any)=>{
+		return {url:item?.large,file:item?.name}
+	})
+	
+	const variations = product?.variations?.map((item:any,index:number)=>{
+
+		return {
+			"id": index,
+			"attribute_id": item?.attribute_id,
+			"value_id": item?.attribute_option_id,
+			"name": `${item?.attribute_name}: ${item?.attribute_option_name}`,
+			"new_title": "",
+			"price": item?.reg_price ,
+			"salesPrice":item?.sale_price,
+			"quantity":item?.qty,
+			"qty_infinity": false,
+			"isEditing": false,
+			"tempNewTitle": ""
+}
+	})
+const attribute = ()=>{
+
+
+	const attributesMap = new Map();
+	product?.variations?.forEach((item: any) => {
+	const id = item.attribute_id;
+	if (!attributesMap.has(id)) {
+		attributesMap.set(id, {
+			is_add: true,
+			name: item.attribute_name,
+			id: id,
+			value: [],
+		});
+	}
+	const attr = attributesMap.get(id);
+	attr.value.push({
+		value: item.attribute_option_id,
+		label: item.attribute_option_name,
+	});
+		});
+
+// Convert the map to an array
+const attributes = Array.from(attributesMap.values());
+	return attributes
+}
+
+const catogeries = product?.product_categories?.map((item:any)=>{
+	return item?.category_id
+})
 
 	const form = useForm<FormValues>({
-		defaultValues: {
-			title: "",
-			slug: "",
-			description: "",
-			media: [],
-			sku: "",
-			supplier: "",
-			brand: "",
-			catogery: "",
-			price: "",
-			sale_price: "",
-			quandity: "",
-			is_schedule: false,
-				is_prebook:false,
-					prebook_date: "",
-			prebook_time: "",
-			shedule_date: "",
-			shedule_time: "",
-material:"",
-	weight: "",
-	is_featured: false,
-	length: "",
-	width: "",
-	height: "",
-	stock_notification: false,
-	notification_qty: "",
-	page_title: "",
-	page_description: "",
-	status: "",
-	categories: [],
+		values: {
+			order:product?.display_order||'',
+			title: product?.name ||"",
+			slug:product?.slug || "",
+			description: product?.description ||"",
+			media: media || [],
+			sku: product?.sku||"",
+			supplier: product?.supplier_id|| "",
+			brand: product?.brand_id || "",
+			catogery:"",
+			price: JSON.stringify(product?.reg_price)||"",
+			sale_price: JSON.stringify(product?.sale_price)||"",
+			quandity: JSON.stringify(product?.qty)||"",
+			is_schedule: product?.scheduled_at  ? true : false||false,
+			is_prebook:product?.is_pre_order === 1 ? true : false ||false,
+			prebook_date: product?.pre_end_at?.split(' ')?.[0]||"",
+			prebook_time: product?.pre_end_at?.split(' ')?.[1]||"",
+			shedule_date: product?.scheduled_at?.split(' ')?.[0]||"",
+			shedule_time: product?.scheduled_at?.split(' ')?.[1]||"",
+    material:product?.material_id||"",
+	weight: product?.ship_weight||"",
+	is_featured: product?.is_featured===1 ? true :false||false,
+	length: product?.ship_length||"",
+	width: product?.ship_width||"",
+	height: product?.ship_height||"",
+	stock_notification: product?.notify_qty>0?true : false||false,
+	notification_qty:product?.notify_qty || "",
+	page_title: product?.meta_title||"",
+	page_description: product?.meta_des||"",
+	status:JSON.stringify(product?.status)|| "",
+	categories: catogeries||[],
 	catogery_search: "",
-	is_variants: false,
-	attributes: [
+	is_variants: product?.is_variation ===1?true:false||false,
+	attributes: attribute()||[
 		{
 			name: "",
 			value: [""],
@@ -62,18 +117,16 @@ material:"",
 		},
 	],
 	attribute_items: [],
-	variations: [],
+	variations:variations|| [],
 	},
 	resolver: zodResolver(product_form_schema as any),
 	});
 
-
-
 	const handleAdd = (values: FormValues) => {
 		const schedule_date =values.shedule_date;
-		const schedule_time = `${values.shedule_time}:00`;
-	const prebook_date = values.prebook_date;
-		const prebook_time = `${values.prebook_time}:00`;
+		const schedule_time = `${values.shedule_time}`;
+		const prebook_date = values.prebook_date;
+		const prebook_time = `${values.prebook_time}`;
 		const slug =
 			values.slug !== ""
 				? values.slug?.toLowerCase().replace(/[\s-]+/g, "-")
@@ -86,15 +139,19 @@ material:"",
 		form_data.append("sku", values.sku);
 		form_data.append("supplier", values.supplier);
 		form_data.append("brand", values.brand);
-			form_data.append("material", values.material as string);
+		form_data.append("material", values.material as string);
 
-		form_data.append("status", "1");
+		form_data.append("status", values.status as string);
 		form_data.append(`category`, JSON.stringify(values.categories));
 		form_data.append("is_variation", values.is_variants ? "1" : "0");
 
 		if (values.is_schedule) {
 			form_data.append("is_scheduled", values.is_schedule ? "1" : "0");
 			form_data.append("scheduled_at", `${schedule_date} ${schedule_time}`);
+		}
+		if(params?.product_id && values.order ){
+            			form_data.append("display_order",values.order);
+
 		}
 if (values.is_prebook) {
 	form_data.append("is_pre_order", values.is_prebook ? "1" : "0");
@@ -105,8 +162,11 @@ if (values.is_prebook) {
 		form_data.append("sale_price", values.sale_price as string);
 		form_data.append("qty", values.quandity as string);
 	}
+	
 	form_data.append("is_notify_stock", values.stock_notification ? "1" : "0");
 	form_data.append("notify_qty", values.notification_qty as string);
+	
+
 	form_data.append("ship_weight", values.weight);
 	form_data.append("ship_length", values.length);
 	form_data.append("ship_width", values.width);
@@ -136,14 +196,26 @@ if (values.is_prebook) {
 		form_data.append(`variations`, JSON.stringify(variation_data));
 	}
 
-	add_product(form_data, {
+	if(params?.product_id){
+		edit_product({data:form_data,id:params?.product_id}, {
 		onSuccess: () => {
-			toast.success("Product added");
+			toast.success("Product updated");
 		},
 		onError: (error: any) => {
 			toast.error(error.data?.message);
 		},
 	});
+	}else{
+add_product(form_data, {
+	onSuccess: () => {
+		toast.success("Product added");
+	},
+	onError: (error: any) => {
+		toast.error(error.data?.message);
+	},
+	});
+	}
+
 	};
 	return (
 		<div className="">
@@ -160,7 +232,7 @@ if (values.is_prebook) {
 					<Seo form={form} />
 					<Advance form={form} />
 					<div className="flex justify-end gap-3">
-						<Button loading={isPending} variant={"secondary"} type="submit">
+						<Button loading={addPending||editPending} variant={"secondary"} type="submit">
 							Save
 						</Button>
 					</div>

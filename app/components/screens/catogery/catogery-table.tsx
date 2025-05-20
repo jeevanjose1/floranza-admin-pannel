@@ -157,7 +157,7 @@ export const columns: ColumnDef<Catogery>[] = [
         toast.promise(delete_catogery(catogery_id), {
           success: "Catogery deleted",
           loading: "Deleting catogery",
-          error: "Faild to delete catogery",
+          error:(error)=> error.data?.message,
         });
       };
       return (

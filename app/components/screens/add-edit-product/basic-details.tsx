@@ -11,8 +11,12 @@ import { BRAND, MATERIAL } from "~/shared/urls";
 import { Textarea } from "~/components/ui/textarea";
 import { SUPPLIER } from "~/shared/urls/supplier";
 import { Checkbox } from "~/components/ui/checkbox";
+import { useEffect, useState } from "react";
 
 type Props = { form: UseFormReturn<any> };
+
+// Define option type for clarity
+type SelectOption = { value: string ; label: string,is_hsn?:boolean };
 
 const promiseOptionsBrand = async (inputValue: string) => {
   try {
@@ -45,6 +49,7 @@ const promiseOptionsHsn = async (inputValue: string) => {
     return [];
   }
 };
+
 const promiseOptionsMaterial = async (inputValue: string) => {
   try {
     const response = await fetcher({
@@ -60,7 +65,35 @@ const promiseOptionsMaterial = async (inputValue: string) => {
     return [];
   }
 };
+
 const BasicDetails = ({ form }: Props) => {
+  // State to store the full option objects for each select
+  const [brandOptions, setBrandOptions] = useState<SelectOption[]>([]);
+  const [supplierOptions, setSupplierOptions] = useState<SelectOption[]>([]);
+  const [materialOptions, setMaterialOptions] = useState<SelectOption[]>([]);
+
+  // Load options on component mount
+  useEffect(() => {
+    const loadInitialOptions = async () => {
+      const brands = await promiseOptionsBrand("");
+      const suppliers = await promiseOptionsHsn("");
+      const materials = await promiseOptionsMaterial("");
+      
+      setBrandOptions(brands);
+      setSupplierOptions(suppliers);
+      setMaterialOptions(materials);
+    };
+    
+    loadInitialOptions();
+  }, []);
+
+  // Helper function to find the full option object by value
+  const getOptionByValue = (options: SelectOption[], value: any,is_hsn=false): SelectOption | null => {
+
+    if (!value) return null;
+
+    return options.find(option => option.value === value) || null;
+  };
 
   return (
     <BgWrapper>
@@ -92,6 +125,7 @@ const BasicDetails = ({ form }: Props) => {
             render={({ field }) => (
               <Textarea
                 className="h-44"
+                {...field}
                 placeholder="Type here..."
                 onChange={(e) => field.onChange(e)}
               />
@@ -130,8 +164,9 @@ const BasicDetails = ({ form }: Props) => {
             name="supplier"
             render={({ field }) => (
               <AsyncSelectCustom
+                value={getOptionByValue(supplierOptions, field.value,true)}
                 cacheOptions
-                onChange={(e: any) => field.onChange(e.value)}
+                onChange={(selectedOption: any) => field.onChange(selectedOption?.value)}
                 defaultOptions
                 loadOptions={promiseOptionsHsn}
               />
@@ -149,8 +184,9 @@ const BasicDetails = ({ form }: Props) => {
             name="brand"
             render={({ field }) => (
               <AsyncSelectCustom
+                value={getOptionByValue(brandOptions, field.value)}
                 cacheOptions
-                onChange={(e: any) => field.onChange(e.value)}
+                onChange={(selectedOption: any) => field.onChange(selectedOption?.value)}
                 defaultOptions
                 loadOptions={promiseOptionsBrand}
               />
@@ -161,22 +197,21 @@ const BasicDetails = ({ form }: Props) => {
             error={form?.formState?.errors?.brand?.message as string}
           />
         </div>
-           <div className="mb-3">
+        <div className="mb-3">
           <Label>Material</Label>
           <Controller
             control={form.control}
             name="material"
             render={({ field }) => (
               <AsyncSelectCustom
+                value={getOptionByValue(materialOptions, field.value)}
                 cacheOptions
-                onChange={(e: any) => field.onChange(e.value)}
+                onChange={(selectedOption: any) => field.onChange(selectedOption?.value)}
                 defaultOptions
                 loadOptions={promiseOptionsMaterial}
               />
             )}
           />
-
-          
         </div>
         <div>
           <Controller

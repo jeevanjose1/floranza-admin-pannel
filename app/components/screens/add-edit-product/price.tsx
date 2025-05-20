@@ -55,6 +55,7 @@ export default function Price({ form }: Props) {
               control={form?.control}
               name="is_schedule"
               render={({ field }) => {
+                
                 return (
                   <div className="flex items-center gap-2">
                     <Checkbox
@@ -83,6 +84,8 @@ export default function Price({ form }: Props) {
               >
                 <div className="w-full">
                   <DatePicker
+                                            defaultDate={ form.getValues('shedule_date')  ? new Date(form.getValues('shedule_date')) : undefined}
+
                     onChange={(e) => form.setValue("shedule_date", dayjs(e as any).format("YYYY-MM-DD"))}
                   />
                   <ErrorMessage
@@ -91,6 +94,7 @@ export default function Price({ form }: Props) {
                 </div>
                 <div className="w-full">
                   <TimePicker
+                                            defaultValue={ form.getValues('shedule_time') || null}
                     onChange={(e) => form.setValue("shedule_time", e)}
                   />
                   <ErrorMessage

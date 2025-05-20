@@ -16,7 +16,7 @@ export default function Status({ form }: Props) {
                   name="status"
                   render={({ field }) => {
                     return (
-                      <Select onValueChange={(e)=>field.onChange(e)}>
+                      <Select value={field.value} onValueChange={(e)=>field.onChange(e)}>
                         <SelectTrigger
                           size="sm"
                           className="w-full rounded-sm py-0"
@@ -25,8 +25,8 @@ export default function Status({ form }: Props) {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectGroup>
-                            <SelectItem value="active">Published</SelectItem>
-                            <SelectItem value="inactive">Unpublished</SelectItem>
+                            <SelectItem value="1">Published</SelectItem>
+                            <SelectItem value="0">Unpublished</SelectItem>
                           </SelectGroup>
                         </SelectContent>
                       </Select>

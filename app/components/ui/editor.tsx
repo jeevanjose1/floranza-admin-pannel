@@ -377,7 +377,6 @@ const HtmlPligin = ({ onContentChange }:EditorProp) => {
             )
             .join("\n");
 
-          console.log("Fallback Plain Text:", text);
 
           if (onContentChange) {
             onContentChange(text);

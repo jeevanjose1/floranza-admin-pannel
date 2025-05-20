@@ -45,9 +45,9 @@ const product_form_schema = z.object({
 	is_variants: z.boolean().default(false),
 	attributes: z.any().optional(), // NOTE: no schema yet
 	attribute_items: z.any().optional(),
-	notification_qty: z.string().optional(),
-	variations: z.array(z.any())
-
+	notification_qty: z.any().optional(),
+	variations: z.array(z.any()),
+    order:z.any().optional()
 }).superRefine((data, ctx) => {
 	if(data?.is_schedule){
 		if ( !data.shedule_date?.trim()) {
