@@ -38,6 +38,7 @@ const MediaCard = ({ data, onSelect, select }: CardType) => {
       <div className="bg-muted/50 w-[100px] h-24 border-4 relative border-white rounded-md ring-1 ring-muted">
         <Checkbox
           checked={checked()}
+
           onClick={(e) => {
             e.stopPropagation();
             onSelect({
@@ -46,7 +47,7 @@ const MediaCard = ({ data, onSelect, select }: CardType) => {
               file:data?.file
             });
           }}
-          className="absolute top-2 right-2 z-10"
+          className="absolute top-2 right-2 z-10 bg-white"
         />
         <img
           src={data.url}

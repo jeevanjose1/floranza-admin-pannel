@@ -44,7 +44,7 @@ export default function CategoryForm({ id }: Props) {
       description: catogery_data?.data?.description || "",
       image: catogery_data?.data?.image?.mini || null,
       name: catogery_data?.data?.name || "",
-      slug: catogery_data?.data?.slug || "",
+      // slug: catogery_data?.data?.slug || "",
       status: catogery_data?.data?.status === 1 ? "active" : "inactive",
       meta_title: catogery_data?.data?.meta_title || "",
       meta_description: catogery_data?.data?.meta_des || "",
@@ -56,7 +56,7 @@ export default function CategoryForm({ id }: Props) {
   const onSubmit = (values: CategoryFormValues) => {
     const form_data = new FormData();
     form_data.append("name", values.name);
-    form_data.append("slug", values.slug);
+    // form_data.append("slug", values.slug);
     form_data.append("description", values.description);
     if(typeof values.image === 'object'){
       form_data.append("image", values.image);
@@ -138,7 +138,7 @@ export default function CategoryForm({ id }: Props) {
                 <ErrorMessage error={formState.errors.image?.message as any}  />
               </div>
 
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <Label>Slug</Label>
                 <Controller
                   control={control}
@@ -148,7 +148,7 @@ export default function CategoryForm({ id }: Props) {
                   )}
                 />
                 <ErrorMessage error={formState.errors.slug?.message} />
-              </div>
+              </div> */}
               <div className="mb-3">
                 <Label>Meta title</Label>
                 <Controller

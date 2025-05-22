@@ -140,13 +140,13 @@ export const columns: ColumnDef<Catogery>[] = [
       <div className="text-right text-[13px]">{row.getValue("count")}</div>
     ),
   },
-  {
-    accessorKey: "date",
-    header: () => <div className="text-right ">Date</div>,
-    cell: ({ row }) => (
-      <div className="text-right text-[13px]">{row.getValue("date")}</div>
-    ),
-  },
+  // {
+  //   accessorKey: "date",
+  //   header: () => <div className="text-right ">Date</div>,
+  //   cell: ({ row }) => (
+  //     <div className="text-right text-[13px]">{row.getValue("date")}</div>
+  //   ),
+  // },
   {
     id: "actions",
     enableHiding: false,

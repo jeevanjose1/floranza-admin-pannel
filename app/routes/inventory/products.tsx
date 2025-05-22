@@ -19,27 +19,23 @@ export default function products({}: Props) {
       id: item.id,
       name: item?.name,
       sku:item?.sku,
-      catogery:item?.catogery,
+      catogery:item?.product_categories,
       brand:item?.hsn,
       price: item?.reg_price,
       status: item?.status ===1 ? 'Active' : 'Inactive',
       date: dayjs(item?.created_at).format('DD-MM-YYYY') ,
       stock: item?.qty,
       image: item?.images?.[0]?.large,
+      variations:item?.variations
     }
   }) || []
 
-
+ 
   return (
     <div>
       <PageHeader title="Products">
         <div className="flex items-center gap-2 ">
-          <Button variant={"default"} size={"sm"}>
-            Export
-          </Button>
-          <Button variant={"default"} size={"sm"}>
-            Import
-          </Button>
+       
           <Link to={'/products/new'}>
           <Button variant={"secondary"} size={"sm"}>
             Add Product

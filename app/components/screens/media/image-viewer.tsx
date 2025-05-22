@@ -68,11 +68,11 @@ export default function ImageViewer({ children, data, current_index }: Props) {
             <div>
               <div className="mb-2">
                 <Label>Name</Label>
-                <Input value={data[current]?.name} placeholder="Enter name" />
+                <Input disabled value={data[current]?.name} placeholder="Enter name" />
               </div>
               <div className="mb-4">
                 <Label>Alt</Label>
-                <Input value={data[current]?.name} placeholder="Enter alt" />
+                <Input disabled value={data[current]?.name} placeholder="Enter alt" />
               </div>
               <div className="mb-2">
                 <Label className="font-medium">Details</Label>
@@ -91,7 +91,7 @@ export default function ImageViewer({ children, data, current_index }: Props) {
               Close
             </Button>
           </DialogClose>
-          <Button size={"sm"}>Done</Button>
+          {/* <Button size={"sm"}>Done</Button> */}
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -19,7 +19,7 @@ const product_form_schema = z.object({
 	media: z.array(z.any()).min(1, "Media is required"),
 	sku: z.string().min(1, "SKU is required"),
 	supplier: z.string().min(1, "HSN / Supplier is required"),
-	brand: z.string().min(1, "Brand is required"),
+	brand: z.string().optional(),
 	catogery: z.string().optional(),
 	price: z.string().optional(),
 	sale_price: z.string().optional(),

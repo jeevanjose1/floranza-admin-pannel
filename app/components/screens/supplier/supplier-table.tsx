@@ -118,21 +118,21 @@ export const columns: ColumnDef<Supplier>[] = [
       );
     },
   },
-  {
-    accessorKey: "description",
-    header: "Description",
-    cell: ({ row }) => (
-      <div className="text-[13px]">{row.getValue("description")}</div>
-    ),
-  },
+  // {
+  //   accessorKey: "description",
+  //   header: "Description",
+  //   cell: ({ row }) => (
+  //     <div className="text-[13px]">{row.getValue("description")}</div>
+  //   ),
+  // },
 
-  {
-    accessorKey: "slug",
-    header: () => <div className="text-right ">Slug</div>,
-    cell: ({ row }) => (
-      <div className="text-right text-[13px]">{row.getValue("slug")}</div>
-    ),
-  },
+  // {
+  //   accessorKey: "slug",
+  //   header: () => <div className="text-right ">Slug</div>,
+  //   cell: ({ row }) => (
+  //     <div className="text-right text-[13px]">{row.getValue("slug")}</div>
+  //   ),
+  // },
   {
     accessorKey: "count",
     header: () => <div className="text-right ">Count</div>,

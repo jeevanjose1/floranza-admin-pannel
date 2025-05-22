@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import { useCreateSupplier, useSupplierDetails, useUpadteSupplier } from "~/services/queries/supplier";
 import { supplier_schema } from "~/shared/validations/supplier-schema";
+import { input_restrictions } from "~/lib/utils";
 
 type BrandFormValues = z.infer<typeof supplier_schema>;
 
@@ -35,11 +36,11 @@ export default function SupplierForm({ id }: Props) {
     resolver: zodResolver(supplier_schema),
     values: {
       title: supplier_data?.data?.name|| "",
-      description: supplier_data?.data?.description|| "",
-      image:  supplier_data?.data?.image?.mini||null,
+      // description: supplier_data?.data?.description|| "",
+      // image:  supplier_data?.data?.image?.mini||null,
       hsn_code: JSON.stringify(supplier_data?.data?.hsn_code)|| "",
-      meta_title:  supplier_data?.data?.meta_title||"",
-      meta_description: supplier_data?.data?.meta_des|| "",
+      // meta_title:  supplier_data?.data?.meta_title||"",
+      // meta_description: supplier_data?.data?.meta_des|| "",
       status: supplier_data?.data?.status ===1 ?"active":'inactive',
     },
   });
@@ -48,12 +49,12 @@ export default function SupplierForm({ id }: Props) {
     const form_data = new FormData();
     form_data.append("name", values.title);
     form_data.append("hsn_code", values.hsn_code);
-    form_data.append("description", values.description);
-    if(typeof values.image === 'object'){
-      form_data.append("image", values.image);
+    // form_data.append("description", values.description);
+    // if(typeof values.image === 'object'){
+    //   form_data.append("image", values.image);
 
-    }    form_data.append("meta_title", values.meta_title);
-    form_data.append("meta_des", values.meta_description);
+    // }    form_data.append("meta_title", values.meta_title);
+    // form_data.append("meta_des", values.meta_description);
     form_data.append("status", values.status === 'active' ? '1' : '0');
     form_data.append("display_order", '1');
 
@@ -104,7 +105,7 @@ export default function SupplierForm({ id }: Props) {
               </div>
 
               {/* Description */}
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <Label>Description</Label>
                 <Controller
                   control={control}
@@ -118,10 +119,10 @@ export default function SupplierForm({ id }: Props) {
                   )}
                 />
                 <ErrorMessage error={formState.errors.description?.message} />
-              </div>
+              </div> */}
 
               {/* Image */}
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <Label>Image</Label>
                 <Controller
                   control={control}
@@ -131,7 +132,7 @@ export default function SupplierForm({ id }: Props) {
                   )}
                 />
                 <ErrorMessage error={formState.errors.image?.message as any} />
-              </div>
+              </div> */}
 
            
 
@@ -142,14 +143,14 @@ export default function SupplierForm({ id }: Props) {
                   control={control}
                   name="hsn_code"
                   render={({ field }) => (
-                    <Input {...field} placeholder="HSN code" />
+                    <Input onKeyDown={input_restrictions.numbersOnly} minLength={6} maxLength={10} {...field} placeholder="HSN code" />
                   )}
                 />
                 <ErrorMessage error={formState.errors.hsn_code?.message} />
               </div>
 
               {/* Meta Title */}
-              <div className="mb-3">
+              {/* <div className="mb-3">
                 <Label>Meta Title</Label>
                 <Controller
                   control={control}
@@ -159,10 +160,10 @@ export default function SupplierForm({ id }: Props) {
                   )}
                 />
                 <ErrorMessage error={formState.errors.meta_title?.message} />
-              </div>
+              </div> */}
 
               {/* Meta Description */}
-              <div className="mb-3">
+              {/* <div className="mb-3">
                 <Label>Meta Description</Label>
                 <Controller
                   control={control}
@@ -178,7 +179,7 @@ export default function SupplierForm({ id }: Props) {
                 <ErrorMessage
                   error={formState.errors.meta_description?.message}
                 />
-              </div>
+              </div> */}
             </div>
           </BgWrapper>
 

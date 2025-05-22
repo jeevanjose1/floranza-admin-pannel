@@ -38,8 +38,8 @@ export default function BrandForm({ id }: Props) {
       title: brand_data?.data?.name|| "",
       description: brand_data?.data?.description|| "",
       image:  brand_data?.data?.image?.mini||null,
-      slug:  brand_data?.data?.slug||"",
-      hsn_code: JSON.stringify(brand_data?.data?.hsn_code)|| "",
+      // slug:  brand_data?.data?.slug||"",
+      // hsn_code: JSON.stringify(brand_data?.data?.hsn_code)|| "",
       meta_title:  brand_data?.data?.meta_title||"",
       meta_description: brand_data?.data?.meta_des|| "",
       status: brand_data?.data?.status ===1 ?"active":'inactive',
@@ -49,8 +49,8 @@ export default function BrandForm({ id }: Props) {
   const onSubmit = (values: BrandFormValues) => {
     const form_data = new FormData();
     form_data.append("name", values.title);
-    form_data.append("slug", values.slug);
-    form_data.append("hsn_code", values.hsn_code);
+    // form_data.append("slug", values.slug);
+    // form_data.append("hsn_code", values.hsn_code);
     form_data.append("description", values.description);
     if(typeof values.image === 'object'){
       form_data.append("image", values.image);
@@ -137,7 +137,7 @@ export default function BrandForm({ id }: Props) {
               </div>
 
               {/* Slug */}
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <Label>Slug</Label>
                 <Controller
                   control={control}
@@ -147,10 +147,10 @@ export default function BrandForm({ id }: Props) {
                   )}
                 />
                 <ErrorMessage error={formState.errors.slug?.message} />
-              </div>
+              </div> */}
 
               {/* HSN Code */}
-              <div className="mb-4">
+              {/* <div className="mb-4">
                 <Label>HSN Code</Label>
                 <Controller
                   control={control}
@@ -160,7 +160,7 @@ export default function BrandForm({ id }: Props) {
                   )}
                 />
                 <ErrorMessage error={formState.errors.hsn_code?.message} />
-              </div>
+              </div> */}
 
               {/* Meta Title */}
               <div className="mb-3">

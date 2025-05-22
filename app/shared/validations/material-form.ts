@@ -7,7 +7,7 @@ import { z } from "zod";
   image: z
     .any()
     .refine((file) => !!file, { message: "Image is required" }),
-  slug: z.string().min(1, "Slug is required"),
+  // slug: z.string().min(1, "Slug is required"),
   meta_title: z.string().min(1, "Meta title is required"),
   meta_description: z.string().min(1, "Meta description is required"),
   status: z.enum(["active", "inactive"], {

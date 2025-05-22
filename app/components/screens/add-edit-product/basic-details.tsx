@@ -16,7 +16,7 @@ import { useEffect, useState } from "react";
 type Props = { form: UseFormReturn<any> };
 
 // Define option type for clarity
-type SelectOption = { value: string ; label: string,is_hsn?:boolean };
+type SelectOption = { value: string; label: string; is_hsn?: boolean };
 
 const promiseOptionsBrand = async (inputValue: string) => {
   try {
@@ -78,21 +78,24 @@ const BasicDetails = ({ form }: Props) => {
       const brands = await promiseOptionsBrand("");
       const suppliers = await promiseOptionsHsn("");
       const materials = await promiseOptionsMaterial("");
-      
+
       setBrandOptions(brands);
       setSupplierOptions(suppliers);
       setMaterialOptions(materials);
     };
-    
+
     loadInitialOptions();
   }, []);
 
   // Helper function to find the full option object by value
-  const getOptionByValue = (options: SelectOption[], value: any,is_hsn=false): SelectOption | null => {
-
+  const getOptionByValue = (
+    options: SelectOption[],
+    value: any,
+    is_hsn = false
+  ): SelectOption | null => {
     if (!value) return null;
 
-    return options.find(option => option.value === value) || null;
+    return options.find((option) => option.value === value) || null;
   };
 
   return (
@@ -143,7 +146,7 @@ const BasicDetails = ({ form }: Props) => {
           />
         </div>
         <div className="mb-5">
-          <Label>SKU (Stock Keeping Unit)</Label>
+          <Label>SKU (Stock Keeping Unit / Product Code)</Label>
           <Controller
             control={form.control}
             name="sku"
@@ -164,9 +167,11 @@ const BasicDetails = ({ form }: Props) => {
             name="supplier"
             render={({ field }) => (
               <AsyncSelectCustom
-                value={getOptionByValue(supplierOptions, field.value,true)}
+                value={getOptionByValue(supplierOptions, field.value, true)}
                 cacheOptions
-                onChange={(selectedOption: any) => field.onChange(selectedOption?.value)}
+                onChange={(selectedOption: any) =>
+                  field.onChange(selectedOption?.value)
+                }
                 defaultOptions
                 loadOptions={promiseOptionsHsn}
               />
@@ -186,7 +191,9 @@ const BasicDetails = ({ form }: Props) => {
               <AsyncSelectCustom
                 value={getOptionByValue(brandOptions, field.value)}
                 cacheOptions
-                onChange={(selectedOption: any) => field.onChange(selectedOption?.value)}
+                onChange={(selectedOption: any) =>
+                  field.onChange(selectedOption?.value)
+                }
                 defaultOptions
                 loadOptions={promiseOptionsBrand}
               />
@@ -206,7 +213,9 @@ const BasicDetails = ({ form }: Props) => {
               <AsyncSelectCustom
                 value={getOptionByValue(materialOptions, field.value)}
                 cacheOptions
-                onChange={(selectedOption: any) => field.onChange(selectedOption?.value)}
+                onChange={(selectedOption: any) =>
+                  field.onChange(selectedOption?.value)
+                }
                 defaultOptions
                 loadOptions={promiseOptionsMaterial}
               />
@@ -221,7 +230,8 @@ const BasicDetails = ({ form }: Props) => {
               <div className="flex items-center gap-2 rounded-sm">
                 <Checkbox
                   id={`is_featured`}
-                  {...field}
+                  
+                  checked={field.value}
                   onCheckedChange={(e) => field.onChange(e)}
                 />
                 <Label

@@ -34,11 +34,11 @@ function ProductVariationsTable({ form }: Props) {
   const [variations, setVariations] = useState<Variation[]>([]);
   const [expandedVariation, setExpandedVariation] = useState<string | null>(null);
   const [dataSource, setDataSource] = useState<"api" | "attributes">("attributes");
-
+    
   // Check if we have variations from the parent form (from API)
   useEffect(() => {
     const existingVariations = form.getValues("variations");
-    
+     
     if (existingVariations && existingVariations.length > 0) {
       setVariations(existingVariations);
       setDataSource("api");
@@ -80,6 +80,7 @@ function ProductVariationsTable({ form }: Props) {
         id: attr.id,
         value: val.label || val,
         valueId: val.value || val,
+
       }))
     );
 
@@ -130,7 +131,7 @@ function ProductVariationsTable({ form }: Props) {
         (v: { attribute_id: string; value_id: string }) => 
           v.attribute_id === newVar.attribute_id && v.value_id === newVar.value_id
       );
-      
+       
       if (existingVar) {
         return {
           ...newVar,
@@ -140,7 +141,7 @@ function ProductVariationsTable({ form }: Props) {
           quantity: existingVar.quantity || "",
           qty_infinity: existingVar.qty_infinity !== undefined ? existingVar.qty_infinity : false,
           isEditing: false,
-          tempNewTitle: existingVar.new_title || "",
+          tempNewTitle: existingVar.tempNewTitle || "",
         };
       }
       return newVar;
@@ -218,7 +219,8 @@ function ProductVariationsTable({ form }: Props) {
     setExpandedVariation(expandedVariation === id ? null : id);
   };
   
-
+ console.log(variations,'asdasd');
+ 
   // If no variations, show message
   if (variations.length === 0) {
     return (
@@ -262,6 +264,7 @@ function ProductVariationsTable({ form }: Props) {
               damping: 30,
             }}
           >
+           
             <div
               className={`flex items-center justify-between px-4 py-2 cursor-pointer ${
                 expandedVariation === variation.id ? "bg-muted/30" : ""
@@ -272,7 +275,7 @@ function ProductVariationsTable({ form }: Props) {
                 {variation.isEditing ? (
                   <div className="flex items-center gap-1 w-full">
                     <div className="font-medium text-xs text-muted-foreground/60 truncate ">
-                      {variation.name}
+                      {variation.name} 
                     </div>
                     <Input
                       type="text"
@@ -314,9 +317,10 @@ function ProductVariationsTable({ form }: Props) {
                     <div className="font-medium text-[13px] flex gap-1 text-slate-800 truncate ">
                       <span>{variation.name}</span>
 
-                      {variation?.new_title && (
+                      {/* {variation?.new_title && (
                         <span>({variation?.new_title})</span>
-                      )}
+                      )} */}
+                      {variation?.tempNewTitle!=='' && variation?.tempNewTitle}
                     </div>
                     <Button
                       type="button"

@@ -35,7 +35,9 @@ type FormValues = z.infer<typeof formSchema>;
 type Props = { children: ReactNode; data?: Attribute };
 
 export default function AddEditModal({ children, data }: Props) {
-
+  console.log("====================================");
+  console.log(data);
+  console.log("====================================");
   const [open, setOpen] = useState(false);
   const { mutateAsync: add_attribute, isPending: addPending } =
     useCreateAttribute();
@@ -55,6 +57,7 @@ export default function AddEditModal({ children, data }: Props) {
                 description: item.description,
                 display_order: 0,
                 status: item.status == 1 ? "Active" : "Inactive",
+                id: item?.id,
               } as any;
             })
           : [
@@ -96,18 +99,19 @@ export default function AddEditModal({ children, data }: Props) {
   };
 
   const onSubmitForm = (values: FormValues) => {
-    const items = values.values?.map(item=>{
+    const items = values.values?.map((item) => {
       return {
         code: item?.code,
         description: item?.description,
         display_order: item?.display_order,
         name: item?.name,
-        status: item?.status === 'Active'?1:0,
-      }
-    })
+        status: item?.status === "Active" ? 1 : 0,
+        ...(data && { id: item?.id }),
+      };
+    });
     const payload = {
       name: values.name,
-      status:values.status==='Active' ? 1:0,
+      status: values.status === "Active" ? 1 : 0,
       items: items,
     };
     if (data) {

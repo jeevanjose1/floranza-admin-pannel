@@ -7,7 +7,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem,
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import { AnimatePresence, motion } from 'framer-motion'
 import { Navigate, Outlet, useLocation, useNavigate } from 'react-router'
-import { ScrollArea } from '../ui/scroll-area'
 import { is_auth } from '~/lib/utils'
 import { useLogout } from '~/services/queries/auth'
 

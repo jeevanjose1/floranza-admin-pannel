@@ -139,13 +139,13 @@ export const columns: ColumnDef<Brand>[] = [
       <div className="text-right text-[13px]">{row.getValue("count")}</div>
     ),
   },
-  {
-    accessorKey: "hsn",
-    header: () => <div className="text-right ">HSN code</div>,
-    cell: ({ row }) => (
-      <div className="text-right text-[13px]">{row.getValue("hsn")}</div>
-    ),
-  },
+  // {
+  //   accessorKey: "hsn",
+  //   header: () => <div className="text-right ">HSN code</div>,
+  //   cell: ({ row }) => (
+  //     <div className="text-right text-[13px]">{row.getValue("hsn")}</div>
+  //   ),
+  // },
   {
     id: "actions",
     enableHiding: false,

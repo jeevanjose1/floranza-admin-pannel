@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Controller, useFieldArray, type UseFormReturn } from "react-hook-form";
 import AsyncSelectCustom from "~/components/ui/async-select";
 import { Badge } from "~/components/ui/badge";
@@ -14,12 +14,21 @@ import SelectCustom from "~/components/ui/custom-select";
 
 type Props = { form: UseFormReturn<any> };
 
-const attribute_options = async (inputValue: string) => {
+const atteribute_items = async (inputValue: string) => {
   try {
     const response = await fetcher({
       url: `${ATTRIBUTE.LIST}${queryFilter({ page: 1, search: inputValue })}`,
       type: "get",
     });
+    return response;
+  } catch (error) {
+    return error;
+  }
+};
+
+const attribute_options = async (inputValue: string) => {
+  try {
+    const response = await atteribute_items(inputValue);
     return response?.data?.map((item: any) => ({
       value: item?.id,
       label: item?.name,
@@ -35,6 +44,23 @@ function VariantsSelect({ form }: Props) {
     control: form.control,
     name: "attributes",
   });
+
+  const handleDefaultItems = async () => {
+    try {
+      const default_item = form.getValues("attributes");
+      const response = await atteribute_items("");
+      const filterd_item = response?.data?.find(
+        (item: any) => item?.name === default_item?.[0]?.name
+      );
+      form.setValue("attribute_items", filterd_item.attribute_options);
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    if (form.getValues("attributes")?.length) {
+      handleDefaultItems();
+    }
+  }, [form]);
 
   const item_options = (attribute: any) => {
     if (!attribute) return [];
@@ -78,13 +104,19 @@ function VariantsSelect({ form }: Props) {
     <div className="w-full">
       <div className="flex w-full justify-between mb-4 items-center">
         <h1 className="text-sm font-semibold">Attributes</h1>
-        <Button type='button' onClick={appendAttribute} size="sm" variant="secondary">
+        <Button
+          type="button"
+          onClick={appendAttribute}
+          size="sm"
+          variant="secondary"
+        >
           Add attribute
         </Button>
       </div>
       <div className="border border-muted-foreground/20 rounded-md">
         {fields?.map((item, index) => {
           const current_item = form.watch("attributes")[index];
+
           return (
             <React.Fragment key={item.id}>
               {!current_item?.is_add ? (
@@ -97,8 +129,6 @@ function VariantsSelect({ form }: Props) {
                       render={({ field }) => (
                         <AsyncSelectCustom
                           onChange={(selected: any) => {
-                        ;
-
                             if (selected) {
                               form.setValue(`attributes.${index}`, {
                                 ...current_item,

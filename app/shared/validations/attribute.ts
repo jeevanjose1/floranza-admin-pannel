@@ -6,6 +6,7 @@ export const attributeValueSchema = z.object({
   description: z.string().min(1, "Description is required"),
   display_order: z.number(),
   status: z.enum(['Active', 'Inactive']),
+   id:z.string().optional()
 });
 
 export const formSchema = z.object({
@@ -14,4 +15,5 @@ export const formSchema = z.object({
   values: z
     .array(attributeValueSchema)
     .min(1, "At least one attribute value is required"),
+ 
 });
