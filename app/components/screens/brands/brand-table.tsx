@@ -96,27 +96,7 @@ export const columns: ColumnDef<Brand>[] = [
       </div>
     ),
   },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string;
 
-      // Apply different styling based on status
-      const statusStyles: Record<string, string> = {
-        Active: "bg-green-200 border border-green-300 text-green-500",
-        Inactive: "bg-red-200 border border-red-300 text-red-500",
-      };
-
-      const style = statusStyles[status] || "";
-
-      return (
-        <Badge variant={"default"} className={`${style} text-[13px]`}>
-          {status}
-        </Badge>
-      );
-    },
-  },
   {
     accessorKey: "description",
     header: "Description",
@@ -146,6 +126,27 @@ export const columns: ColumnDef<Brand>[] = [
   //     <div className="text-right text-[13px]">{row.getValue("hsn")}</div>
   //   ),
   // },
+    {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string;
+
+      // Apply different styling based on status
+      const statusStyles: Record<string, string> = {
+        Active: "bg-green-200 border border-green-300 text-green-500",
+        Inactive: "bg-red-200 border border-red-300 text-red-500",
+      };
+
+      const style = statusStyles[status] || "";
+
+      return (
+        <Badge variant={"default"} className={`${style} text-[13px]`}>
+          {status}
+        </Badge>
+      );
+    },
+  },
   {
     id: "actions",
     enableHiding: false,

@@ -22,7 +22,7 @@ type FormValues = z.infer<typeof product_form_schema>;
 export default function ProductForm({}: Props) {
   const params = useParams() as any;
   const { data } = useSingleProduct(params?.product_id);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const { mutateAsync: add_product, isPending: addPending } =
     useCreateProduct();
@@ -32,7 +32,7 @@ export default function ProductForm({}: Props) {
   const media = product?.images?.map((item: any) => {
     return { url: item?.large, file: item?.name };
   });
- 
+
   const variations = product?.variations?.map((item: any, index: number) => {
     return {
       id: index,
@@ -45,7 +45,8 @@ export default function ProductForm({}: Props) {
       quantity: item?.qty,
       qty_infinity: item?.is_unlimited_qty,
       isEditing: false,
-      tempNewTitle:item?.option_title,
+      tempNewTitle: item?.option_title,
+      prd_var_value_id: item?.prd_var_value_id,
     };
   });
   const attribute = () => {
@@ -122,8 +123,12 @@ export default function ProductForm({}: Props) {
     },
     resolver: zodResolver(product_form_schema as any),
   });
+ 
+
 
   const handleAdd = (values: FormValues) => {
+
+    
     const schedule_date = values.shedule_date;
     const schedule_time = `${values.shedule_time}`;
     const prebook_date = values.prebook_date;
@@ -141,7 +146,6 @@ export default function ProductForm({}: Props) {
     form_data.append("supplier", values.supplier);
     form_data.append("brand", values.brand as string);
     form_data.append("material", values.material as string);
-
     form_data.append("status", values.status as string);
     form_data.append(`category`, JSON.stringify(values.categories));
     form_data.append("is_variation", values.is_variants ? "1" : "0");
@@ -189,10 +193,14 @@ export default function ProductForm({}: Props) {
           qty: item.quantity,
           is_unlimited_qty: item?.qty_infinity ? 1 : 0,
           option_title: item?.new_title,
+          prd_var_value_id: item?.prd_var_value_id
+            ? item?.prd_var_value_id
+            : null,
         };
       });
-
+     
       form_data.append(`variations`, JSON.stringify(variation_data));
+
     }
 
     if (params?.product_id) {
@@ -201,7 +209,7 @@ export default function ProductForm({}: Props) {
         {
           onSuccess: () => {
             toast.success("Product updated");
-			navigate('/products')
+            navigate("/products");
           },
           onError: (error: any) => {
             toast.error(error.data?.message);
@@ -212,7 +220,7 @@ export default function ProductForm({}: Props) {
       add_product(form_data, {
         onSuccess: () => {
           toast.success("Product added");
-		  navigate('/products')
+          navigate("/products");
         },
         onError: (error: any) => {
           toast.error(error.data?.message);

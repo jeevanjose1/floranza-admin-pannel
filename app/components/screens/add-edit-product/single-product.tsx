@@ -1,11 +1,8 @@
 import { Controller, type UseFormReturn } from "react-hook-form";
-import { motion, AnimatePresence } from "framer-motion";
-import { Checkbox } from "~/components/ui/checkbox";
-import { DatePicker } from "~/components/ui/date-picker";
+
 import ErrorMessage from "~/components/ui/error-message";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import TimePicker from "~/components/ui/time-picker";
 import { input_restrictions } from "~/lib/utils";
 
 type Props = { form: UseFormReturn<any> };

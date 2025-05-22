@@ -62,6 +62,7 @@ import {
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { Badge } from "~/components/ui/badge";
 
 const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useSortable({
@@ -216,16 +217,7 @@ export function AttributeTable({ loading, table_data }: props) {
         </div>
       ),
     },
-    {
-      accessorKey: "added_on",
-      header: "Added on",
-      size: 160, // Set appropriate width for date column
-      cell: ({ row }) => (
-        <div className="font-medium text-[13px] flex items-center gap-2">
-          {row.original.date}
-        </div>
-      ),
-    },
+   
     {
       accessorKey: "items",
       header: "Items",
@@ -251,6 +243,27 @@ export function AttributeTable({ loading, table_data }: props) {
         );
       },
     },
+     {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string;
+
+      // Apply different styling based on status
+      const statusStyles: Record<string, string> = {
+        Active: "bg-green-200 border border-green-300 text-green-500",
+        Inactive: "bg-red-200 border border-red-300 text-red-500",
+      };
+
+      const style = statusStyles[status] || "";
+
+      return (
+        <Badge variant={"default"} className={`${style} text-[13px]`}>
+          {status}
+        </Badge>
+      );
+    },
+  },
     {
       id: "actions",
       enableHiding: false,

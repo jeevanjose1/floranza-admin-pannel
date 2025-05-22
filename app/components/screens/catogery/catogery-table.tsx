@@ -97,27 +97,7 @@ export const columns: ColumnDef<Catogery>[] = [
       </div>
     ),
   },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status");
-
-      // Apply different styling based on status
-      const statusStyles: Record<string, string> = {
-        Active: "bg-green-200 border border-green-300 text-green-500",
-        Inactive: "bg-red-200 border border-red-300 text-red-500",
-      };
-
-      const style = statusStyles[status === 1 ? "Active" : "Inactive"] || "";
-
-      return (
-        <Badge variant={"default"} className={`${style} text-[13px]`}>
-          {status === 1 ? "Active" : "Inactive"}
-        </Badge>
-      );
-    },
-  },
+  
   {
     accessorKey: "description",
     header: "Description",
@@ -147,6 +127,27 @@ export const columns: ColumnDef<Catogery>[] = [
   //     <div className="text-right text-[13px]">{row.getValue("date")}</div>
   //   ),
   // },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status");
+
+      // Apply different styling based on status
+      const statusStyles: Record<string, string> = {
+        Active: "bg-green-200 border border-green-300 text-green-500",
+        Inactive: "bg-red-200 border border-red-300 text-red-500",
+      };
+
+      const style = statusStyles[status === 1 ? "Active" : "Inactive"] || "";
+
+      return (
+        <Badge variant={"default"} className={`${style} text-[13px]`}>
+          {status === 1 ? "Active" : "Inactive"}
+        </Badge>
+      );
+    },
+  },
   {
     id: "actions",
     enableHiding: false,

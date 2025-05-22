@@ -20,7 +20,7 @@ export default function Attributes({}: Props) {
       items:item?.attribute_options,
       values_count:item?.attribute_options?.length,
       date:dayjs().format('DD/MM/YYYY'),
-      status:item?.status
+      status:item?.status  ===1 ? 'Active':'Inactive',
     }
   })
   return (

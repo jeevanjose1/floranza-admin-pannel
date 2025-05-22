@@ -1,9 +1,11 @@
-import { useCallback, useState, type SetStateAction } from "react";
+import { useCallback, useEffect, useState, type SetStateAction } from "react";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
+import { $generateNodesFromDOM } from '@lexical/html';
+
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import {
   INSERT_ORDERED_LIST_COMMAND,
@@ -22,6 +24,7 @@ import {
   UNDO_COMMAND,
   REDO_COMMAND,
   type EditorState,
+  $getRoot,
 } from "lexical";
 import {
   Bold,
@@ -57,7 +60,8 @@ import { Button } from "./button";
 import { Card } from "./card";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 type EditorProp = {
-    onContentChange?:(data:string)=>void
+    onContentChange?:(data:string)=>void,
+    value:string
 }
 const FormatDropdown = () => {
   const [editor] = useLexicalComposerContext();
@@ -200,6 +204,8 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
+                                    type="button"
+
                   className="h-8 w-8"
                   onClick={formatBold}
                 >
@@ -214,6 +220,8 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
+                                    type="button"
+
                   className="h-8 w-8"
                   onClick={formatItalic}
                 >
@@ -228,6 +236,8 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
+                                    type="button"
+
                   className="h-8 w-8"
                   onClick={formatUnderline}
                 >
@@ -244,6 +254,8 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
+                                    type="button"
+
                   className="h-8 w-8"
                   onClick={formatBulletList}
                 >
@@ -258,6 +270,8 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
+                                    type="button"
+
                   className="h-8 w-8"
                   onClick={formatNumberedList}
                 >
@@ -274,6 +288,8 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
+                                    type="button"
+
                   className="h-8 w-8"
                   onClick={formatAlignLeft}
                 >
@@ -288,6 +304,8 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
+                                    type="button"
+
                   className="h-8 w-8"
                   onClick={formatAlignCenter}
                 >
@@ -302,6 +320,8 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
+                                    type="button"
+
                   className="h-8 w-8"
                   onClick={formatAlignRight}
                 >
@@ -318,6 +338,8 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
+                                    type="button"
+
                   className="h-8 w-8"
                   onClick={undo}
                 >
@@ -332,6 +354,7 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
+                  type="button"
                   className="h-8 w-8"
                   onClick={redo}
                 >
@@ -346,8 +369,32 @@ const ToolbarPlugin = () => {
     </TooltipProvider>
   );
 };
+export const LoadInitialContent = ({ value }: any) => {
+  const [editor] = useLexicalComposerContext();
 
-const HtmlPligin = ({ onContentChange }:EditorProp) => {
+  useEffect(() => {
+    if (!value) return;
+
+    editor.update(() => {
+      // Decode HTML entities
+      const textarea = document.createElement('textarea');
+      textarea.innerHTML = value;
+      const decodedValue = textarea.value;
+      
+      const parser = new DOMParser();
+      const dom = parser.parseFromString(decodedValue, "text/html");
+      console.log(dom, 'dom');
+      
+      const nodes = $generateNodesFromDOM(editor, dom);
+      const root = $getRoot();
+      root.clear();
+      nodes.forEach((n) => root.append(n));
+    });
+  }, [editor, value]);
+
+  return null;
+};
+const HtmlPligin = ({ onContentChange,value }:EditorProp) => {
   const [editor] = useLexicalComposerContext();
 
   const handleEditorChange = useCallback(
@@ -396,6 +443,9 @@ const CharacterLimitPlugin = () => {
   const [showLimit, setShowLimit] = useState(false);
   const LIMIT = 2000;
   // Calculate character count
+
+  
+
   editor.registerUpdateListener(() => {
     editor.getEditorState().read(() => {
       const text = editor
@@ -438,7 +488,8 @@ const CharacterLimitPlugin = () => {
   );
 };
 
-const Editor = ({ onContentChange }:EditorProp) => {
+const Editor = ({ onContentChange,value }:EditorProp) => {
+  
   const initialConfig = {
     namespace: "ShopifyStyleEditor",
     nodes: [ListNode, ListItemNode, HeadingNode, QuoteNode, LinkNode],
@@ -469,12 +520,13 @@ const Editor = ({ onContentChange }:EditorProp) => {
   return (
     <div className="w-full">
       <Card className="overflow-hidden rounded-md gap-0 shadow-none py-0 bg-white border-muted">
-        <LexicalComposer initialConfig={initialConfig}>
+        <LexicalComposer  initialConfig={initialConfig}>
           <ToolbarPlugin />
           <div className="relative bg-white">
             <RichTextPlugin
+
               contentEditable={
-                <ContentEditable className="min-h-[200px] p-4 focus:outline-none" />
+                <ContentEditable  className="min-h-[200px] p-4 focus:outline-none" />
               }
               placeholder={
                 <div className="absolute top-4 left-4 text-sm text-accent pointer-events-none">
@@ -484,7 +536,9 @@ const Editor = ({ onContentChange }:EditorProp) => {
               ErrorBoundary={() => <div>Something went wrong.</div>}
             />
           </div>
-          <HtmlPligin onContentChange={onContentChange} />
+                      <LoadInitialContent value={value} />
+
+          <HtmlPligin value={value} onContentChange={onContentChange} />
           <ListPlugin />
           <HistoryPlugin />
           <CharacterLimitPlugin />

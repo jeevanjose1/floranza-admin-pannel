@@ -29,11 +29,16 @@ const atteribute_items = async (inputValue: string) => {
 const attribute_options = async (inputValue: string) => {
   try {
     const response = await atteribute_items(inputValue);
-    return response?.data?.map((item: any) => ({
-      value: item?.id,
-      label: item?.name,
-      items: item?.attribute_options,
-    }));
+
+    return response?.data
+      ?.filter((item: any) => item?.status === 1)
+      ?.map((item: any) => {
+        return {
+          value: item?.id,
+          label: item?.name,
+          items: item?.attribute_options,
+        };
+      });
   } catch (error) {
     return [];
   }

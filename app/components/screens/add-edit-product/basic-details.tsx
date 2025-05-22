@@ -12,6 +12,7 @@ import { Textarea } from "~/components/ui/textarea";
 import { SUPPLIER } from "~/shared/urls/supplier";
 import { Checkbox } from "~/components/ui/checkbox";
 import { useEffect, useState } from "react";
+import Editor from "~/components/ui/editor";
 
 type Props = { form: UseFormReturn<any> };
 
@@ -126,11 +127,10 @@ const BasicDetails = ({ form }: Props) => {
             control={form?.control}
             name="description"
             render={({ field }) => (
-              <Textarea
-                className="h-44"
+              <Editor
                 {...field}
-                placeholder="Type here..."
-                onChange={(e) => field.onChange(e)}
+                value={field.value}
+                onContentChange={(e) => field.onChange(e)}
               />
             )}
           />
