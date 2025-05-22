@@ -86,13 +86,13 @@ export const columns: ColumnDef<Supplier>[] = [
   },
   {
     accessorKey: "name",
-    header: "Product",
+    header: "Supplier",
     cell: ({ row }) => (
       <div className="font-medium text-[13px] flex items-center gap-2">
-        <Avatar className="rounded-md">
+        {/* <Avatar className="rounded-md">
           <AvatarImage src={row.original.image} />
           <AvatarFallback className="rounded-md">CS</AvatarFallback>
-        </Avatar>
+        </Avatar> */}
         {row.getValue("name")}
       </div>
     ),

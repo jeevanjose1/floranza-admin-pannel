@@ -85,7 +85,7 @@ export const columns: ColumnDef<Brand>[] = [
   },
   {
     accessorKey: "name",
-    header: "Product",
+    header: "Brand",
     cell: ({ row }) => (
       <div className="font-medium text-[13px] flex items-center gap-2">
         <Avatar className="rounded-md">

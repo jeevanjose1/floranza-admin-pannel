@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 
 import {
   Collapsible,
@@ -34,6 +34,8 @@ export function NavMain({
     }[];
   }[];
 }) {
+  const location = useLocation();
+
   return (
     <SidebarGroup>
       {/* <SidebarGroupLabel>Platform</SidebarGroupLabel> */}
@@ -44,12 +46,16 @@ export function NavMain({
               {item.items?.length ? (
                 <>
                   <CollapsibleTrigger className="cursor-pointer" asChild>
-                    <SidebarMenuButton size={'sm'}  className="data-[state=open]:[&>button]:rotate-90" >
+                    <SidebarMenuButton
+                      isActive={location.pathname?.includes(item.url)}
+                      size={"sm"}
+                      className="data-[state=open]:[&>button]:rotate-90"
+                    >
                       <>
                         <item.icon />
                         <span>{item.title}</span>
                         <SidebarMenuAction className="transition-transform data-[state=open]:rotate-90">
-                          <ChevronRight  />
+                          <ChevronRight />
                           <span className="sr-only">Toggle</span>
                         </SidebarMenuAction>
                       </>
@@ -59,7 +65,11 @@ export function NavMain({
                     <SidebarMenuSub>
                       {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
-                          <SidebarMenuSubButton   size={'sm'}asChild>
+                          <SidebarMenuSubButton
+                            isActive={location.pathname?.includes(subItem.url)}
+                            size={"sm"}
+                            asChild
+                          >
                             <a href={subItem.url}>
                               <span>{subItem.title}</span>
                             </a>
@@ -70,7 +80,12 @@ export function NavMain({
                   </CollapsibleContent>
                 </>
               ) : (
-                <SidebarMenuButton  size={'sm'} asChild tooltip={item.title}>
+                <SidebarMenuButton
+                  isActive={location.pathname?.includes(item.url)}
+                  size={"sm"}
+                  asChild
+                  tooltip={item.title}
+                >
                   <a href={item.url}>
                     <item.icon />
                     <span>{item.title}</span>
