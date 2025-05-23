@@ -26,7 +26,11 @@ export default function products({}: Props) {
       date: dayjs(item?.created_at).format('DD-MM-YYYY') ,
       stock: item?.qty,
       image: item?.images?.[0]?.large,
-      variations:item?.variations
+      variations:item?.variations,
+      scheduled:item?.is_scheduled,
+      sheduled_at:item?.scheduled_at,
+      prebook:item?.is_pre_order,
+      preorder_at:item?.pre_end_at
     }
   }) || []
 

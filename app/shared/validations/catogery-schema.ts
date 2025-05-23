@@ -10,6 +10,9 @@ const category_schema = z.object({
   status: z.enum(["active", "inactive"]),
   meta_title: z.string().min(1, "Meta title is required"),
   meta_description: z.string().min(1, "Meta description is required"),
+  nav_active:z.boolean().optional(),
+  nav_order:z.string().optional(),
+  home_show:z.boolean().optional()
 });
 
 export { category_schema };

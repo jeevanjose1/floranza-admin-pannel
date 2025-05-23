@@ -56,6 +56,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "~/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
+import dayjs from "dayjs";
 
 type props = {
   table_data: Product[];
@@ -75,6 +82,10 @@ export type Product = {
   date: string;
   stock: number;
   image: string;
+  scheduled: boolean;
+  prebook: boolean;
+  sheduled_at: string;
+  preorder_at: string;
   variations: {
     attribute_id: string;
     attribute_name: string;
@@ -207,14 +218,68 @@ export const columns: ColumnDef<Product>[] = [
         <div className="text-right text-[13px]">{row.getValue("stock")}</div>
       ),
   },
-  {
-    accessorKey: "date",
-    header: () => <div className="text-right ">Date</div>,
-    cell: ({ row }) => (
-      <div className="text-right text-[13px]">{row.getValue("date")}</div>
+
+{
+  accessorKey: "scheduled",
+  header: () => <div className="text-right">Scheduled</div>,
+  cell: ({ row }) =>
+    row.getValue("scheduled") === 1 ? (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className="w-full flex justify-end">
+              <Badge className="bg-blue-100 text-blue-800 border border-blue-300">
+                Scheduled
+              </Badge>
+            </div>
+          </TooltipTrigger>
+          <TooltipContent>
+            
+            {row.original?.sheduled_at
+              ? dayjs(row.original.sheduled_at).format("MMM D, YYYY h:mm A")
+              : "N/A"}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    ) : (
+      <div className="w-full flex justify-end">
+        <Badge className="bg-gray-100 text-gray-800 border border-gray-300">
+          Not Scheduled
+        </Badge>
+      </div>
     ),
+},
+
+  {
+    accessorKey: "prebook",
+    header: () => <div className="text-right">Pre Order</div>,
+    cell: ({ row }) =>
+      row.getValue("prebook") === 1 ? (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="w-full flex justify-end">
+                <Badge className="bg-green-100 text-green-800 border border-green-300">
+                  Pre-order Available
+                </Badge>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+               {row.original?.preorder_at
+              ? dayjs(row.original.preorder_at).format("MMM D, YYYY h:mm A")
+              : "N/A"}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ) : (
+        <div className="w-full flex justify-end">
+          <Badge className="bg-red-100 text-red-800 border border-red-300">
+            Not Available for Pre-order
+          </Badge>
+        </div>
+      ),
   },
-    {
+  {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
@@ -291,7 +356,12 @@ export const columns: ColumnDef<Product>[] = [
 
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link to={`/products/edit/${product_id}` } className="w-full h-full">Edit</Link>
+              <Link
+                to={`/products/edit/${product_id}`}
+                className="w-full h-full"
+              >
+                Edit
+              </Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -357,6 +427,7 @@ export function ProductTable({ loading, table_data }: props) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});

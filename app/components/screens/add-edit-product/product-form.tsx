@@ -91,7 +91,7 @@ export default function ProductForm({}: Props) {
       price: JSON.stringify(product?.reg_price) || "",
       sale_price: JSON.stringify(product?.sale_price) || "",
       quandity: JSON.stringify(product?.qty) || "",
-      is_schedule: product?.scheduled_at ? true : false || false,
+      is_schedule: product?.is_scheduled===1 ? true : false || false,
       is_prebook: product?.is_pre_order === 1 ? true : false || false,
       prebook_date: product?.pre_end_at?.split(" ")?.[0] || "",
       prebook_time: product?.pre_end_at?.split(" ")?.[1] || "",
@@ -215,7 +215,7 @@ export default function ProductForm({}: Props) {
       add_product(form_data, {
         onSuccess: () => {
           toast.success("Product added");
-          navigate("/products");
+          // navigate("/products");
         },
         onError: (error: any) => {
           toast.error(error.data?.message);
