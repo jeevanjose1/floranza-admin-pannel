@@ -25,6 +25,8 @@ import {
   REDO_COMMAND,
   type EditorState,
   $getRoot,
+  KEY_ENTER_COMMAND,
+  COMMAND_PRIORITY_LOW,
 } from "lexical";
 import {
   Bold,
@@ -59,10 +61,12 @@ import { Separator } from "./separator";
 import { Button } from "./button";
 import { Card } from "./card";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
+
 type EditorProp = {
     onContentChange?:(data:string)=>void,
     value:string
 }
+
 const FormatDropdown = () => {
   const [editor] = useLexicalComposerContext();
   const [selectedFormat, setSelectedFormat] = useState("paragraph");
@@ -163,11 +167,11 @@ const ToolbarPlugin = () => {
   };
 
   const formatBulletList = () => {
-    editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND);
+    editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
   };
 
   const formatNumberedList = () => {
-    editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND);
+    editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
   };
 
   const formatAlignLeft = () => {
@@ -183,11 +187,11 @@ const ToolbarPlugin = () => {
   };
 
   const undo = () => {
-    editor.dispatchCommand(UNDO_COMMAND);
+    editor.dispatchCommand(UNDO_COMMAND, undefined);
   };
 
   const redo = () => {
-    editor.dispatchCommand(REDO_COMMAND);
+    editor.dispatchCommand(REDO_COMMAND, undefined);
   };
 
   return (
@@ -204,8 +208,7 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                                    type="button"
-
+                  type="button"
                   className="h-8 w-8"
                   onClick={formatBold}
                 >
@@ -220,8 +223,7 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                                    type="button"
-
+                  type="button"
                   className="h-8 w-8"
                   onClick={formatItalic}
                 >
@@ -236,8 +238,7 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                                    type="button"
-
+                  type="button"
                   className="h-8 w-8"
                   onClick={formatUnderline}
                 >
@@ -254,8 +255,7 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                                    type="button"
-
+                  type="button"
                   className="h-8 w-8"
                   onClick={formatBulletList}
                 >
@@ -270,8 +270,7 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                                    type="button"
-
+                  type="button"
                   className="h-8 w-8"
                   onClick={formatNumberedList}
                 >
@@ -288,8 +287,7 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                                    type="button"
-
+                  type="button"
                   className="h-8 w-8"
                   onClick={formatAlignLeft}
                 >
@@ -304,8 +302,7 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                                    type="button"
-
+                  type="button"
                   className="h-8 w-8"
                   onClick={formatAlignCenter}
                 >
@@ -320,8 +317,7 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                                    type="button"
-
+                  type="button"
                   className="h-8 w-8"
                   onClick={formatAlignRight}
                 >
@@ -338,8 +334,7 @@ const ToolbarPlugin = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                                    type="button"
-
+                  type="button"
                   className="h-8 w-8"
                   onClick={undo}
                 >
@@ -369,11 +364,13 @@ const ToolbarPlugin = () => {
     </TooltipProvider>
   );
 };
+
 export const LoadInitialContent = ({ value }: any) => {
   const [editor] = useLexicalComposerContext();
+  const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {
-    if (!value) return;
+    if (!value || hasLoaded) return;
 
     editor.update(() => {
       // Decode HTML entities
@@ -383,32 +380,34 @@ export const LoadInitialContent = ({ value }: any) => {
       
       const parser = new DOMParser();
       const dom = parser.parseFromString(decodedValue, "text/html");
-      console.log(dom, 'dom');
       
       const nodes = $generateNodesFromDOM(editor, dom);
       const root = $getRoot();
-      root.clear();
-      nodes.forEach((n) => root.append(n));
+      
+      // Only clear and load if we actually have content
+      if (nodes.length > 0) {
+        root.clear();
+        nodes.forEach((n) => root.append(n));
+      }
     });
-  }, [editor, value]);
+    
+    setHasLoaded(true);
+  }, [editor, value, hasLoaded]);
 
   return null;
 };
-const HtmlPligin = ({ onContentChange,value }:EditorProp) => {
+
+const HtmlPlugin = ({ onContentChange, value }: EditorProp) => {
   const [editor] = useLexicalComposerContext();
 
   const handleEditorChange = useCallback(
     (editorState: EditorState) => {
       editorState.read(() => {
-        // Get HTML content from the DOM
         try {
           const rootElement = editor._rootElement;
-          if (rootElement) {
+          if (rootElement && onContentChange) {
             const html = rootElement.innerHTML;
-
-            if (onContentChange) {
-              onContentChange(html);
-            }
+            onContentChange(html);
           }
         } catch (error) {
           console.error("Error getting HTML content:", error);
@@ -423,7 +422,6 @@ const HtmlPligin = ({ onContentChange,value }:EditorProp) => {
                   .join("") || ""
             )
             .join("\n");
-
 
           if (onContentChange) {
             onContentChange(text);
@@ -442,9 +440,6 @@ const CharacterLimitPlugin = () => {
   const [characterCount, setCharacterCount] = useState(0);
   const [showLimit, setShowLimit] = useState(false);
   const LIMIT = 2000;
-  // Calculate character count
-
-  
 
   editor.registerUpdateListener(() => {
     editor.getEditorState().read(() => {
@@ -488,8 +483,30 @@ const CharacterLimitPlugin = () => {
   );
 };
 
-const Editor = ({ onContentChange,value }:EditorProp) => {
-  
+// Add Enter Key Handler Plugin to control line breaks
+const EnterKeyPlugin = () => {
+  const [editor] = useLexicalComposerContext();
+
+  useEffect(() => {
+    return editor.registerCommand(
+      KEY_ENTER_COMMAND,
+      (event) => {
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+          // Allow normal Enter behavior - this creates proper paragraph breaks
+          // You can customize this behavior here if needed
+          return false; // Let Lexical handle the default behavior
+        }
+        return false;
+      },
+      COMMAND_PRIORITY_LOW
+    );
+  }, [editor]);
+
+  return null;
+};
+
+const Editor = ({ onContentChange, value }: EditorProp) => {
   const initialConfig = {
     namespace: "ShopifyStyleEditor",
     nodes: [ListNode, ListItemNode, HeadingNode, QuoteNode, LinkNode],
@@ -511,6 +528,7 @@ const Editor = ({ onContentChange,value }:EditorProp) => {
         h5: "text-sm font-bold my-2",
       },
       quote: "border-l-4 border-slate-200 pl-4 my-2 italic",
+      paragraph: "my-1", // Add proper paragraph spacing
     },
     onError: (error: any) => {
       console.error(error);
@@ -520,13 +538,12 @@ const Editor = ({ onContentChange,value }:EditorProp) => {
   return (
     <div className="w-full">
       <Card className="overflow-hidden rounded-md gap-0 shadow-none py-0 bg-white border-muted">
-        <LexicalComposer  initialConfig={initialConfig}>
+        <LexicalComposer initialConfig={initialConfig}>
           <ToolbarPlugin />
           <div className="relative bg-white">
             <RichTextPlugin
-
               contentEditable={
-                <ContentEditable  className="min-h-[200px] p-4 focus:outline-none" />
+                <ContentEditable className="min-h-[200px] p-4 focus:outline-none" />
               }
               placeholder={
                 <div className="absolute top-4 left-4 text-sm text-accent pointer-events-none">
@@ -536,9 +553,9 @@ const Editor = ({ onContentChange,value }:EditorProp) => {
               ErrorBoundary={() => <div>Something went wrong.</div>}
             />
           </div>
-                      <LoadInitialContent value={value} />
-
-          <HtmlPligin value={value} onContentChange={onContentChange} />
+          <LoadInitialContent value={value} />
+          <HtmlPlugin value={value} onContentChange={onContentChange} />
+          <EnterKeyPlugin />
           <ListPlugin />
           <HistoryPlugin />
           <CharacterLimitPlugin />

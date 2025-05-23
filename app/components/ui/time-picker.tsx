@@ -1,4 +1,4 @@
-import { useState, useEffect, type SetStateAction } from "react";
+import { useState, useEffect, useRef, type SetStateAction } from "react";
 import { Popover, PopoverContent, PopoverTrigger } from "./popover";
 import { Button } from "./button";
 import { Check, Clock, SunIcon, MoonIcon } from "lucide-react";
@@ -71,49 +71,77 @@ export default function TimePicker({
   const [open, setOpen] = useState(false);
   const [openHours, setOpenHours] = useState(false);
   const [openMinutes, setOpenMinutes] = useState(false);
+  
+  // Flag to track if component is initialized
+  const isInitialized = useRef(false);
+  const isSettingDefault = useRef(false);
 
   // Initialize time from defaultValue
   useEffect(() => {
     if (defaultValue) {
+      isSettingDefault.current = true;
+      
+      // Since defaultValue comes from API split, it's always 24-hour format
+      // Possible formats: "04:30:00", "04:30", "4:30:00", "4:30"
+      
       let timeObj;
+      const patterns = [
+        "HH:mm:ss", // "04:30:00"
+        "HH:mm",    // "04:30"
+        "H:mm:ss",  // "4:30:00"
+        "H:mm"      // "4:30"
+      ];
 
-      // Try to parse in both formats
-      if (defaultValue.includes("AM") || defaultValue.includes("PM")) {
-        // 12-hour format
-        timeObj = dayjs(`2023-01-01 ${defaultValue}`, "YYYY-MM-DD h:mm A");
-        if (timeObj.isValid()) {
-          setHour(timeObj.format("h"));
-          setMinute(timeObj.format("mm"));
-          setPeriod(timeObj.format("A"));
-          if (is24Hour) setIs24Hour(false);
-        }
-      } else {
-        // 24-hour format
-        timeObj = dayjs(`2023-01-01 ${defaultValue}`, "YYYY-MM-DD HH:mm");
+      for (const pattern of patterns) {
+        timeObj = dayjs(defaultValue, pattern);
         if (timeObj.isValid()) {
           setHour(timeObj.format("HH"));
           setMinute(timeObj.format("mm"));
           setPeriod(timeObj.hour() >= 12 ? "PM" : "AM");
-          if (!is24Hour) setIs24Hour(true);
+          // Since API data is 24-hour format, set to 24-hour mode
+          setIs24Hour(true);
+          break;
         }
       }
+
+      // Fallback: if dayjs parsing fails, try manual parsing
+      if (!timeObj || !timeObj.isValid()) {
+        const timeParts = defaultValue.split(':');
+        if (timeParts.length >= 2) {
+          const hourStr = timeParts[0].padStart(2, '0');
+          const minuteStr = timeParts[1].padStart(2, '0');
+          
+          setHour(hourStr);
+          setMinute(minuteStr);
+          setPeriod(parseInt(hourStr) >= 12 ? "PM" : "AM");
+          setIs24Hour(true);
+        }
+      }
+      
+      // Set initialized flag after a brief delay to allow state updates
+      setTimeout(() => {
+        isSettingDefault.current = false;
+        isInitialized.current = true;
+      }, 0);
+    } else {
+      isInitialized.current = true;
     }
   }, [defaultValue]);
 
-  // Notify parent when time changes
+  // Notify parent when time changes (only after user interaction)
   useEffect(() => {
-    if (onChange) {
+    if (onChange && isInitialized.current && !isSettingDefault.current) {
       const timeString = getTimeValue();
       onChange(timeString);
     }
   }, [hour, minute, period, is24Hour]);
 
-  // Notify parent when format changes
+  // Notify parent when format changes (only after user interaction)
   useEffect(() => {
-    if (onFormatChange) {
+    if (onFormatChange && isInitialized.current && !isSettingDefault.current) {
       onFormatChange(is24Hour);
     }
-  }, [is24Hour]);
+  }, [is24Hour, onFormatChange]);
 
   const handleSelectHour = (currentValue: SetStateAction<string>) => {
     setHour(currentValue);

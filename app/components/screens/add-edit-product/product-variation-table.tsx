@@ -33,15 +33,23 @@ type Variation = {
 
 function ProductVariationsTable({ form }: Props) {
   const [variations, setVariations] = useState<Variation[]>([]);
-  const [expandedVariation, setExpandedVariation] = useState<string | null>(null);
-  const [dataSource, setDataSource] = useState<"api" | "attributes">("attributes");
+  const [expandedVariation, setExpandedVariation] = useState<string | null>(
+    null
+  );
+  const [dataSource, setDataSource] = useState<"api" | "attributes">(
+    "attributes"
+  );
   const [initialApiDataLoaded, setInitialApiDataLoaded] = useState(false);
 
   // Check if we have variations from the parent form (from API)
   useEffect(() => {
     const existingVariations = form.getValues("variations");
 
-    if (existingVariations && existingVariations.length > 0 && !initialApiDataLoaded) {
+    if (
+      existingVariations &&
+      existingVariations.length > 0 &&
+      !initialApiDataLoaded
+    ) {
       setVariations(existingVariations);
       setDataSource("api");
       setInitialApiDataLoaded(true);
@@ -61,15 +69,47 @@ function ProductVariationsTable({ form }: Props) {
         attr.is_add && Array.isArray(attr.value) && attr.value.length > 0
     );
 
-    // If no active attributes, don't clear variations if we have API data
+    // If no active attributes, clear all variations except API ones
     if (activeAttributes.length === 0) {
-      // Only clear variations if we don't have API data or if we're in pure attribute mode
-      if (!initialApiDataLoaded || (dataSource === "attributes" && variations.length === 0)) {
-        setVariations([]);
-        form.setValue("variations", []);
+      // Get existing variations
+      const existingVariations =
+        variations.length > 0 ? variations : form.getValues("variations") || [];
+
+      // Keep only API variations (those with prd_var_value_id)
+      const apiVariations = existingVariations.filter(
+        (variation: Variation) =>
+          variation.prd_var_value_id && variation.prd_var_value_id !== ""
+      );
+
+      setVariations(apiVariations);
+      form.setValue("variations", apiVariations);
+
+      // Reset expanded variation if current one was removed
+      if (
+        expandedVariation &&
+        !apiVariations.find((v: Variation) => v.id === expandedVariation)
+      ) {
+        setExpandedVariation(
+          apiVariations.length > 0 ? apiVariations[0].id : null
+        );
       }
+
       return;
     }
+
+    // Get currently active attribute IDs and their values
+    const activeAttributeIds = new Set(
+      activeAttributes.map((attr: Attribute) => attr.id)
+    );
+    
+    // Create a map of active attribute values for quick lookup
+    const activeAttributeValues = new Map();
+    activeAttributes.forEach((attr: Attribute) => {
+      const valueSet = new Set(
+        attr.value.map((val: any) => val.value || val.label || val)
+      );
+      activeAttributeValues.set(attr.id, valueSet);
+    });
 
     // Create an array of attribute values
     const attrValues = activeAttributes.map((attr: Attribute) =>
@@ -122,11 +162,44 @@ function ProductVariationsTable({ form }: Props) {
     });
 
     // Get existing variations (preserve both API and previously generated data)
-    const existingVariations = variations.length > 0 ? variations : form.getValues("variations") || [];
+    const existingVariations =
+      variations.length > 0 ? variations : form.getValues("variations") || [];
 
-    // Merge new variations with existing ones
-    const mergedVariations = [...existingVariations];
-    const newlyAddedVariations: Variation[] = [];
+    // Filter existing variations to keep only valid ones
+    const validExistingVariations = existingVariations.filter(
+      (variation: Variation) => {
+        // If it's from API (has prd_var_value_id), check if its attributes are still active
+        if (variation.prd_var_value_id && variation.prd_var_value_id !== "") {
+          // Check if all attribute IDs in this variation are still active
+          const variationAttributeIds = variation.attribute_id.split(",");
+          const variationValueIds = variation.value_id.split(",");
+          
+          // All attribute IDs must be active
+          const allAttributesActive = variationAttributeIds.every((attrId) =>
+            activeAttributeIds.has(attrId)
+          );
+          
+          // All values must still exist in their respective attributes
+          const allValuesExist = variationAttributeIds.every((attrId, index) => {
+            const valueId = variationValueIds[index];
+            const activeValues = activeAttributeValues.get(attrId);
+            return activeValues && activeValues.has(valueId);
+          });
+          
+          return allAttributesActive && allValuesExist;
+        }
+
+        // For generated variations, check if this combination still exists in the new variations
+        return newVariations.some(
+          (newVar) =>
+            newVar.attribute_id === variation.attribute_id &&
+            newVar.value_id === variation.value_id
+        );
+      }
+    );
+
+    // Merge new variations with valid existing ones
+    const mergedVariations = [...validExistingVariations];
 
     // Add new variations that don't already exist
     newVariations.forEach((newVar) => {
@@ -137,8 +210,8 @@ function ProductVariationsTable({ form }: Props) {
       );
 
       if (existingIndex === -1) {
-        // This is a new variation, collect it to add at the top later
-        newlyAddedVariations.push(newVar);
+        // This is a new variation, add it
+        mergedVariations.push(newVar);
       } else {
         // This variation already exists, just update the name and sku if needed
         mergedVariations[existingIndex] = {
@@ -149,39 +222,41 @@ function ProductVariationsTable({ form }: Props) {
       }
     });
 
-    // Add new variations at the top
-    const variationsWithNewOnesOnTop = [...newlyAddedVariations, ...mergedVariations];
-
-    // Remove variations that are no longer valid (if their attribute combinations don't exist in new variations)
-    const validVariations = variationsWithNewOnesOnTop.filter((variation) => {
-      // If it's from API (has prd_var_value_id), keep it
-      if (variation.prd_var_value_id) {
-        return true;
-      }
-      
-      // Otherwise, check if this combination still exists in the new variations
-      return newVariations.some(
-        (newVar) =>
-          newVar.attribute_id === variation.attribute_id &&
-          newVar.value_id === variation.value_id
-      );
-    });
-
     // Update IDs to be sequential
-    const finalVariations = validVariations.map((variation, index) => ({
+    const finalVariations = mergedVariations.map((variation, index) => ({
       ...variation,
       id: variation.prd_var_value_id || index.toString(),
     }));
 
-    setVariations(finalVariations);
-    form.setValue("variations", finalVariations);
+    // Only update if there's an actual change
+    const currentVariations = variations.length > 0 ? variations : form.getValues("variations") || [];
+    const hasChanged = 
+      finalVariations.length !== currentVariations.length ||
+      finalVariations.some((newVar, index) => {
+        const oldVar = currentVariations[index];
+        return !oldVar || 
+          newVar.attribute_id !== oldVar.attribute_id ||
+          newVar.value_id !== oldVar.value_id ||
+          newVar.name !== oldVar.name;
+      });
 
-    // Auto-expand the first new variation if any were added
-    if (newlyAddedVariations.length > 0 && finalVariations.length > 0) {
-      setExpandedVariation(finalVariations[0].id);
-    } else if (finalVariations.length > 0 && expandedVariation === null) {
-      // Auto-expand the first variation when variations are generated for the first time
-      setExpandedVariation(finalVariations[0].id);
+    if (hasChanged) {
+      setVariations(finalVariations);
+      form.setValue("variations", finalVariations);
+
+      // Reset expanded variation if current one was removed
+      const currentExpanded = expandedVariation;
+      if (
+        currentExpanded &&
+        !finalVariations.find((v: Variation) => v.id === currentExpanded)
+      ) {
+        setExpandedVariation(
+          finalVariations.length > 0 ? finalVariations[0].id : null
+        );
+      } else if (finalVariations.length > 0 && currentExpanded === null) {
+        // Auto-expand the first variation when variations are generated for the first time
+        setExpandedVariation(finalVariations[0].id);
+      }
     }
   }, [form.watch("attributes"), initialApiDataLoaded]);
 
@@ -210,7 +285,10 @@ function ProductVariationsTable({ form }: Props) {
     setVariations(newVariations);
 
     if (field !== "tempNewTitle") {
-      form.setValue(`variations.${index}.${field}`, newVariations[index][field]);
+      form.setValue(
+        `variations.${index}.${field}`,
+        newVariations[index][field]
+      );
     }
   };
 
@@ -227,7 +305,10 @@ function ProductVariationsTable({ form }: Props) {
     newVariations[index].new_title = newVariations[index].tempNewTitle || "";
     newVariations[index].isEditing = false;
     setVariations(newVariations);
-    form.setValue(`variations.${index}.new_title`, newVariations[index].new_title);
+    form.setValue(
+      `variations.${index}.new_title`,
+      newVariations[index].new_title
+    );
   };
 
   // Cancel editing variation name
@@ -250,7 +331,8 @@ function ProductVariationsTable({ form }: Props) {
         <h2 className="text-sm font-medium mb-2">Product Variations</h2>
         <div className="rounded-lg bg-muted/20 p-6 text-center">
           <p className="text-sm text-accent-foreground">
-            Add at least one attribute with values to generate product variations.
+            Add at least one attribute with values to generate product
+            variations.
           </p>
         </div>
         <ErrorMessage
@@ -336,7 +418,8 @@ function ProductVariationsTable({ form }: Props) {
                   <div className="flex items-center gap-2 min-w-0 flex-1">
                     <div className="font-medium text-[13px] flex gap-1 text-slate-800 truncate ">
                       <span>{variation.name}</span>
-                      {variation?.tempNewTitle !== "" && variation?.tempNewTitle}
+                      {variation?.tempNewTitle !== "" &&
+                        variation?.tempNewTitle}
                     </div>
                     <Button
                       type="button"
@@ -429,7 +512,11 @@ function ProductVariationsTable({ form }: Props) {
                           placeholder="0.00"
                           value={variation.salesPrice}
                           onChange={(e) =>
-                            handleInputChange(index, "salesPrice", e.target.value)
+                            handleInputChange(
+                              index,
+                              "salesPrice",
+                              e.target.value
+                            )
                           }
                           className="h-9 text-sm bg-white"
                         />
@@ -445,7 +532,11 @@ function ProductVariationsTable({ form }: Props) {
                               id={`qty-infinity-${index}`}
                               checked={variation.qty_infinity}
                               onCheckedChange={(checked) =>
-                                handleInputChange(index, "qty_infinity", checked)
+                                handleInputChange(
+                                  index,
+                                  "qty_infinity",
+                                  checked
+                                )
                               }
                               className="bg-white"
                             />

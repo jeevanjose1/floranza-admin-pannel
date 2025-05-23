@@ -76,6 +76,7 @@ export default function ProductForm({}: Props) {
   const catogeries = product?.product_categories?.map((item: any) => {
     return item?.category_id;
   });
+console.log(product);
 
   const form = useForm<FormValues>({
     values: {
@@ -123,12 +124,9 @@ export default function ProductForm({}: Props) {
     },
     resolver: zodResolver(product_form_schema as any),
   });
+//  console.log(form.getValues());
  
-
-
   const handleAdd = (values: FormValues) => {
-
-    
     const schedule_date = values.shedule_date;
     const schedule_time = `${values.shedule_time}`;
     const prebook_date = values.prebook_date;
@@ -186,7 +184,7 @@ export default function ProductForm({}: Props) {
     if (values.is_variants) {
       const variation_data = values?.variations?.map((item) => {
         return {
-          attribute_id: item.attribute_id?.split(","),
+          attribute_id: item.attribute_id?.split(','),
           attribute_option_id: item.value_id?.split(","),
           reg_price: item.price,
           sale_price: item.salesPrice,
@@ -198,9 +196,8 @@ export default function ProductForm({}: Props) {
             : null,
         };
       });
-     
-      form_data.append(`variations`, JSON.stringify(variation_data));
 
+      form_data.append(`variations`, JSON.stringify(variation_data));
     }
 
     if (params?.product_id) {
@@ -261,3 +258,26 @@ export default function ProductForm({}: Props) {
     </div>
   );
 }
+
+const f = [
+  {
+    attribute_id: "8378c2e6-73c1-4616-8b4e-b6701fa65a3b",
+    attribute_option_id: ["357b2665-cbee-4507-ba8f-dcbbf9151aff"],
+    reg_price: 4,
+    sale_price: 4,
+    qty: 2,
+    is_unlimited_qty: 0,
+    option_title: "",
+    prd_var_value_id: "028beb31-110d-475f-8cb6-a974746ae3b6",
+  },
+  {
+    attribute_id: "8378c2e6-73c1-4616-8b4e-b6701fa65a3b",
+    attribute_option_id: ["80745e27-22c5-4d0a-9e15-daee6af704e9"],
+    reg_price: 4,
+    sale_price: 4,
+    qty: 0,
+    is_unlimited_qty: 0,
+    option_title: "",
+    prd_var_value_id: "d3ef987b-fcc0-44ae-ba5c-314a0a601d9e",
+  },
+];
