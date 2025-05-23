@@ -291,7 +291,7 @@ export const columns: ColumnDef<Product>[] = [
 
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link to={`/products/edit/${product_id}`}>Edit</Link>
+              <Link to={`/products/edit/${product_id}` } className="w-full h-full">Edit</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

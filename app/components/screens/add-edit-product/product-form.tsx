@@ -76,7 +76,6 @@ export default function ProductForm({}: Props) {
   const catogeries = product?.product_categories?.map((item: any) => {
     return item?.category_id;
   });
-console.log(product);
 
   const form = useForm<FormValues>({
     values: {
@@ -124,7 +123,6 @@ console.log(product);
     },
     resolver: zodResolver(product_form_schema as any),
   });
-//  console.log(form.getValues());
  
   const handleAdd = (values: FormValues) => {
     const schedule_date = values.shedule_date;
@@ -178,8 +176,8 @@ console.log(product);
       return e.file;
     });
     form_data.append(`media`, JSON.stringify(media));
-    form_data.append("meta_title", values.page_title);
-    form_data.append("meta_des", values.page_description);
+    form_data.append("meta_title", values.page_title as string);
+    form_data.append("meta_des", values.page_description as string);
 
     if (values.is_variants) {
       const variation_data = values?.variations?.map((item) => {

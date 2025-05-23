@@ -143,7 +143,7 @@ export default function SupplierForm({ id }: Props) {
                   control={control}
                   name="hsn_code"
                   render={({ field }) => (
-                    <Input onKeyDown={input_restrictions.numbersOnly} minLength={6} maxLength={10} {...field} placeholder="HSN code" />
+                    <Input onKeyDown={input_restrictions.numbersOnly}  {...field} placeholder="HSN code" />
                   )}
                 />
                 <ErrorMessage error={formState.errors.hsn_code?.message} />
