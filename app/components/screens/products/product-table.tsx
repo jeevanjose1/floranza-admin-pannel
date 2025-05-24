@@ -243,9 +243,7 @@ export const columns: ColumnDef<Product>[] = [
       </TooltipProvider>
     ) : (
       <div className="w-full flex justify-end">
-        <Badge className="bg-gray-100 text-gray-800 border border-gray-300">
-          Not Scheduled
-        </Badge>
+        -
       </div>
     ),
 },
@@ -273,9 +271,7 @@ export const columns: ColumnDef<Product>[] = [
         </TooltipProvider>
       ) : (
         <div className="w-full flex justify-end">
-          <Badge className="bg-red-100 text-red-800 border border-red-300">
-            Not Available for Pre-order
-          </Badge>
+          -
         </div>
       ),
   },

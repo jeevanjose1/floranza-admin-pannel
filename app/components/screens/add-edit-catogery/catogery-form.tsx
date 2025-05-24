@@ -254,17 +254,8 @@ export default function CategoryForm({ id }: Props) {
 					</BgWrapper>
 					<BgWrapper>
 						<div className="p-4 w-full">
-							<div className="mb-4">
-								<h1 className="text-sm font-semibold mb-2">Others</h1>
-								<Controller
-									control={control}
-									name="nav_order"
-									render={({ field }) => (
-										<Input type="number" placeholder="Enter order" {...field} />
-									)}
-								/>
-								<ErrorMessage error={formState.errors.status?.message} />
-							</div>
+															<h1 className="text-sm font-semibold mb-2">Menu options</h1>
+
 							<div className="mb-4 flex items-center gap-2">
 								<Controller
 									control={control}
@@ -297,6 +288,16 @@ export default function CategoryForm({ id }: Props) {
 									Show this category in menu
 								</Label>
 							</div>
+							{form.watch('nav_active')&&<div className="mb-4">
+								<Controller
+									control={control}
+									name="nav_order"
+									render={({ field }) => (
+										<Input type="number" placeholder="Enter menu order" {...field} />
+									)}
+								/>
+								<ErrorMessage error={formState.errors.status?.message} />
+							</div>}
 							{/* <div>
 								<h1 className="text-sm font-semibold mb-2">Parent Category</h1>
 								<Controller
