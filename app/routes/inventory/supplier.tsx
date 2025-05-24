@@ -23,7 +23,7 @@ export default function Supplier({}: Props) {
       hsn:item?.hsn_code,
       count:45
     }
-  })
+  })||[]
 
   return (
     <div>

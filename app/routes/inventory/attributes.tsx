@@ -22,7 +22,7 @@ export default function Attributes({}: Props) {
       date:dayjs().format('DD/MM/YYYY'),
       status:item?.status  ===1 ? 'Active':'Inactive',
     }
-  })
+  }) ||[]
   return (
     <div>
       <PageHeader title="Attribute">

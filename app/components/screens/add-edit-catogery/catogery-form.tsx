@@ -52,6 +52,7 @@ export default function CategoryForm({ id }: Props) {
 			home_show: catogery_data?.data?.home_show === 1 ? true : false,
 			nav_active: catogery_data?.data?.nav_active === 1 ? true : false,
 			nav_order: catogery_data?.data?.nav_order || "",
+			display_order:catogery_data?.data?.display_order || ""
 		},
 	});
 
@@ -189,6 +190,17 @@ export default function CategoryForm({ id }: Props) {
 									error={formState.errors.meta_description?.message}
 								/>
 							</div>
+							<div>
+									<Label>Display order</Label>
+								<Controller
+									control={control}
+									name="display_order"
+									render={({ field }) => (
+										<Input type="number" placeholder="Enter display order" {...field} />
+									)}
+								/>
+							</div>
+							
 						</div>
 					</BgWrapper>
 
@@ -231,25 +243,7 @@ export default function CategoryForm({ id }: Props) {
 								<ErrorMessage error={formState.errors.status?.message} />
 							</div>
 
-							{/* <div>
-								<h1 className="text-sm font-semibold mb-2">Parent Category</h1>
-								<Controller
-									control={control}
-									name="categories"
-									render={({ field }) => (
-										<Combobox
-											options={[
-												{ value: "electronics", label: "Electronics" },
-												{ value: "fashion", label: "Fashion" },
-											]}
-											value={field.value}
-											onChange={field.onChange}
-											multiple
-										/>
-									)}
-								/>
-								<ErrorMessage error={formState.errors.categories?.message} />
-							</div> */}
+							
 						</div>
 					</BgWrapper>
 					<BgWrapper>
@@ -288,7 +282,7 @@ export default function CategoryForm({ id }: Props) {
 									Show this category in menu
 								</Label>
 							</div>
-							{form.watch('nav_active')&&<div className="mb-4">
+							{form.watch('nav_active')&&<div>
 								<Controller
 									control={control}
 									name="nav_order"

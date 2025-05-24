@@ -11,8 +11,10 @@ const category_schema = z.object({
   meta_title: z.string().min(1, "Meta title is required"),
   meta_description: z.string().min(1, "Meta description is required"),
   nav_active:z.boolean().optional(),
-  nav_order:z.string().optional(),
-  home_show:z.boolean().optional()
+  nav_order:z.any().optional(),
+  home_show:z.boolean().optional(),
+  display_order:z.any().optional(),
+
 });
 
 export { category_schema };

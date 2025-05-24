@@ -21,7 +21,7 @@ export default function Material({}: Props) {
       slug:item?.slug,
       count:45
     }
-  })
+  })||[]
   return (
     <div>
       <PageHeader title="Materials">

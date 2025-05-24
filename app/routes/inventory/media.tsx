@@ -39,7 +39,7 @@ export default function Media({}: Props) {
       date: item?.created_at,
       type: item?.file?.split(".")[item?.file?.split(".")?.length - 1],
     };
-  });
+  })||[];
 
   return (
     <div>

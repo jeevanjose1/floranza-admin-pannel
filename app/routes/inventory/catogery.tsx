@@ -21,7 +21,7 @@ export default function Catogery({}: Props) {
       image:item?.image.mini,
       count:4
     }
-  })
+  })||[]
   return (
     <div>
       <PageHeader title="Catogery">
