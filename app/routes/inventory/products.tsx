@@ -23,7 +23,7 @@ export default function products({}: Props) {
       brand:item?.hsn,
       price: item?.reg_price,
       status: item?.status ===1 ? 'Active' : 'Inactive',
-      date: dayjs(item?.created_at).format('DD-MM-YYYY') ,
+      date: item?.publishedAt ,
       stock: item?.qty,
       image: item?.images?.[0]?.large,
       variations:item?.variations,

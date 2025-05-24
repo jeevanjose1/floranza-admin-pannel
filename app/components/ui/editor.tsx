@@ -40,6 +40,9 @@ import {
   Undo,
   Redo,
   Type,
+  Palette,
+  Highlighter,
+  ChevronDown,
 } from "lucide-react";
 import { $createHeadingNode } from "@lexical/rich-text";
 import { $setBlocksType } from "@lexical/selection";
@@ -57,15 +60,165 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "./tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuTrigger,
+} from "./dropdown-menu";
 import { Separator } from "./separator";
 import { Button } from "./button";
 import { Card } from "./card";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
-
+import { $patchStyleText } from "@lexical/selection";
+import { ExtendedTextNode } from "./LexicalExtended";
+import { 
+  TextNode, 
+   
+} from 'lexical';
 type EditorProp = {
     onContentChange?:(data:string)=>void,
     value:string
 }
+
+// Lexical native color options
+const TEXT_COLORS = [
+  '#000000', // Black
+  '#ffffff', // White
+  '#888888', // Gray
+  '#ff0000', // Red
+  '#ff8800', // Orange
+  '#ffff00', // Yellow
+  '#88ff00', // Lime
+  '#00ff00', // Green
+  '#00ff88', // Spring Green
+  '#00ffff', // Cyan
+  '#0088ff', // Sky Blue
+  '#0000ff', // Blue
+  '#8800ff', // Purple
+  '#ff00ff', // Magenta
+  '#ff0088', // Pink
+];
+
+const BACKGROUND_COLORS = [
+  'transparent', // No background
+  '#f8f9fa', // Light Gray
+  '#e9ecef', // Gray
+  '#fff3cd', // Light Yellow
+  '#d4edda', // Light Green
+  '#d1ecf1', // Light Blue
+  '#e2e3f0', // Light Purple
+  '#f8d7da', // Light Red
+  '#ffeaa7', // Yellow
+  '#74b9ff', // Blue
+  '#a29bfe', // Purple
+  '#fd79a8', // Pink
+  '#fdcb6e', // Orange
+  '#6c5ce7', // Indigo
+  '#00b894', // Teal
+];
+
+const NativeColorPicker = ({ 
+  colors, 
+  onColorSelect, 
+  icon: Icon, 
+  tooltip,
+  currentColor = ''
+}: {
+  colors: string[],
+  onColorSelect: (color: string) => void,
+  icon: any,
+  tooltip: string,
+  currentColor?: string
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              type="button"
+              className="h-8 w-8 relative"
+            >
+              <Icon className="h-4 w-4" />
+              {/* Show current color indicator */}
+              {currentColor && currentColor !== 'transparent' && (
+                <div 
+                  className="absolute bottom-0 left-0 right-0 h-1 rounded-b"
+                  style={{ backgroundColor: currentColor }}
+                />
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent>{tooltip}</TooltipContent>
+      </Tooltip>
+      <DropdownMenuContent className="w-64 p-3" align="start">
+        <div className="space-y-3">
+          {/* Color Grid */}
+          <div className="grid grid-cols-5 gap-2">
+            {colors.map((color, index) => (
+              <button
+                key={index}
+                className="w-8 h-8 rounded border-2 hover:scale-110 transition-transform flex items-center justify-center"
+                style={{ 
+                  backgroundColor: color === 'transparent' ? '#ffffff' : color,
+                  border: `2px solid ${currentColor === color ? '#000000' : '#e5e7eb'}`,
+                  position: 'relative'
+                }}
+                onClick={() => {
+                  onColorSelect(color === 'transparent' ? '' : color);
+                  setIsOpen(false);
+                }}
+                title={color === 'transparent' ? 'No Color' : color}
+              >
+                {color === 'transparent' && (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <div className="w-4 h-0.5 bg-red-500 transform rotate-45 absolute" />
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+          
+          {/* Custom Color Input */}
+          <div className="border-t pt-3">
+            <label className="text-xs text-gray-600 mb-2 block">Custom Color:</label>
+            <div className="flex gap-2">
+              <input
+                type="color"
+                className="w-8 h-8 rounded border cursor-pointer"
+                onChange={(e) => {
+                  onColorSelect(e.target.value);
+                  setIsOpen(false);
+                }}
+              />
+              <input
+                type="text"
+                placeholder="#000000"
+                className="flex-1 px-2 py-1 text-xs border rounded"
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/.test(value)) {
+                    onColorSelect(value);
+                  }
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setIsOpen(false);
+                  }
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};
 
 const FormatDropdown = () => {
   const [editor] = useLexicalComposerContext();
@@ -130,6 +283,35 @@ const FormatDropdown = () => {
 
 const ToolbarPlugin = () => {
   const [editor] = useLexicalComposerContext();
+  const [currentTextColor, setCurrentTextColor] = useState('');
+  const [currentBgColor, setCurrentBgColor] = useState('');
+
+  // Track current colors from selection
+  useEffect(() => {
+    return editor.registerUpdateListener(() => {
+      editor.getEditorState().read(() => {
+        const selection = $getSelection();
+        if ($isRangeSelection(selection)) {
+          const nodes = selection.getNodes();
+          if (nodes.length > 0) {
+            const firstNode = nodes[0];
+            const parent = firstNode.getParent();
+            if (parent) {
+              // Get computed styles
+              const style = parent.getStyle();
+              if (style) {
+                const colorMatch = style.match(/color:\s*([^;]+)/);
+                const bgColorMatch = style.match(/background-color:\s*([^;]+)/);
+                
+                if (colorMatch) setCurrentTextColor(colorMatch[1].trim());
+                if (bgColorMatch) setCurrentBgColor(bgColorMatch[1].trim());
+              }
+            }
+          }
+        }
+      });
+    });
+  }, [editor]);
 
   // Calculate word count
   const updateWordCount = () => {
@@ -194,6 +376,30 @@ const ToolbarPlugin = () => {
     editor.dispatchCommand(REDO_COMMAND, undefined);
   };
 
+  const handleTextColorChange = (color: string) => {
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        $patchStyleText(selection, {
+          color: color || null,
+        });
+      }
+    });
+    setCurrentTextColor(color);
+  };
+
+  const handleBackgroundColorChange = (color: string) => {
+    editor.update(() => {
+      const selection = $getSelection();
+      if ($isRangeSelection(selection)) {
+        $patchStyleText(selection, {
+          'background-color': color || null,
+        });
+      }
+    });
+    setCurrentBgColor(color);
+  };
+
   return (
     <TooltipProvider>
       <div className="flex flex-col">
@@ -247,6 +453,24 @@ const ToolbarPlugin = () => {
               </TooltipTrigger>
               <TooltipContent>Underline</TooltipContent>
             </Tooltip>
+
+            <Separator orientation="vertical" className="mx-1 h-6" />
+
+            <NativeColorPicker
+              colors={TEXT_COLORS}
+              onColorSelect={handleTextColorChange}
+              icon={Palette}
+              tooltip="Text Color"
+              currentColor={currentTextColor}
+            />
+
+            <NativeColorPicker
+              colors={BACKGROUND_COLORS}
+              onColorSelect={handleBackgroundColorChange}
+              icon={Highlighter}
+              tooltip="Background Color"
+              currentColor={currentBgColor}
+            />
 
             <Separator orientation="vertical" className="mx-1 h-6" />
 
@@ -380,7 +604,7 @@ export const LoadInitialContent = ({ value }: any) => {
       
       const parser = new DOMParser();
       const dom = parser.parseFromString(decodedValue, "text/html");
-      
+        
       const nodes = $generateNodesFromDOM(editor, dom);
       const root = $getRoot();
       
@@ -426,7 +650,9 @@ const HtmlPlugin = ({ onContentChange, value }: EditorProp) => {
           if (onContentChange) {
             onContentChange(text);
           }
+          
         }
+        
       });
     },
     [editor, onContentChange]
@@ -509,7 +735,11 @@ const EnterKeyPlugin = () => {
 const Editor = ({ onContentChange, value }: EditorProp) => {
   const initialConfig = {
     namespace: "ShopifyStyleEditor",
-    nodes: [ListNode, ListItemNode, HeadingNode, QuoteNode, LinkNode],
+    nodes: [ListNode, ListItemNode, HeadingNode, QuoteNode, LinkNode,ExtendedTextNode,{
+      replace: TextNode,
+      with: (node: TextNode) => new ExtendedTextNode(node.__text),
+      withKlass: ExtendedTextNode,
+    },],
     theme: {
       text: {
         bold: "font-bold",

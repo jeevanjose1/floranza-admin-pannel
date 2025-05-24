@@ -153,7 +153,7 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: "name",
     header: "Product",
     cell: ({ row }) => (
-      <div className="font-medium text-[13px] flex items-center gap-2">
+      <div className="font-medium text-[13px] whitespace-pre-wrap flex items-center gap-2">
         <Avatar className="rounded-md">
           <AvatarImage src={row.original.image} />
           <AvatarFallback className="rounded-md">CS</AvatarFallback>
@@ -202,7 +202,7 @@ export const columns: ColumnDef<Product>[] = [
       }).format(price);
 
       return row.original.variations.length > 0 ? (
-        <div className="text-right font-medium text-[13px]">Valiration</div>
+        <div className="text-right font-medium text-[13px]">Variation</div>
       ) : (
         <div className="text-right font-medium text-[13px]">{formatted}</div>
       );
@@ -213,7 +213,7 @@ export const columns: ColumnDef<Product>[] = [
     header: () => <div className="text-right ">Stocks</div>,
     cell: ({ row }) =>
       row.original.variations.length > 0 ? (
-        <div className="text-right font-medium text-[13px]">Valiration</div>
+        <div className="text-right font-medium text-[13px]">Variation</div>
       ) : (
         <div className="text-right text-[13px]">{row.getValue("stock")}</div>
       ),
@@ -275,6 +275,17 @@ export const columns: ColumnDef<Product>[] = [
         </div>
       ),
   },
+  {
+  accessorKey: "date",
+  header: () => <div className="text-right">Published</div>,
+  cell: ({ row }) => (
+    <div className="text-right text-sm">
+      <p className="font-semibold">Published</p>
+      <p className="mb-0">{dayjs(row.original.date).format("MMM D, YYYY")} at</p>
+      <p className="mb-0 text-sm text-gray-500">{dayjs(row.original.date).format("h:mm A")}</p>
+    </div>
+  )
+},
   {
     accessorKey: "status",
     header: "Status",
