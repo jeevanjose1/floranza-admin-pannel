@@ -60,6 +60,7 @@ export default [
     route("/media", "routes/inventory/media.tsx"),
     route("/attributes", "routes/inventory/attributes.tsx"),
     route("/slider", "routes/others/slider.tsx"),
+    route("/orders", "routes/orders/order.tsx"),
 
   ] satisfies RouteConfig),
 ];

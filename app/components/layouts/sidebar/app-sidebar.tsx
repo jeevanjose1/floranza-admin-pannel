@@ -79,6 +79,17 @@ const data = {
       title: "Orders",
       url: "#",
       icon: ShoppingCart,
+       items: [
+        {
+          title: "Orders",
+          url: "/orders",
+        },
+        {
+          title: "New Orders",
+          url: "/new-orders",
+        },
+        
+      ],
     },
     {
       title: "Analytics",

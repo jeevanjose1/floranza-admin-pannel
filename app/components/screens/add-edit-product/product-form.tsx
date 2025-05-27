@@ -91,7 +91,7 @@ export default function ProductForm({}: Props) {
       price: JSON.stringify(product?.reg_price) || "",
       sale_price: JSON.stringify(product?.sale_price) || "",
       quandity: JSON.stringify(product?.qty) || "",
-      is_schedule: product?.is_scheduled===1 ? true : false || false,
+      is_schedule: product?.is_scheduled === 1 ? true : false || false,
       is_prebook: product?.is_pre_order === 1 ? true : false || false,
       prebook_date: product?.pre_end_at?.split(" ")?.[0] || "",
       prebook_time: product?.pre_end_at?.split(" ")?.[1] || "",
@@ -100,6 +100,7 @@ export default function ProductForm({}: Props) {
       material: product?.material_id || "",
       weight: product?.ship_weight || "",
       is_featured: product?.is_featured === 1 ? true : false || false,
+      is_free_shipping: product?.free_shipping === 1 ? true : false || false,
       length: product?.ship_length || "",
       width: product?.ship_width || "",
       height: product?.ship_height || "",
@@ -123,7 +124,7 @@ export default function ProductForm({}: Props) {
     },
     resolver: zodResolver(product_form_schema as any),
   });
- 
+
   const handleAdd = (values: FormValues) => {
     const schedule_date = values.shedule_date;
     const schedule_time = `${values.shedule_time}`;
@@ -144,6 +145,8 @@ export default function ProductForm({}: Props) {
     form_data.append("material", values.material as string);
     form_data.append("status", values.status as string);
     form_data.append(`category`, JSON.stringify(values.categories));
+    form_data.append("free_shipping", values.is_free_shipping ? "1" : "0");
+
     form_data.append("is_variation", values.is_variants ? "1" : "0");
 
     if (values.is_schedule) {
@@ -182,7 +185,7 @@ export default function ProductForm({}: Props) {
     if (values.is_variants) {
       const variation_data = values?.variations?.map((item) => {
         return {
-          attribute_id: item.attribute_id?.split(','),
+          attribute_id: item.attribute_id?.split(","),
           attribute_option_id: item.value_id?.split(","),
           reg_price: item.price,
           sale_price: item.salesPrice,

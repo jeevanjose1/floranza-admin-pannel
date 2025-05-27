@@ -30,6 +30,8 @@ const product_form_schema = z.object({
 	height: z.string().min(1, "Height is required"),
 	stock_notification: z.boolean().default(false),
 	is_schedule: z.boolean().default(false),
+	is_free_shipping: z.boolean().default(false),
+
 	is_prebook:z.boolean().default(false),
 	shedule_date: z.string().optional(),
 	shedule_time: z.string().optional(),
