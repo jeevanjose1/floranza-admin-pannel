@@ -82,7 +82,7 @@ const data = {
        items: [
         {
           title: "Orders",
-          url: "/orders",
+          url: "/orders/all",
         },
         {
           title: "New Orders",

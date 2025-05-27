@@ -118,3 +118,7 @@ export const input_restrictions = {
     e.target.value = e.target.value.replace(/[^0-9a-fA-F#]/g, "");
   },
 };
+
+export const transform_name = (string: string) => {
+    return string?.toLowerCase()?.split(" ")?.join("-");
+  };

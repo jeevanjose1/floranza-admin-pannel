@@ -13,12 +13,16 @@ export default [
   layout("components/layouts/privet-layout.tsx", [
     index("routes/home.tsx"),
     route("/products", "routes/inventory/products.tsx"),
-    route("/products/new", "routes/inventory/add-edit-product.tsx",{
-      id:'add_product'
+    route("/products/new", "routes/inventory/add-edit-product.tsx", {
+      id: "add_product",
     }),
-    route("/products/edit/:product_id", "routes/inventory/add-edit-product.tsx",{
-      id:'edit_product'
-    }),
+    route(
+      "/products/edit/:product_id",
+      "routes/inventory/add-edit-product.tsx",
+      {
+        id: "edit_product",
+      }
+    ),
 
     route("/catogery", "routes/inventory/catogery.tsx"),
     route("/catogery/new", "routes/inventory/add-edit-catogery.tsx", {
@@ -60,7 +64,8 @@ export default [
     route("/media", "routes/inventory/media.tsx"),
     route("/attributes", "routes/inventory/attributes.tsx"),
     route("/slider", "routes/others/slider.tsx"),
-    route("/orders", "routes/orders/order.tsx"),
-
+    layout("components/layouts/order-layout.tsx", [
+      route("/orders/:order_menu", "routes/orders/order.tsx"),
+    ]),
   ] satisfies RouteConfig),
 ];

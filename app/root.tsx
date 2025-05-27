@@ -36,8 +36,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <QueryProvider>
-        <Toaster  theme="light" richColors />
-
+          <Toaster theme="light" richColors />
           {children}
           <ScrollRestoration />
           <Scripts />

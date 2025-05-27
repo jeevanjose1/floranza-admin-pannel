@@ -1,6 +1,4 @@
-type COMMON_LIST_PAYLOAD = {
-    page:number
-}
+type COMMON_LIST_PAYLOAD = any
 type COMMON_PAYLOAD = FormData
 
 type COMMON_MUTATION = {
