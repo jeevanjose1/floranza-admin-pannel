@@ -13,6 +13,16 @@ const useOrderList = (payload: COMMON_LIST_PAYLOAD) => {
 			}),
 	});
 };
+const useOrderView = (payload: COMMON_LIST_PAYLOAD) => {
+	return useQuery({
+		queryKey: ["ORDER_VIEW", payload],
+		queryFn: () =>
+			fetcher({
+				url: `${ORDER.ORDER_VIEW}/${payload}`,
+				type: "get",
+			}),
+	});
+};
 const useOrderMenuList = (payload: COMMON_LIST_PAYLOAD) => {
 	return useQuery({
 		queryKey: ["MENU_LIST", payload],
@@ -26,5 +36,6 @@ const useOrderMenuList = (payload: COMMON_LIST_PAYLOAD) => {
 
 export {
     useOrderList,
-    useOrderMenuList
+    useOrderMenuList,
+	useOrderView
 }

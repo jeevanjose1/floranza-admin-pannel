@@ -38,7 +38,7 @@ import { Badge } from "~/components/ui/badge";
 import Loader from "~/components/ui/loader";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { PopConfirm } from "~/components/ui/pop-confirm";
-import { Link } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import { useDeleteBrand } from "~/services/queries";
 import { toast } from "sonner";
 import { useDeleteSupplier } from "~/services/queries/supplier";
@@ -319,6 +319,7 @@ export function OrderTable({ loading, table_data }: props) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const navigate = useNavigate()
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
@@ -341,6 +342,10 @@ export function OrderTable({ loading, table_data }: props) {
       rowSelection,
     },
   });
+
+const handleNavigate = (id:string)=>{
+  navigate(`/edit-order/${id}`)
+}
 
   if (loading)
     return (
@@ -378,9 +383,10 @@ export function OrderTable({ loading, table_data }: props) {
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   className="cursor-pointer"
+                  onClick={()=>handleNavigate(row.original.id)}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell  key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()

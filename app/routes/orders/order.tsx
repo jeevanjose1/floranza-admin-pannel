@@ -1,12 +1,6 @@
-import { Link, useParams } from "react-router";
-import { useState } from "react";
-import { motion } from "framer-motion";
-import BgWrapper from "~/components/common/bg-wrapper";
-import PageHeader from "~/components/common/page-header";
-import { Button } from "~/components/ui/button";
-import OrderTableHeader from "../../components/screens/orders/order-table-header";
+import { useParams } from "react-router";
+
 import { useOrderList, useOrderMenuList } from "~/services/queries/order";
-import { FolderDot, User } from "lucide-react";
 import { OrderTable } from "~/components/screens/orders/order-table";
 import { transform_name } from "~/lib/utils";
 

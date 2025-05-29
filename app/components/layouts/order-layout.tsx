@@ -18,7 +18,7 @@ export default function OrderLayout({}: Props) {
   const tab_active = (menu: string) => {
     return params?.order_menu === menu;
   };
-  
+
   const is_page = menus?.find(
     (item: any) => transform_name(item?.name) === params?.order_menu
   );
@@ -37,47 +37,44 @@ export default function OrderLayout({}: Props) {
 
       <BgWrapper>
         <div className="relative  ">
-            <ScrollArea className="overflow-scroll max-w-screen tablet-lg:max-w-[calc(100vw-270px)]">
-
-      
-          <div className="flex space-x-5 border-b border-gray-200">
-            {menus.map((item: any, index: number) => {
-              const path = transform_name(item?.name);
-              return (
-                <Link
-                  to={`/orders/${path}`}
-                  key={item?.id || index}
-                  className={`relative flex whitespace-nowrap items-center gap-2 py-3 last:pr-4 first:pl-4 text-[13px] font-medium transition-colors duration-200 ${
-                    tab_active(path)
-                      ? "text-muted-foreground"
-                      : "text-muted-foreground/65 hover:text-muted-foreground/90"
-                  }`}
-                >
-                  <span dangerouslySetInnerHTML={{ __html: item?.icon }} />
-                  {item?.name} ({item?.count})
-                  {tab_active(path) && (
-                    <motion.div
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted-foreground"
-                      layoutId="activeTab"
-                      initial={false}
-                      transition={{
-                        type: "keyframes",
-                        stiffness: 300,
-                        damping: 30,
-                      }}
-                    />
-                  )}
-                </Link>
-              );
-            })}
-          </div>
-                <ScrollBar orientation="horizontal" />
-
-                </ScrollArea>
+          <ScrollArea className="overflow-scroll max-w-screen tablet-lg:max-w-[calc(100vw-270px)]">
+            <div className="flex space-x-5 border-b border-gray-200">
+              {menus.map((item: any, index: number) => {
+                const path = transform_name(item?.name);
+                return (
+                  <Link
+                    to={`/orders/${path}`}
+                    key={item?.id || index}
+                    className={`relative flex whitespace-nowrap items-center gap-2 py-3 last:pr-4 first:pl-4 text-[13px] font-medium transition-colors duration-200 ${
+                      tab_active(path)
+                        ? "text-muted-foreground"
+                        : "text-muted-foreground/65 hover:text-muted-foreground/90"
+                    }`}
+                  >
+                    <span dangerouslySetInnerHTML={{ __html: item?.icon }} />
+                    {item?.name} ({item?.count})
+                    {tab_active(path) && (
+                      <motion.div
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-muted-foreground"
+                        layoutId="activeTab"
+                        initial={false}
+                        transition={{
+                          type: "keyframes",
+                          stiffness: 300,
+                          damping: 30,
+                        }}
+                      />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+            <ScrollBar orientation="horizontal" />
+          </ScrollArea>
         </div>
-                <OrderTableHeader />
+        <OrderTableHeader />
 
-        <div >
+        <div>
           <Outlet />
         </div>
       </BgWrapper>

@@ -67,5 +67,6 @@ export default [
     layout("components/layouts/order-layout.tsx", [
       route("/orders/:order_menu", "routes/orders/order.tsx"),
     ]),
+    route("/edit-order/:order_id", "routes/orders/order-edit.tsx"),
   ] satisfies RouteConfig),
 ];
