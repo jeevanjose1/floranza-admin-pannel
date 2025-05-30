@@ -53,12 +53,12 @@ export default function MaterialForm({ id }: Props) {
     const form_data = new FormData();
     form_data.append("name", values.title);
     // form_data.append("slug", values.slug);
-    form_data.append("description", values.description);
+    form_data.append("description", values.description as string);
     if (typeof values.image === "object") {
       form_data.append("image", values.image);
     }
-    form_data.append("meta_title", values.meta_title);
-    form_data.append("meta_des", values.meta_description);
+    form_data.append("meta_title", values.meta_title as string);
+    form_data.append("meta_des", values.meta_description as string);
     form_data.append("status", values.status === "active" ? "1" : "0");
     form_data.append("display_order", "1");
 

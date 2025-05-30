@@ -10,9 +10,7 @@ type Props = {}
 export default function OrderEdit({}: Props) {
     const params = useParams()
     const {data:order_details} = useOrderView(params?.order_id)
-    console.log('====================================');
-    console.log(order_details);
-    console.log('====================================');
+
   return (
     <div className='flex gap-4 '>
         <div className='flex-1 flex flex-col gap-4'>

@@ -18,7 +18,11 @@ import {
 import { Button } from "~/components/ui/button";
 import MediaUpload from "~/components/ui/media-upload";
 import { brand_schema } from "~/shared/validations/brand-schema";
-import { useBrandDetails, useCreateBrand, useUpadteBrand } from "~/services/queries";
+import {
+  useBrandDetails,
+  useCreateBrand,
+  useUpadteBrand,
+} from "~/services/queries";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 
@@ -29,38 +33,40 @@ type Props = { id: string | undefined };
 export default function BrandForm({ id }: Props) {
   const { mutateAsync: add_brand, isPending: add_pending } = useCreateBrand();
   const { mutateAsync: edit_brand, isPending: edit_pending } = useUpadteBrand();
-  const {data:brand_data} = useBrandDetails(id as string)
+  const { data: brand_data } = useBrandDetails(id as string);
   const navigate = useNavigate();
- 
+
   const { control, handleSubmit, formState } = useForm<BrandFormValues>({
     resolver: zodResolver(brand_schema),
     values: {
-      title: brand_data?.data?.name|| "",
-      description: brand_data?.data?.description|| "",
-      image:  brand_data?.data?.image?.mini||null,
-      // slug:  brand_data?.data?.slug||"",
-      // hsn_code: JSON.stringify(brand_data?.data?.hsn_code)|| "",
-      meta_title:  brand_data?.data?.meta_title||"",
-      meta_description: brand_data?.data?.meta_des|| "",
-      status: brand_data?.data?.status ===1 ?"active":'inactive',
+      title: brand_data?.data?.name || "",
+      description: brand_data?.data?.description || "",
+      image: brand_data?.data?.image?.mini || null,
+
+      meta_title: brand_data?.data?.meta_title || "",
+      meta_description: brand_data?.data?.meta_des || "",
+      status: brand_data?.data?.status === 1 ? "active" : "inactive",
     },
   });
 
   const onSubmit = (values: BrandFormValues) => {
     const form_data = new FormData();
     form_data.append("name", values.title);
-    // form_data.append("slug", values.slug);
-    // form_data.append("hsn_code", values.hsn_code);
-    form_data.append("description", values.description);
-    if(typeof values.image === 'object'){
+    if (values.description !== "") {
+      form_data.append("description", values.description as string);
+    }
+    if (typeof values.image === "object") {
       form_data.append("image", values.image);
+    }
+    if (values.meta_title !== "") {
+      form_data.append("meta_title", values.meta_title as string);
+    }
+    if (values.meta_description !== "") {
+      form_data.append("meta_des", values.meta_description as string);
+    }
+    form_data.append("status", values.status === "active" ? "1" : "0");
+    form_data.append("display_order", "1");
 
-    }    form_data.append("meta_title", values.meta_title);
-    form_data.append("meta_des", values.meta_description);
-    form_data.append("status", values.status === 'active' ? '1' : '0');
-    form_data.append("display_order", '1');
-
-    
     if (id) {
       edit_brand(
         { id: id, data: form_data },
@@ -130,7 +136,10 @@ export default function BrandForm({ id }: Props) {
                   control={control}
                   name="image"
                   render={({ field }) => (
-                    <MediaUpload value={field.value} onChange={field.onChange} />
+                    <MediaUpload
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
                   )}
                 />
                 <ErrorMessage error={formState.errors.image?.message as any} />

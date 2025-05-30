@@ -207,7 +207,7 @@ export default function ProductForm({}: Props) {
         {
           onSuccess: () => {
             toast.success("Product updated");
-            navigate("/products");
+            // navigate("/products");
           },
           onError: (error: any) => {
             toast.error(error.data?.message);
