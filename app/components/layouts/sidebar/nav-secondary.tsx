@@ -23,7 +23,7 @@ export function NavSecondary({
             <SidebarMenuItem >
               <SidebarMenuButton  size="sm">
                   <Settings2 />
-                  <span>Setting</span>
+                  <span>Settings</span>
                 
               </SidebarMenuButton>
             </SidebarMenuItem>
