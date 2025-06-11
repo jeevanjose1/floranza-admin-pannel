@@ -2,15 +2,17 @@ import {
   ArrowDownUp,
   ArrowUpNarrowWide,
   ArrowUpWideNarrow,
+  EllipsisVertical,
   FilterIcon,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "~/components/ui/button";
 import { DatePicker } from "~/components/ui/date-picker";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
@@ -27,9 +29,49 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { Separator } from "~/components/ui/separator";
+import { useBulkInvoice, useBulkStatus } from "~/services/queries/order";
+import { toast } from "sonner";
+import { download_pdf } from "~/lib/utils";
+import dayjs from "dayjs";
+import { useParams } from "react-router";
 
-type Props = {};
-
+type Props = { selected: string[]; setSelected: any };
+const containerVariants = {
+  hidden: {
+    height: 0,
+    opacity: 0,
+    overflow: "hidden",
+  },
+  visible: {
+    height: "auto",
+    opacity: 1,
+    overflow: "visible",
+    transition: {
+      height: {
+        duration: 0.25,
+        ease: [0.04, 0.62, 0.23, 0.98],
+      },
+      opacity: {
+        duration: 0.2,
+        delay: 0.05,
+      },
+    },
+  },
+  exit: {
+    height: 0,
+    opacity: 0,
+    overflow: "hidden",
+    transition: {
+      height: {
+        duration: 0.25,
+        ease: [0.04, 0.62, 0.23, 0.98],
+      },
+      opacity: {
+        duration: 0.15,
+      },
+    },
+  },
+};
 const Filter = () => {
   return (
     <div className="px-4 pb-4 flex items-center gap-3">
@@ -59,9 +101,8 @@ const Filter = () => {
         </SelectContent>
       </Select>
       <div className="w-56">
-  <DatePicker/>
+        <DatePicker />
       </div>
-   
     </div>
   );
 };
@@ -81,7 +122,6 @@ const Sort = () => {
         <DropdownMenuLabel className="text-[13px]">Sorted By</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-          
           <DropdownMenuRadioItem value="stocks">Stocks</DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
 
@@ -105,45 +145,196 @@ const Sort = () => {
   );
 };
 
-export default function OrderTableHeader({}: Props) {
+export default function OrderTableHeader({ selected, setSelected }: Props) {
   const [filterOpen, setFilterOpen] = useState(false);
+  const params = useParams();
   const handleToggle = () => setFilterOpen((pre) => !pre);
+  const { mutateAsync: change } = useBulkStatus();
+  const { mutateAsync: download } = useBulkInvoice();
 
-  const containerVariants = {
-    hidden: {
-      height: 0,
-      opacity: 0,
-      overflow: "hidden",
-    },
-    visible: {
-      height: "auto",
-      opacity: 1,
-      overflow: "visible",
-      transition: {
-        height: {
-          duration: 0.25,
-          ease: [0.04, 0.62, 0.23, 0.98],
-        },
-        opacity: {
-          duration: 0.2,
-          delay: 0.05,
-        },
+  const handleDownloadInvoice = useCallback(() => {
+    const formData = new FormData();
+    formData.append("order_ids", JSON.stringify(selected));
+    toast.promise(download({ order_ids: selected }), {
+      loading: "Generating Invoice",
+      success: (response) => {
+        setSelected({});
+        download_pdf(response, dayjs().format("DD/MM/YYYY"));
+        return "Invoice Generated";
       },
-    },
-    exit: {
-      height: 0,
-      opacity: 0,
-      overflow: "hidden",
-      transition: {
-        height: {
-          duration: 0.25,
-          ease: [0.04, 0.62, 0.23, 0.98],
+      error: () => "Something went wrong",
+    });
+  }, [selected, download]);
+
+  const handleChangeStatus = (status: string) => {
+    toast.promise(
+      change({
+        status: status,
+        order_ids: selected,
+      }),
+      {
+        loading: "Changing status",
+        success: () => {
+          setSelected({});
+          return "Status changed";
         },
-        opacity: {
-          duration: 0.15,
-        },
-      },
-    },
+        error: "Something went wrong",
+      }
+    );
+  };
+
+  const menu_render = () => {
+    switch (params?.order_menu) {
+      case "all":
+        return null;
+      case "processing":
+        return (
+          <>
+            <DropdownMenuLabel className="text-xs text-accent-foreground/50">
+              Change Status
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem onSelect={() => handleChangeStatus("2")}>
+              Action Taken
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleChangeStatus("5")}>
+              Hold
+            </DropdownMenuItem>
+          </>
+        );
+      case "action-taken":
+        return (
+          <>
+            <DropdownMenuLabel className="text-xs text-accent-foreground/50">
+              Bulk Actions
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleDownloadInvoice}>
+              Download Invoice
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuLabel className="text-xs text-accent-foreground/50">
+              Change Status
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => handleChangeStatus("1")}>
+              Processing
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleChangeStatus("7")}>
+              Canceled
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleChangeStatus("5")}>
+              Hold
+            </DropdownMenuItem>
+          </>
+        );
+      case "shipping":
+        return (
+          <>
+            <DropdownMenuLabel className="text-xs text-accent-foreground/50">
+              Bulk Actions
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleDownloadInvoice}>
+              Download Invoice
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuLabel className="text-xs text-accent-foreground/50">
+              Change Status
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => handleChangeStatus("4")}>
+              Completed
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleChangeStatus("7")}>
+              Canceled
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleChangeStatus("2")}>
+              Hold
+            </DropdownMenuItem>
+          </>
+        );
+      case "completed":
+        return (
+          <>
+            <DropdownMenuLabel className="text-xs text-accent-foreground/50">
+              Bulk Actions
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleDownloadInvoice}>
+              Download Invoice
+            </DropdownMenuItem>
+          </>
+        );
+      case "hold":
+        return (
+          <>
+            <DropdownMenuLabel className="text-xs text-accent-foreground/50">
+              Bulk Actions
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleDownloadInvoice}>
+              Download Invoice
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuLabel className="text-xs text-accent-foreground/50">
+              Change Status
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => handleChangeStatus("2")}>
+              Action Taken
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleChangeStatus("7")}>
+              Canceled
+            </DropdownMenuItem>
+          </>
+        );
+      case "refund":
+        return (
+          <>
+            <DropdownMenuLabel className="text-xs text-accent-foreground/50">
+              Bulk Actions
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleDownloadInvoice}>
+              Download Invoice
+            </DropdownMenuItem>
+          </>
+        );
+      case "canceled":
+        return null;
+      case "pre-order":
+      case "reserved":
+        return (
+          <>
+            <DropdownMenuLabel className="text-xs text-accent-foreground/50">
+              Bulk Actions
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleDownloadInvoice}>
+              Download Invoice
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuLabel className="text-xs text-accent-foreground/50">
+              Change Status
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => handleChangeStatus("2")}>
+              Action Taken
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleChangeStatus("5")}>
+              Hold
+            </DropdownMenuItem>
+          </>
+        );
+      default:
+        break;
+    }
   };
 
   return (
@@ -159,6 +350,18 @@ export default function OrderTableHeader({}: Props) {
           <FilterIcon size={10} />{" "}
         </Button>
         <Sort />
+        {selected?.length > 0 && (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size={"sm"} title="Bulk Action" variant={"secondary"}>
+                <EllipsisVertical />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {menu_render()}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )}
       </div>
 
       <AnimatePresence initial={false}>

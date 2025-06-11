@@ -18,6 +18,9 @@ const badgeVariants = cva(
         outline:
           "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
       },
+       disabled: {
+        true: "border-transparent bg-secondary opacity-60 cursor-not-allowed pointer-events-none",
+      },
     },
     defaultVariants: {
       variant: "default",
@@ -28,16 +31,18 @@ const badgeVariants = cva(
 function Badge({
   className,
   variant,
+  disabled=false,
   asChild = false,
   ...props
 }: React.ComponentProps<"span"> &
-  VariantProps<typeof badgeVariants> & { asChild?: boolean }) {
+  VariantProps<typeof badgeVariants> & { asChild?: boolean,disabled?:boolean }) {
   const Comp = asChild ? Slot : "span"
 
   return (
     <Comp
       data-slot="badge"
-      className={cn(badgeVariants({ variant }), className)}
+      data-disabled={disabled ? true : undefined}
+      className={cn(badgeVariants({ variant,disabled }), className)}
       {...props}
     />
   )

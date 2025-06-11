@@ -32,6 +32,7 @@ export const fetcher = async ({
   type,
   headers,
   onUploadProgress,
+  rest,
 }: FETCHER_TYPE) => {
   try {
     if (authenticated) {
@@ -41,6 +42,7 @@ export const fetcher = async ({
         data: data ? data : undefined,
         headers: headers,
         onUploadProgress: onUploadProgress,
+        ...rest,
       });
       return response.data;
     } else {
@@ -49,6 +51,7 @@ export const fetcher = async ({
         data: data ? data : undefined,
         url: `${base_url}${url}`,
         headers: headers,
+        ...rest,
       });
       return response.data;
     }
@@ -61,11 +64,11 @@ export const fetcher = async ({
 };
 
 export const is_auth = () => {
-  if (typeof window === "undefined") return false 
+  if (typeof window === "undefined") return false;
 
-  const details = localStorage.getItem("token")
-  return !!details
-}
+  const details = localStorage.getItem("token");
+  return !!details;
+};
 
 export const input_restrictions = {
   numbersOnly: (e: any) => {
@@ -120,5 +123,19 @@ export const input_restrictions = {
 };
 
 export const transform_name = (string: string) => {
-    return string?.toLowerCase()?.split(" ")?.join("-");
-  };
+  return string?.toLowerCase()?.split(" ")?.join("-");
+};
+
+export const download_pdf = (response: any, name: string) => {
+  const pdfBlob = new Blob([response], { type: "application/pdf" });
+
+  const url = window.URL.createObjectURL(pdfBlob);
+  const tempLink = document.createElement("a");
+  tempLink.href = url;
+  tempLink.setAttribute("download", `invoice-${name}.pdf`);
+  document.body.appendChild(tempLink);
+  tempLink.click();
+
+  document.body.removeChild(tempLink);
+  window.URL.revokeObjectURL(url);
+};

@@ -3,11 +3,15 @@ import { useParams } from "react-router";
 import { useOrderList, useOrderMenuList } from "~/services/queries/order";
 import { OrderTable } from "~/components/screens/orders/order-table";
 import { transform_name } from "~/lib/utils";
+import OrderTableHeader from "~/components/screens/orders/order-table-header";
+import { useState } from "react";
 
 type Props = {};
 
 export default function Slider({}: Props) {
   const { data: menu_list } = useOrderMenuList({ page: 1 });
+ 
+  const [selected,setSelected] = useState({})
   const params = useParams();
   const menu_id = () => {
     const curr_menu = params?.order_menu;
@@ -36,8 +40,18 @@ export default function Slider({}: Props) {
       };
     }) || [];
 
+const selected_filtred = () => {
+  return Object.keys(selected)
+    .map(index => filtred_order?.[parseInt(index)]?.id)
+    .filter(Boolean) // Remove undefined values
+}
+
+
+
   return (
-    
-    <OrderTable table_data={filtred_order} loading={isLoading || isFetching} />
+    <>
+    <OrderTableHeader selected={selected_filtred()} setSelected={setSelected}/>
+    <OrderTable selected={selected} setSelected={setSelected} table_data={filtred_order} loading={isLoading || isFetching} />
+    </>
   );
 }

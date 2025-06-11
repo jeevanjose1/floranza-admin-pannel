@@ -14,22 +14,17 @@ import {
   DialogTrigger,
 } from "~/components/ui/dialog";
 import SelectCustom from "~/components/ui/custom-select";
-import { country, indianStates } from "~/shared/others/others";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
+import { country, courier, indianStates } from "~/shared/others/others";
+
 import ErrorMessage from "~/components/ui/error-message";
 import { shipping_address_schema } from "~/shared/validations/order";
 import { Textarea } from "~/components/ui/textarea";
+import { useChangeAddress } from "~/services/queries/order";
+import { toast } from "sonner";
 
 type BillingAddressFormData = z.infer<typeof shipping_address_schema>;
 
 type Props = {
-  onSubmit?: (data: BillingAddressFormData) => void;
   defaultValues?: any;
 };
 const filterd_state = indianStates.map((item) => {
@@ -38,7 +33,11 @@ const filterd_state = indianStates.map((item) => {
     label: item.name,
   };
 });
-export default function EditBillingAddress({ onSubmit, defaultValues }: Props) {
+export default function EditBillingAddress({ defaultValues }: Props) {
+
+
+  const { mutateAsync: update, isPending } = useChangeAddress();
+
   const {
     control,
     handleSubmit,
@@ -46,25 +45,44 @@ export default function EditBillingAddress({ onSubmit, defaultValues }: Props) {
   } = useForm<BillingAddressFormData>({
     resolver: zodResolver(shipping_address_schema),
     values: {
-      firstName: defaultValues?.fname || "",
-      lastName: defaultValues?.lname || "",
-      addressLine1: defaultValues?.address_1 || "",
-      addressLine2: defaultValues?.address_ || "",
-      city: defaultValues?.city || "",
-      country: defaultValues?.country || "",
-      companyName: "",
-      phone: defaultValues?.phone || "",
-      postcode: defaultValues?.postcode || "",
-      state: defaultValues?.state || "",
-      couier: "",
+      fullName: defaultValues?.address?.fname || "",
+      addressLine1: defaultValues?.address?.address_1 || "",
+      addressLine2: defaultValues?.address?.address_ || "",
+      city: defaultValues?.address?.city || "",
+      country: defaultValues?.address?.country || "",
+      phone: defaultValues?.address?.phone || "",
+      postcode: defaultValues?.address?.postcode || "",
+      state: defaultValues?.address?.state || "",
+      courier: defaultValues?.courier || "",
       note: "",
+      email:  defaultValues?.address?.email|| "",
     },
   });
 
   const handleFormSubmit = (data: BillingAddressFormData) => {
-    if (onSubmit) {
-      onSubmit(data);
-    }
+    const form_data = new FormData();
+    form_data.append("fname", data.fullName);
+    form_data.append("country", data.country);
+    form_data.append("state", data.state);
+    form_data.append("address_1", data.addressLine1);
+    form_data.append("address_2", data.addressLine2 as string);
+    form_data.append("city", data.city);
+    form_data.append("postcode", data.postcode);
+    form_data.append("phone", data.phone);
+    form_data.append("email", data.email as string);
+    form_data.append("courier", data.courier);
+
+    update(
+      { id: defaultValues?.id, data: form_data },
+      {
+        onSuccess: () => {
+          toast.success("Address updaed");
+        },
+        onError: () => {
+          toast.error("Something went wrong");
+        },
+      }
+    );
   };
 
   return (
@@ -91,46 +109,32 @@ export default function EditBillingAddress({ onSubmit, defaultValues }: Props) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* First Name */}
             <div className="space-y-2">
-              <Label htmlFor="firstName">First Name</Label>
+              <Label htmlFor="firstName">Full Name</Label>
               <Controller
-                name="firstName"
+                name="fullName"
                 control={control}
                 render={({ field }) => (
-                  <Input id="firstName" placeholder="First name" {...field} />
+                  <Input id="firstName" placeholder="Full name" {...field} />
                 )}
               />
 
-              <ErrorMessage error={errors?.firstName?.message} />
+              <ErrorMessage error={errors?.fullName?.message} />
             </div>
 
-            {/* Last Name */}
             <div className="space-y-2">
-              <Label htmlFor="lastName">Last Name</Label>
+              <Label htmlFor="firstName">Email</Label>
               <Controller
-                name="lastName"
+                name="email"
                 control={control}
                 render={({ field }) => (
-                  <Input id="lastName" placeholder="Last name" {...field} />
+                  <Input id="email" placeholder="Email" {...field} />
                 )}
               />
-              <ErrorMessage error={errors?.lastName?.message} />
+
+              <ErrorMessage error={errors?.email?.message} />
             </div>
           </div>
 
-          {/* Company Name (Optional) */}
-          <div className="space-y-2">
-            <Label htmlFor="companyName">Company Name (Optional)</Label>
-            <Controller
-              name="companyName"
-              control={control}
-              render={({ field }) => (
-                <Input id="companyName" placeholder="Company name" {...field} />
-              )}
-            />
-            <ErrorMessage error={errors?.companyName?.message} />
-          </div>
-
-          {/* Country/Region */}
           <div className="space-y-2">
             <Label htmlFor="country">Country/Region</Label>
             <Controller
@@ -263,16 +267,31 @@ export default function EditBillingAddress({ onSubmit, defaultValues }: Props) {
           <div className="space-y-2">
             <Label htmlFor="transaction_id">Select Courier</Label>
             <Controller
-              name="couier"
+              name="courier"
               control={control}
               render={({ field }) => (
-                <Input id="couier" placeholder="Select Courier" {...field} />
+                <Controller
+                  name="courier"
+                  control={control}
+                  render={({ field }) => (
+                    <SelectCustom
+                      value={courier.find(
+                        (option) => option.value === field.value
+                      )}
+                      onChange={(e: any) => {
+                        field.onChange(e.value);
+                      }}
+                      options={courier}
+                    />
+                  )}
+                />
               )}
             />
           </div>
           <div className="flex items-center justify-end">
             <Button
               type="submit"
+              loading={isPending}
               size={"sm"}
               variant="secondary"
               className="w-36"

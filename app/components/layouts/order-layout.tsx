@@ -29,15 +29,17 @@ export default function OrderLayout({}: Props) {
     <div>
       <PageHeader title="Orders">
         <div className="flex items-center gap-2">
-          <Button variant={"secondary"} size={"sm"}>
-            Add Order
-          </Button>
+          <Link to={"/add-order"}>
+            <Button variant={"secondary"} size={"sm"}>
+              Add Order
+            </Button>
+          </Link>
         </div>
       </PageHeader>
 
       <BgWrapper>
         <div className="relative  ">
-          <ScrollArea className="overflow-scroll max-w-screen tablet-lg:max-w-[calc(100vw-270px)]">
+          <ScrollArea className="overflow-scroll ">
             <div className="flex space-x-5 border-b border-gray-200">
               {menus.map((item: any, index: number) => {
                 const path = transform_name(item?.name);
@@ -72,8 +74,6 @@ export default function OrderLayout({}: Props) {
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
         </div>
-        <OrderTableHeader />
-
         <div>
           <Outlet />
         </div>

@@ -68,5 +68,7 @@ export default [
       route("/orders/:order_menu", "routes/orders/order.tsx"),
     ]),
     route("/edit-order/:order_id", "routes/orders/order-edit.tsx"),
+    route("/add-order", "routes/orders/add-order.tsx"),
+
   ] satisfies RouteConfig),
 ];

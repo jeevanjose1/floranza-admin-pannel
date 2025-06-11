@@ -31,8 +31,10 @@ type MaterialFormValues = z.infer<typeof material_schema>;
 type Props = { id: string | undefined };
 
 export default function MaterialForm({ id }: Props) {
-  const { mutateAsync: add_material, isPending: add_pending } = useCreateMaterial();
-  const { mutateAsync: edit_material, isPending: edit_pending } = useUpadteMaterial();
+  const { mutateAsync: add_material, isPending: add_pending } =
+    useCreateMaterial();
+  const { mutateAsync: edit_material, isPending: edit_pending } =
+    useUpadteMaterial();
   const { data: material_data } = useMaterialDetails(id as string);
   const navigate = useNavigate();
 
@@ -153,7 +155,6 @@ export default function MaterialForm({ id }: Props) {
                 <ErrorMessage error={formState.errors.slug?.message} />
               </div> */}
 
-          
               {/* Meta Title */}
               <div className="mb-3">
                 <Label>Meta Title</Label>

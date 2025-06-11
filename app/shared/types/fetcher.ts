@@ -5,7 +5,7 @@
     type: "get" | "post" | "put" | "patch" | "delete";
     headers?:any;
     onUploadProgress?:any
-
+rest?:any
   };
 
   export type {
