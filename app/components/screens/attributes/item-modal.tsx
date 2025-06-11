@@ -64,7 +64,7 @@ import {
 } from "~/services/queries";
 
 const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
-  const { attributes, listeners, setNodeRef, isDragging } = useSortable({
+  const { attributes, listeners, setNodeRef } = useSortable({
     id: rowId,
   });
 

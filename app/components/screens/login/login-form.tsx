@@ -19,7 +19,6 @@ import { useLogin } from "~/services/queries";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 
-// Define Zod schema
 
 type LoginFormValues = z.infer<typeof login_schema>;
 

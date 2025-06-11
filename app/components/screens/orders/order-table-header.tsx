@@ -5,7 +5,7 @@ import {
   EllipsisVertical,
   FilterIcon,
 } from "lucide-react";
-import React, { useCallback, useState } from "react";
+import  { useCallback, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "~/components/ui/button";
 import { DatePicker } from "~/components/ui/date-picker";
@@ -33,7 +33,9 @@ import { useBulkInvoice, useBulkStatus } from "~/services/queries/order";
 import { toast } from "sonner";
 import { download_pdf } from "~/lib/utils";
 import dayjs from "dayjs";
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
+import { base_url } from "~/services/instance";
+import { COMMON } from "~/shared/urls/common";
 
 type Props = { selected: string[]; setSelected: any };
 const containerVariants = {
@@ -341,6 +343,11 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
     <>
       <div className="w-full flex items-center gap-3 pt-4 pb-3 px-4 justify-end">
         <Input placeholder="Search brand" className="max-w-96 mr-auto" />
+        {params?.order_menu === "shipping" && (
+          <Link to={`${base_url}${COMMON.EXCEL_DOWNLOAD}`} download>
+            <Button size={"sm"}>Excel Download</Button>
+          </Link>
+        )}
         <Button
           onClick={handleToggle}
           variant={"transparent"}
@@ -350,6 +357,7 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
           <FilterIcon size={10} />{" "}
         </Button>
         <Sort />
+
         {selected?.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

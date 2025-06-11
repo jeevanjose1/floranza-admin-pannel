@@ -34,7 +34,6 @@ import Loader from "~/components/ui/loader";
 import { PopConfirm } from "~/components/ui/pop-confirm";
 import {
   useDeleteAttribute,
-  useUpadteAttribute,
   useUpadtePositionAttribute,
 } from "~/services/queries";
 import { toast } from "sonner";
@@ -58,7 +57,6 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
-// needed for row & cell level scope DnD setup
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
@@ -351,21 +349,18 @@ export function AttributeTable({ loading, table_data }: props) {
         update_attribute(value_data, {
           onSuccess: () => toast.success("Attribute order updated"),
         });
-        // Optionally notify user of the successful reordering
+        
       }
     }
   }
 
-  // Configure sensors with lower activation thresholds for better drag detection
   const sensors = useSensors(
     useSensor(MouseSensor, {
-      // Lower the activation distance threshold
       activationConstraint: {
-        distance: 5, // 5px
+        distance: 5, 
       },
     }),
     useSensor(TouchSensor, {
-      // Lower the activation distance threshold for touch
       activationConstraint: {
         delay: 100,
         tolerance: 5,

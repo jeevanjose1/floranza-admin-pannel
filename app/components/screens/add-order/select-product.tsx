@@ -1,6 +1,7 @@
 import { Minus, Plus } from "lucide-react";
 import React, { useState } from "react";
 import type { UseFormReturn } from "react-hook-form";
+import { toast } from "sonner";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import ErrorMessage from "~/components/ui/error-message";
@@ -20,41 +21,56 @@ const ProductCard = ({ data, form }: ProductCardProps) => {
   const price = calculate_product_price(data);
   const [variation, setVariation] = useState<any>(false);
   const is_variation = Boolean(data?.is_variation);
+  const is_pre_order = Boolean(data?.is_pre_order);
+
   const [qty, setQty] = useState<number>(1);
 
   const handleAddProduct = () => {
     const current_products = form.getValues("products") || [];
-
-    const product_data = {
-      name: data?.name,
-      price: price.min,
-      qty: qty,
-      product_id: data?.id,
-      is_variation: is_variation,
-      var_value_id: variation?.prd_var_value_id,
-      image: data?.images?.[0]?.mini,
-    };
-
-    const existingProductIndex = current_products.findIndex((product: any) => {
-      if (is_variation) {
-        return (
-          product.product_id === data?.id &&
-          product.var_value_id === variation?.prd_var_value_id
-        );
-      } else {
-        return product.product_id === data?.id && !product.var_value_id;
-      }
-    });
-
-    if (existingProductIndex !== -1) {
-      const updatedProducts = [...current_products];
-      updatedProducts[existingProductIndex] = {
-        ...updatedProducts[existingProductIndex],
-        qty: updatedProducts[existingProductIndex].qty + qty,
-      };
-      form.setValue("products", updatedProducts);
+    const is_prebook_product = current_products.find(
+      (item: any) => item.is_prebook
+    );
+    if (is_pre_order && Boolean(current_products?.length)) {
+      toast.warning(
+        "Select product is pre order item, remove the current selected product"
+      );
+    } else if (is_prebook_product) {
+      toast.warning("Pre order product in the selected items");
     } else {
-      form.setValue("products", [...current_products, product_data]);
+      const product_data = {
+        name: data?.name,
+        price: price.min,
+        qty: qty,
+        product_id: data?.id,
+        is_variation: is_variation,
+        var_value_id: variation?.prd_var_value_id,
+        image: data?.images?.[0]?.mini,
+        is_prebook: is_pre_order,
+      };
+
+      const existingProductIndex = current_products.findIndex(
+        (product: any) => {
+          if (is_variation) {
+            return (
+              product.product_id === data?.id &&
+              product.var_value_id === variation?.prd_var_value_id
+            );
+          } else {
+            return product.product_id === data?.id && !product.var_value_id;
+          }
+        }
+      );
+
+      if (existingProductIndex !== -1) {
+        const updatedProducts = [...current_products];
+        updatedProducts[existingProductIndex] = {
+          ...updatedProducts[existingProductIndex],
+          qty: updatedProducts[existingProductIndex].qty + qty,
+        };
+        form.setValue("products", updatedProducts);
+      } else {
+        form.setValue("products", [...current_products, product_data]);
+      }
     }
   };
 
@@ -171,7 +187,6 @@ const ProductCard = ({ data, form }: ProductCardProps) => {
           value={qty}
           onChange={handleQtyChange}
           min={1}
-          
           max={availableStock}
           className="w-16 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
           disabled={availableStock === 0}

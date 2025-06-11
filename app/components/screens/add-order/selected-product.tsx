@@ -1,4 +1,3 @@
-import React from "react";
 import type { UseFormReturn } from "react-hook-form";
 import { Button } from "~/components/ui/button";
 import { ScrollArea, ScrollBar } from "~/components/ui/scroll-area";

@@ -134,7 +134,7 @@ export default function AddEditModal({ children, data }: Props) {
           data: payload,
         },
         {
-          onSuccess: (response) => {
+          onSuccess: () => {
             setOpen(false);
             reset();
           },

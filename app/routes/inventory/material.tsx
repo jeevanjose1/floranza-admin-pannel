@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 import BgWrapper from "~/components/common/bg-wrapper";
 import PageHeader from "~/components/common/page-header";
-import { MaterialTable } from "~/components/screens/material/brands/material-table";
-import MaterialTableHeader from "~/components/screens/material/brands/material-table-header";
+import { MaterialTable } from "~/components/screens/material/material-table";
+import MaterialTableHeader from "~/components/screens/material/material-table-header";
 import { Button } from "~/components/ui/button";
 import { useListMaterial } from "~/services/queries";
 

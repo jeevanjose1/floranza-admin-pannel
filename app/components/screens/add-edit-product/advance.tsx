@@ -1,4 +1,3 @@
-import React from "react";
 import { Controller, type UseFormReturn } from "react-hook-form";
 import BgWrapper from "~/components/common/bg-wrapper";
 import ErrorMessage from "~/components/ui/error-message";

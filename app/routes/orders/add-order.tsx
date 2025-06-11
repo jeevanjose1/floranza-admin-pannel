@@ -66,7 +66,7 @@ add(data,{
     navigate('/orders/reserved')
 
   },
-  onError:(error)=>{
+  onError:()=>{
     toast.error('Order creation faild')
 
   }

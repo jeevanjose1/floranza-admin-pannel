@@ -64,11 +64,15 @@ export default [
     route("/media", "routes/inventory/media.tsx"),
     route("/attributes", "routes/inventory/attributes.tsx"),
     route("/slider", "routes/others/slider.tsx"),
+    route("/admin-users", "routes/others/admin-user.tsx"),
+
     layout("components/layouts/order-layout.tsx", [
       route("/orders/:order_menu", "routes/orders/order.tsx"),
     ]),
     route("/edit-order/:order_id", "routes/orders/order-edit.tsx"),
     route("/add-order", "routes/orders/add-order.tsx"),
+    route("/stock-management", "routes/inventory/stock-management.tsx"),
+    route("/transaction-history", "routes/others/transaction.tsx"),
 
   ] satisfies RouteConfig),
 ];

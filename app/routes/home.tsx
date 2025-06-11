@@ -8,5 +8,5 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-  return <div>asdas</div>;
+  return <div className="w-full h-[calc(100vh-200px)]  flex items-center justify-center">Coming soon</div>;
 }

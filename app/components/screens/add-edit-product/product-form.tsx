@@ -22,7 +22,6 @@ type FormValues = z.infer<typeof product_form_schema>;
 export default function ProductForm({}: Props) {
   const params = useParams() as any;
   const { data } = useSingleProduct(params?.product_id);
-  const navigate = useNavigate();
 
   const { mutateAsync: add_product, isPending: addPending } =
     useCreateProduct();
@@ -207,7 +206,6 @@ export default function ProductForm({}: Props) {
         {
           onSuccess: () => {
             toast.success("Product updated");
-            // navigate("/products");
           },
           onError: (error: any) => {
             toast.error(error.data?.message);
@@ -218,7 +216,6 @@ export default function ProductForm({}: Props) {
       add_product(form_data, {
         onSuccess: () => {
           toast.success("Product added");
-          // navigate("/products");
         },
         onError: (error: any) => {
           toast.error(error.data?.message);

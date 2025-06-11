@@ -13,19 +13,16 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import {  MoreHorizontal } from "lucide-react";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { Input } from "~/components/ui/input";
 import {
   Table,
   TableBody,
@@ -42,9 +39,7 @@ import { useDeleteCatogery } from "~/services/queries";
 import { toast } from "sonner";
 import { PopConfirm } from "~/components/ui/pop-confirm";
 
-// Updated sample data with product information
 
-// Updated type definition
 export type Catogery = {
   id: string;
   name: string;
@@ -120,20 +115,13 @@ export const columns: ColumnDef<Catogery>[] = [
       <div className="text-right text-[13px]">{row.getValue("count")}</div>
     ),
   },
-  // {
-  //   accessorKey: "date",
-  //   header: () => <div className="text-right ">Date</div>,
-  //   cell: ({ row }) => (
-  //     <div className="text-right text-[13px]">{row.getValue("date")}</div>
-  //   ),
-  // },
+ 
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
       const status = row.getValue("status");
 
-      // Apply different styling based on status
       const statusStyles: Record<string, string> = {
         Active: "bg-green-200 border border-green-300 text-green-500",
         Inactive: "bg-red-200 border border-red-300 text-red-500",

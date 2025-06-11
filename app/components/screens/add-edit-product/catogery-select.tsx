@@ -1,5 +1,4 @@
-import { ChevronDown, ChevronRight, Search } from "lucide-react";
-import React from "react";
+import {  Search } from "lucide-react";
 import { Controller, type UseFormReturn } from "react-hook-form";
 import BgWrapper from "~/components/common/bg-wrapper";
 import { Checkbox } from "~/components/ui/checkbox";

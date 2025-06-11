@@ -5,7 +5,6 @@ import BgWrapper from "~/components/common/bg-wrapper";
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import ErrorMessage from "~/components/ui/error-message";
-import { Textarea } from "~/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -15,10 +14,13 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { Button } from "~/components/ui/button";
-import MediaUpload from "~/components/ui/media-upload";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
-import { useCreateSupplier, useSupplierDetails, useUpadteSupplier } from "~/services/queries/supplier";
+import {
+  useCreateSupplier,
+  useSupplierDetails,
+  useUpadteSupplier,
+} from "~/services/queries/supplier";
 import { supplier_schema } from "~/shared/validations/supplier-schema";
 import { input_restrictions } from "~/lib/utils";
 
@@ -27,21 +29,21 @@ type BrandFormValues = z.infer<typeof supplier_schema>;
 type Props = { id: string | undefined };
 
 export default function SupplierForm({ id }: Props) {
-  const { mutateAsync: add_supplier, isPending: add_pending } = useCreateSupplier();
-  const { mutateAsync: edit_supplier, isPending: edit_pending } = useUpadteSupplier();
-  const {data:supplier_data} = useSupplierDetails(id as string)
+  const { mutateAsync: add_supplier, isPending: add_pending } =
+    useCreateSupplier();
+  const { mutateAsync: edit_supplier, isPending: edit_pending } =
+    useUpadteSupplier();
+  const { data: supplier_data } = useSupplierDetails(id as string);
   const navigate = useNavigate();
 
   const { control, handleSubmit, formState } = useForm<BrandFormValues>({
     resolver: zodResolver(supplier_schema),
     values: {
-      title: supplier_data?.data?.name|| "",
-      // description: supplier_data?.data?.description|| "",
-      // image:  supplier_data?.data?.image?.mini||null,
-      hsn_code: JSON.stringify(supplier_data?.data?.hsn_code)|| "",
-      // meta_title:  supplier_data?.data?.meta_title||"",
-      // meta_description: supplier_data?.data?.meta_des|| "",
-      status: supplier_data?.data?.status ===1 ?"active":'inactive',
+      title: supplier_data?.data?.name || "",
+
+      hsn_code: JSON.stringify(supplier_data?.data?.hsn_code) || "",
+
+      status: supplier_data?.data?.status === 1 ? "active" : "inactive",
     },
   });
 
@@ -49,16 +51,10 @@ export default function SupplierForm({ id }: Props) {
     const form_data = new FormData();
     form_data.append("name", values.title);
     form_data.append("hsn_code", values.hsn_code);
-    // form_data.append("description", values.description);
-    // if(typeof values.image === 'object'){
-    //   form_data.append("image", values.image);
 
-    // }    form_data.append("meta_title", values.meta_title);
-    // form_data.append("meta_des", values.meta_description);
-    form_data.append("status", values.status === 'active' ? '1' : '0');
-    form_data.append("display_order", '1');
+    form_data.append("status", values.status === "active" ? "1" : "0");
+    form_data.append("display_order", "1");
 
-    
     if (id) {
       edit_supplier(
         { id: id, data: form_data },
@@ -104,38 +100,6 @@ export default function SupplierForm({ id }: Props) {
                 <ErrorMessage error={formState.errors.title?.message} />
               </div>
 
-              {/* Description */}
-              {/* <div className="mb-4">
-                <Label>Description</Label>
-                <Controller
-                  control={control}
-                  name="description"
-                  render={({ field }) => (
-                    <Textarea
-                      {...field}
-                      className="resize-none h-28"
-                      placeholder="Description"
-                    />
-                  )}
-                />
-                <ErrorMessage error={formState.errors.description?.message} />
-              </div> */}
-
-              {/* Image */}
-              {/* <div className="mb-4">
-                <Label>Image</Label>
-                <Controller
-                  control={control}
-                  name="image"
-                  render={({ field }) => (
-                    <MediaUpload value={field.value} onChange={field.onChange} />
-                  )}
-                />
-                <ErrorMessage error={formState.errors.image?.message as any} />
-              </div> */}
-
-           
-
               {/* HSN Code */}
               <div className="mb-4">
                 <Label>HSN Code</Label>
@@ -143,43 +107,15 @@ export default function SupplierForm({ id }: Props) {
                   control={control}
                   name="hsn_code"
                   render={({ field }) => (
-                    <Input onKeyDown={input_restrictions.numbersOnly}  {...field} placeholder="HSN code" />
+                    <Input
+                      onKeyDown={input_restrictions.numbersOnly}
+                      {...field}
+                      placeholder="HSN code"
+                    />
                   )}
                 />
                 <ErrorMessage error={formState.errors.hsn_code?.message} />
               </div>
-
-              {/* Meta Title */}
-              {/* <div className="mb-3">
-                <Label>Meta Title</Label>
-                <Controller
-                  control={control}
-                  name="meta_title"
-                  render={({ field }) => (
-                    <Input {...field} placeholder="Meta Title" />
-                  )}
-                />
-                <ErrorMessage error={formState.errors.meta_title?.message} />
-              </div> */}
-
-              {/* Meta Description */}
-              {/* <div className="mb-3">
-                <Label>Meta Description</Label>
-                <Controller
-                  control={control}
-                  name="meta_description"
-                  render={({ field }) => (
-                    <Textarea
-                      {...field}
-                      className="resize-none"
-                      placeholder="Meta Description"
-                    />
-                  )}
-                />
-                <ErrorMessage
-                  error={formState.errors.meta_description?.message}
-                />
-              </div> */}
             </div>
           </BgWrapper>
 

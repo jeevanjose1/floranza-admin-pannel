@@ -23,7 +23,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { Input } from "~/components/ui/input";
 import {
   Table,
   TableBody,
@@ -37,10 +36,9 @@ import Loader from "~/components/ui/loader";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { PopConfirm } from "~/components/ui/pop-confirm";
 import { Link } from "react-router";
-import { useDeleteBrand, useDeleteMaterial } from "~/services/queries";
+import {  useDeleteMaterial } from "~/services/queries";
 import { toast } from "sonner";
 
-// Updated sample data with product information
 
 // Updated type definition
 export type Material = {

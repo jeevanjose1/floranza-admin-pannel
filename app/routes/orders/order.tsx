@@ -10,8 +10,8 @@ type Props = {};
 
 export default function Slider({}: Props) {
   const { data: menu_list } = useOrderMenuList({ page: 1 });
- 
-  const [selected,setSelected] = useState({})
+
+  const [selected, setSelected] = useState({});
   const params = useParams();
   const menu_id = () => {
     const curr_menu = params?.order_menu;
@@ -36,22 +36,31 @@ export default function Slider({}: Props) {
         order_via: item?.order_via,
         paid_status: item?.paid_status,
         date: item?.date,
-        pre_order_date:item?.pre_order_date
+        pre_order_date: item?.pre_order_date,
+        track_id: item?.track_id ? item?.track_id : "-",
+        courier: item?.courier,
+        is_reserved:params.order_menu==='reserved'
       };
     }) || [];
 
-const selected_filtred = () => {
-  return Object.keys(selected)
-    .map(index => filtred_order?.[parseInt(index)]?.id)
-    .filter(Boolean) // Remove undefined values
-}
-
-
+  const selected_filtred = () => {
+    return Object.keys(selected)
+      .map((index) => filtred_order?.[parseInt(index)]?.id)
+      .filter(Boolean); // Remove undefined values
+  };
 
   return (
     <>
-    <OrderTableHeader selected={selected_filtred()} setSelected={setSelected}/>
-    <OrderTable selected={selected} setSelected={setSelected} table_data={filtred_order} loading={isLoading || isFetching} />
+      <OrderTableHeader
+        selected={selected_filtred()}
+        setSelected={setSelected}
+      />
+      <OrderTable
+        selected={selected}
+        setSelected={setSelected}
+        table_data={filtred_order}
+        loading={isLoading || isFetching}
+      />
     </>
   );
 }

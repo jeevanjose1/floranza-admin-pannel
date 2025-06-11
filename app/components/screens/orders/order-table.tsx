@@ -13,19 +13,15 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, Edit2, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { Input } from "~/components/ui/input";
 import {
   Table,
   TableBody,
@@ -36,17 +32,13 @@ import {
 } from "~/components/ui/table";
 import { Badge } from "~/components/ui/badge";
 import Loader from "~/components/ui/loader";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { PopConfirm } from "~/components/ui/pop-confirm";
-import { Link, useLocation, useNavigate } from "react-router";
-import { useDeleteBrand } from "~/services/queries";
+import {  useNavigate } from "react-router";
 import { toast } from "sonner";
-import { useDeleteSupplier } from "~/services/queries/supplier";
 import { status_options } from "~/shared/others/others";
+import { useDeleteOrder } from "~/services/queries/order";
 
-// Updated sample data with product information
 
-// Updated type definition
 export type Order = {
   id: string;
   order: string;
@@ -58,12 +50,14 @@ export type Order = {
   consigment: string;
   track: string;
   download: string;
-  track_number: string;
+  track_id: string;
   name: string;
   order_no: string;
   order_via: string;
   paid_status: string;
   pre_order_date: string;
+  courier:string
+  is_reserved:boolean
 };
 type props = {
   table_data: Order[];
@@ -132,7 +126,6 @@ export const columns: ColumnDef<Order>[] = [
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-    
       const currentStatusValue = row.getValue("status");
       const currentStatus = status_options.find(
         (s) => s.status === currentStatusValue
@@ -200,38 +193,37 @@ export const columns: ColumnDef<Order>[] = [
       );
     },
   },
-  {
-    accessorKey: "track_number",
-    header: () => <div className="text-left font-medium">Tracking Number</div>,
-    cell: () => {
-      return (
-        <div className="py-3 flex justify-end">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 px-3 text-xs font-medium "
-          >
-            <Edit2 />
-          </Button>
-        </div>
-      );
-    },
-  },
-  {
+ {
+  accessorKey: "track_id",
+  header: () => <div className="text-left font-medium">Tracking Details</div>,
+  cell: ({ row }) => (
+    <div className="py-3">
+      <div className="text-sm font-medium text-gray-900">
+        {row.original.courier}
+      </div>
+      <div className="text-sm text-gray-600 font-mono">
+        {row.original.track_id}
+      </div>
+    </div>
+  ),
+},
+{
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const supplier_id = row.original.id;
-      const { mutateAsync: delete_supplier } = useDeleteSupplier();
+      const order_id = row.original.id;
+      const { mutateAsync: delete_order } = useDeleteOrder();
       const handleDelete = () => {
-        toast.promise(delete_supplier(supplier_id), {
-          success: "Supplier deleted",
-          loading: "Deleting supplier",
-          error: "Failed to delete supplier",
+        toast.promise(delete_order(order_id), {
+          success: "Order deleted",
+          loading: "Deleting order",
+          error: "Failed to delete order",
         });
       };
+
+      if(!row.original.is_reserved) return false
       return (
-        <div className="py-3">
+        <div className="py-3" onClick={(e) => e.stopPropagation()}>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -244,12 +236,12 @@ export const columns: ColumnDef<Order>[] = [
             </DropdownMenuTrigger>
             <DropdownMenuContent
               align="end"
-              className="w-48 shadow-lg border-gray-200"
+              className="w-48 shadow-lg "
             >
               <PopConfirm
                 action={handleDelete}
-                description="Are you really want to delete this supplier"
-                title="Delete supplier"
+                description="Are you really want to delete this order"
+                title="Delete order"
               >
                 <DropdownMenuItem
                   onSelect={(e) => e.preventDefault()}
@@ -258,16 +250,14 @@ export const columns: ColumnDef<Order>[] = [
                   Delete
                 </DropdownMenuItem>
               </PopConfirm>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="focus:bg-gray-50">
-                <Link to={`/supplier/edit/${supplier_id}`}>Edit</Link>
-              </DropdownMenuItem>
+             
+             
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       );
     },
-  },
+},
 ];
 
 export function OrderTable({

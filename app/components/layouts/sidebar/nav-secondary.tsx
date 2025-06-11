@@ -1,5 +1,5 @@
 import * as React from "react"
-import { type LucideIcon } from "lucide-react"
+import { Settings2 } from "lucide-react"
 
 import {
   SidebarGroup,
@@ -8,31 +8,26 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "~/components/ui/sidebar"
+import Settings from "~/components/common/settings"
 
 export function NavSecondary({
-  items,
   ...props
-}: {
-  items: {
-    title: string
-    url: string
-    icon: LucideIcon
-  }[]
-} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+}: React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild size="sm">
-                <a href={item.url}>
-                  <item.icon />
-                  <span>{item.title}</span>
-                </a>
+          <Settings>
+
+         
+            <SidebarMenuItem >
+              <SidebarMenuButton  size="sm">
+                  <Settings2 />
+                  <span>Setting</span>
+                
               </SidebarMenuButton>
             </SidebarMenuItem>
-          ))}
+           </Settings>
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>

@@ -1,9 +1,7 @@
 import { motion } from "framer-motion";
 import { Link, Navigate, Outlet, useParams } from "react-router";
 import PageHeader from "../common/page-header";
-import { Button } from "../ui/button";
 import BgWrapper from "../common/bg-wrapper";
-import OrderTableHeader from "~/components/screens/orders/order-table-header";
 import { useOrderMenuList } from "~/services/queries/order";
 import { transform_name } from "~/lib/utils";
 import { ScrollArea, ScrollBar } from "../ui/scroll-area";
@@ -27,15 +25,7 @@ export default function OrderLayout({}: Props) {
 
   return (
     <div>
-      <PageHeader title="Orders">
-        <div className="flex items-center gap-2">
-          <Link to={"/add-order"}>
-            <Button variant={"secondary"} size={"sm"}>
-              Add Order
-            </Button>
-          </Link>
-        </div>
-      </PageHeader>
+      <PageHeader title="Orders"/>
 
       <BgWrapper>
         <div className="relative  ">

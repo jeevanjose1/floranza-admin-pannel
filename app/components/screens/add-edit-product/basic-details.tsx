@@ -4,11 +4,9 @@ import ErrorMessage from "~/components/ui/error-message";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import MediaInput from "~/components/ui/media-input";
-import LexicalEditor from "~/components/ui/editor";
 import AsyncSelectCustom from "~/components/ui/async-select";
 import { fetcher, queryFilter } from "~/lib/utils";
 import { BRAND, MATERIAL } from "~/shared/urls";
-import { Textarea } from "~/components/ui/textarea";
 import { SUPPLIER } from "~/shared/urls/supplier";
 import { Checkbox } from "~/components/ui/checkbox";
 import { useEffect, useState } from "react";
@@ -19,7 +17,7 @@ type Props = { form: UseFormReturn<any> };
 // Define option type for clarity
 type SelectOption = { value: string; label: string; is_hsn?: boolean };
 
-const promiseOptionsBrand = async (inputValue: string) => {
+const promiseOptionsBrand = async () => {
   try {
     const response = await fetcher({
       url: `${BRAND.LIST}${queryFilter({ page: 1 })}`,
@@ -35,7 +33,7 @@ const promiseOptionsBrand = async (inputValue: string) => {
   }
 };
 
-const promiseOptionsHsn = async (inputValue: string) => {
+const promiseOptionsHsn = async () => {
   try {
     const response = await fetcher({
       url: `${SUPPLIER.LIST}${queryFilter({ page: 1 })}`,
@@ -51,7 +49,7 @@ const promiseOptionsHsn = async (inputValue: string) => {
   }
 };
 
-const promiseOptionsMaterial = async (inputValue: string) => {
+const promiseOptionsMaterial = async () => {
   try {
     const response = await fetcher({
       url: `${MATERIAL.LIST}${queryFilter({ page: 1 })}`,
@@ -76,9 +74,9 @@ const BasicDetails = ({ form }: Props) => {
   // Load options on component mount
   useEffect(() => {
     const loadInitialOptions = async () => {
-      const brands = await promiseOptionsBrand("");
-      const suppliers = await promiseOptionsHsn("");
-      const materials = await promiseOptionsMaterial("");
+      const brands = await promiseOptionsBrand();
+      const suppliers = await promiseOptionsHsn();
+      const materials = await promiseOptionsMaterial();
 
       setBrandOptions(brands);
       setSupplierOptions(suppliers);

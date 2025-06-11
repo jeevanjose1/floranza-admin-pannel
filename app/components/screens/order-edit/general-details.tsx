@@ -18,6 +18,7 @@ import {
   Phone,
   Clock,
   ListOrdered,
+  Package,
 } from "lucide-react";
 import EditShippingAddress from "./edit-shipping-address";
 import { status_filter, status_options } from "~/shared/others/others";
@@ -42,7 +43,7 @@ export default function GeneralDetails({ data }: Props) {
   const { mutateAsync: change, isPending: isStatusChanging } =
     useSingleStatus();
   const { mutateAsync: mark, isPending: markPending } = usePaymentStatus();
-  const is_paid = Boolean(data?.paid_status)
+  const is_paid = Boolean(data?.paid_status);
   const downloadInvoice = () => {
     download(
       { id: data.id },
@@ -60,7 +61,7 @@ export default function GeneralDetails({ data }: Props) {
 
   const handleMarkAsPaid = () => {
     const form_data = new FormData();
-    form_data.append("paid_status", is_paid ? '0': "1");
+    form_data.append("paid_status", is_paid ? "0" : "1");
     mark(
       {
         data: form_data,
@@ -70,9 +71,9 @@ export default function GeneralDetails({ data }: Props) {
         onSuccess: () => {
           toast.success("Payment status changed");
         },
-        onError:()=>{
-          toast.error('Error while changing payment status')
-        }
+        onError: () => {
+          toast.error("Error while changing payment status");
+        },
       }
     );
   };
@@ -118,13 +119,21 @@ export default function GeneralDetails({ data }: Props) {
                 <h1 className="text-2xl font-bold tracking-tight">
                   Order #{data?.order_no}
                 </h1>
-                {is_paid && (
+                {is_paid ? (
                   <Badge
                     variant="secondary"
-                    className="bg-green-100 text-green-800 hover:bg-green-100"
+                    className="bg-green-100 text-green-800 "
                   >
                     <Clock className="w-3 h-3 mr-1" />
                     Paid
+                  </Badge>
+                ) : (
+                  <Badge
+                    variant="secondary"
+                    className="bg-orange-100 text-orange-800 "
+                  >
+                    <Clock className="w-3 h-3 mr-1" />
+                    Unpaid
                   </Badge>
                 )}
               </div>
@@ -162,12 +171,12 @@ export default function GeneralDetails({ data }: Props) {
             )}
             {data?.order_status === 10 && (
               <PopConfirm
-              action={handleMarkAsPaid}
-                title={is_paid ? 'Remove status':"Mark as paid"}
+                action={handleMarkAsPaid}
+                title={is_paid ? "Remove status" : "Mark as paid"}
                 description="Are you really want to change the status"
               >
                 <Button loading={markPending} variant={"secondary"} size={"sm"}>
-                 {is_paid?'Remove Paid Status':'Mark As Paid' }
+                  {is_paid ? "Remove Paid Status" : "Mark As Paid"}
                 </Button>
               </PopConfirm>
             )}
@@ -340,17 +349,51 @@ export default function GeneralDetails({ data }: Props) {
               </div>
 
               <Separator />
+              <div className="bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-950/30 dark:to-orange-900/20 rounded-xl p-4 border border-orange-200/60 shadow-sm ">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="bg-orange-100 dark:bg-orange-900/50 rounded-lg p-2">
+                      <Truck className="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-orange-600 dark:text-orange-400 uppercase tracking-wider">
+                        Courier Service
+                      </p>
+                      <p className="text-sm font-semibold text-orange-900 dark:text-orange-200">
+                        {data?.courier}
+                      </p>
+                    </div>
+                  </div>
 
-              <div className="bg-orange-50 dark:bg-orange-950/20 rounded-lg p-3 border border-orange-100 dark:border-orange-900/20">
-                <div className="flex items-center gap-2 mb-1">
-                  <Truck className="w-4 h-4 text-orange-600" />
-                  <p className="text-xs font-medium text-orange-700 dark:text-orange-400 uppercase tracking-wide">
-                    Courier
-                  </p>
+                  {data?.track_id && (
+                    <div className="bg-orange-200/50 dark:bg-orange-800/30 rounded-lg p-1.5">
+                      <Package className="w-3.5 h-3.5 text-orange-700 dark:text-orange-300" />
+                    </div>
+                  )}
                 </div>
-                <p className="text-sm font-semibold text-orange-900 dark:text-orange-300">
-                  {data?.courier?.replace("_", " ")}
-                </p>
+
+                {data?.track_id && (
+                  <div className="bg-white/60 dark:bg-gray-900/40 rounded-lg p-3 border border-orange-200/40 dark:border-orange-800/30">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-orange-600 dark:text-orange-400 mb-1">
+                          Tracking ID
+                        </p>
+                        <p className="text-sm font-mono font-medium text-gray-900 dark:text-gray-100 truncate">
+                          {data.track_id}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {!data?.track_id && (
+                  <div className="bg-orange-100/50 dark:bg-orange-900/20 rounded-lg p-3 border border-dashed border-orange-300 dark:border-orange-700">
+                    <p className="text-xs text-orange-600 dark:text-orange-400 text-center">
+                      Tracking information not yet available
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </CardContent>

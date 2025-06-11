@@ -6,5 +6,16 @@ import { MATERIAL } from "./material";
 import { ATTRIBUTE } from "./attribute";
 import { PRODUCT } from "./products";
 import { SLIDER } from "./slider";
+import { ADMIN_USERS } from "./admin-users";
 
-export { AUTH, MEDIA, CATOGERY, BRAND, MATERIAL, ATTRIBUTE,PRODUCT,SLIDER };
+export {
+  AUTH,
+  MEDIA,
+  CATOGERY,
+  BRAND,
+  MATERIAL,
+  ATTRIBUTE,
+  PRODUCT,
+  SLIDER,
+  ADMIN_USERS,
+};

@@ -5,6 +5,7 @@ import type {
   COMMON_MUTATION,
   COMMON_PAYLOAD,
 } from "~/shared/types";
+import { COMMON } from "~/shared/urls/common";
 import { ORDER } from "~/shared/urls/order";
 
 const useOrderList = (payload: COMMON_LIST_PAYLOAD) => {
@@ -17,7 +18,16 @@ const useOrderList = (payload: COMMON_LIST_PAYLOAD) => {
       }),
   });
 };
-
+const useTransactionList = (payload: COMMON_LIST_PAYLOAD) => {
+  return useQuery({
+    queryKey: ["TRANSACTION_LIST", payload],
+    queryFn: () =>
+      fetcher({
+        url: `${COMMON.TRANSACTION}`,
+        type: "get",
+      }),
+  });
+};
 const useOrderView = (payload: COMMON_LIST_PAYLOAD) => {
   return useQuery({
     queryKey: ["ORDER_VIEW", payload],
@@ -206,5 +216,6 @@ export {
   useSingleStatus,
   useAddOrder,
   usePaymentStatus,
-  useDeleteOrder
+  useDeleteOrder,
+  useTransactionList
 };

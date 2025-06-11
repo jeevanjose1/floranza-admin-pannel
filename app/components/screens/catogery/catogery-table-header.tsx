@@ -1,7 +1,3 @@
-
-
-
-
 import {
   ArrowDownUp,
   ArrowUpNarrowWide,
@@ -48,8 +44,8 @@ const Filter = () => {
           </SelectGroup>
         </SelectContent>
       </Select>
-     
-  <DatePicker  />
+
+      <DatePicker />
     </div>
   );
 };
@@ -69,7 +65,6 @@ const Sort = () => {
         <DropdownMenuLabel className="text-[13px]">Sorted By</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-         
           <DropdownMenuRadioItem value="stocks">Stocks</DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
 

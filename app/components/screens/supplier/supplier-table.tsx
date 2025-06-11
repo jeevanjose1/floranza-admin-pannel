@@ -13,19 +13,17 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
+
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { Input } from "~/components/ui/input";
 import {
   Table,
   TableBody,
@@ -36,16 +34,12 @@ import {
 } from "~/components/ui/table";
 import { Badge } from "~/components/ui/badge";
 import Loader from "~/components/ui/loader";
-import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { PopConfirm } from "~/components/ui/pop-confirm";
 import { Link } from "react-router";
-import { useDeleteBrand } from "~/services/queries";
 import { toast } from "sonner";
 import { useDeleteSupplier } from "~/services/queries/supplier";
 
-// Updated sample data with product information
 
-// Updated type definition
 export type Supplier = {
   id: string;
   name: string;
@@ -89,30 +83,13 @@ export const columns: ColumnDef<Supplier>[] = [
     header: "Supplier",
     cell: ({ row }) => (
       <div className="font-medium text-[13px] flex items-center gap-2">
-        {/* <Avatar className="rounded-md">
-          <AvatarImage src={row.original.image} />
-          <AvatarFallback className="rounded-md">CS</AvatarFallback>
-        </Avatar> */}
+
         {row.getValue("name")}
       </div>
     ),
   },
   
-  // {
-  //   accessorKey: "description",
-  //   header: "Description",
-  //   cell: ({ row }) => (
-  //     <div className="text-[13px]">{row.getValue("description")}</div>
-  //   ),
-  // },
 
-  // {
-  //   accessorKey: "slug",
-  //   header: () => <div className="text-right ">Slug</div>,
-  //   cell: ({ row }) => (
-  //     <div className="text-right text-[13px]">{row.getValue("slug")}</div>
-  //   ),
-  // },
   {
     accessorKey: "count",
     header: () => <div className="text-right ">Count</div>,

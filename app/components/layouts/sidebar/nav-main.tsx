@@ -2,6 +2,7 @@
 
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import { Link, useLocation } from "react-router";
+import { Badge } from "~/components/ui/badge";
 
 import {
   Collapsible,
@@ -10,7 +11,6 @@ import {
 } from "~/components/ui/collapsible";
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuAction,
   SidebarMenuButton,
@@ -28,9 +28,11 @@ export function NavMain({
     url: string;
     icon: LucideIcon;
     isActive?: boolean;
+    count?: number;
     items?: {
       title: string;
       url: string;
+      count?: number;
     }[];
   }[];
 }) {
@@ -70,9 +72,20 @@ export function NavMain({
                             size={"sm"}
                             asChild
                           >
-                            <a href={subItem.url}>
+                            <Link
+                              to={subItem.url}
+                              className="flex w-full justify-between"
+                            >
                               <span>{subItem.title}</span>
-                            </a>
+                              {subItem.count && (
+                                <Badge
+                                  className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums bg-white"
+                                  variant="outline"
+                                >
+                                  {subItem.count > 100 ? "100+" : subItem.count}
+                                </Badge>
+                              )}
+                            </Link>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
                       ))}
@@ -86,10 +99,20 @@ export function NavMain({
                   asChild
                   tooltip={item.title}
                 >
-                  <a href={item.url}>
-                    <item.icon />
-                    <span>{item.title}</span>
-                  </a>
+                  <Link to={item.url} className="flex w-full justify-between">
+                    <div className="flex items-center gap-2">
+                      <item.icon size={16} />
+                      <span>{item.title}</span>
+                    </div>
+                    {item.count && (
+                      <Badge
+                        className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums bg-white"
+                        variant="outline"
+                      >
+                        {item.count > 100 ? "100+" : item?.count}
+                      </Badge>
+                    )}
+                  </Link>
                 </SidebarMenuButton>
               )}
             </SidebarMenuItem>

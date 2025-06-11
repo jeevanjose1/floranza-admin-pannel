@@ -44,7 +44,6 @@ export default function MaterialForm({ id }: Props) {
       title: material_data?.data?.name || "",
       description: material_data?.data?.description || "",
       image: material_data?.data?.image?.mini || null,
-      // slug: material_data?.data?.slug || "",
       meta_title: material_data?.data?.meta_title || "",
       meta_description: material_data?.data?.meta_des || "",
       status: material_data?.data?.status === 1 ? "active" : "inactive",
@@ -54,7 +53,6 @@ export default function MaterialForm({ id }: Props) {
   const onSubmit = (values: MaterialFormValues) => {
     const form_data = new FormData();
     form_data.append("name", values.title);
-    // form_data.append("slug", values.slug);
     form_data.append("description", values.description as string);
     if (typeof values.image === "object") {
       form_data.append("image", values.image);
@@ -72,7 +70,7 @@ export default function MaterialForm({ id }: Props) {
             toast.success(response.message);
             navigate("/materials");
           },
-          onError: (error: any) => {
+          onError: () => {
             toast.error("Something went wrong");
           },
         }
@@ -83,7 +81,7 @@ export default function MaterialForm({ id }: Props) {
           toast.success(response.message);
           navigate("/materials");
         },
-        onError: (error: any) => {
+        onError: () => {
           toast.error("Something went wrong");
         },
       });
@@ -141,19 +139,6 @@ export default function MaterialForm({ id }: Props) {
                 />
                 <ErrorMessage error={formState.errors.image?.message as any} />
               </div>
-
-              {/* Slug */}
-              {/* <div className="mb-4">
-                <Label>Slug</Label>
-                <Controller
-                  control={control}
-                  name="slug"
-                  render={({ field }) => (
-                    <Input {...field} placeholder="Slug" />
-                  )}
-                />
-                <ErrorMessage error={formState.errors.slug?.message} />
-              </div> */}
 
               {/* Meta Title */}
               <div className="mb-3">

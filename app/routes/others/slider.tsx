@@ -13,36 +13,43 @@ import { useListSlider } from "~/services/queries/slider";
 type Props = {};
 
 export default function Slider({}: Props) {
-	const {data:slider_data,isLoading,isFetching} = useListSlider({page:1})
+  const {
+    data: slider_data,
+    isLoading,
+    isFetching,
+  } = useListSlider({ page: 1 });
 
-	const filtred_brand = slider_data?.data?.data?.map((item:any)=>{
-		return {
-			id:item?.id,
-			title:item?.headTitle,
-			sub_title:item?.subTitle,
-			is_btn:item?.buttonShow ===1 ? 'YES':'NO',
-			btn_title:item?.buttonTitle ? item?.buttonTitle :'-',
-			image:item?.image,
-            btn_url:item?.buttonURl,
-            order:item?.display_order
-	}
-	}) || []
-	return (
-		<div>
-			<PageHeader title="Brand">
-				<div className="flex items-center gap-2 ">
-			<AddEditSliderModal>
-				<Button variant={"secondary"} size={"sm"}>
-				Add Slider
-					</Button>
-				</AddEditSliderModal>
-
-		</div>
-		</PageHeader>
-		<BgWrapper>
-			<SliderTableHeader />
-			<SliderTable table_data={filtred_brand} loading={isLoading||isFetching}/>
-		</BgWrapper>
-	</div>
-	);
+  const filtred_brand =
+    slider_data?.data?.data?.map((item: any) => {
+      return {
+        id: item?.id,
+        title: item?.headTitle,
+        sub_title: item?.subTitle,
+        is_btn: item?.buttonShow === 1 ? "YES" : "NO",
+        btn_title: item?.buttonTitle ? item?.buttonTitle : "-",
+        image: item?.image,
+        btn_url: item?.buttonURl,
+        order: item?.display_order,
+      };
+    }) || [];
+  return (
+    <div>
+      <PageHeader title="Home Slider">
+        <div className="flex items-center gap-2 ">
+          <AddEditSliderModal>
+            <Button variant={"secondary"} size={"sm"}>
+              Add Slider
+            </Button>
+          </AddEditSliderModal>
+        </div>
+      </PageHeader>
+      <BgWrapper>
+        <SliderTableHeader />
+        <SliderTable
+          table_data={filtred_brand}
+          loading={isLoading || isFetching}
+        />
+      </BgWrapper>
+    </div>
+  );
 }

@@ -12,11 +12,10 @@ import {
 
 } from "../ui/breadcrumb";
 import { Button } from "../ui/button";
-import { BadgeCheck, Bell, LogOut } from "lucide-react";
+import {  Bell, LogOut } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -31,8 +30,8 @@ import {
   useNavigate,
   useParams,
 } from "react-router";
-import { is_auth } from "~/lib/utils";
-import { useLogout } from "~/services/queries/auth";
+import { capitalize_first_letters, is_auth, transform_name } from "~/lib/utils";
+import { useGetProfile, useLogout } from "~/services/queries/auth";
 
 type Props = {};
 
@@ -85,7 +84,8 @@ export default function PrivateLayout({}: Props) {
   const is_authenticated = is_auth();
   const { mutateAsync: logout } = useLogout();
   const navigate = useNavigate();
-
+  const { data: profile } = useGetProfile();
+ const profile_date =profile?.data?.user 
   if (!is_authenticated) {
     return <Navigate to={"/login"} />;
   }
@@ -96,6 +96,7 @@ export default function PrivateLayout({}: Props) {
       navigate("/");
     });
   };
+const current_page = location.pathname?.split('/')?.[1]
 
   return (
     <SidebarProvider>
@@ -107,7 +108,7 @@ export default function PrivateLayout({}: Props) {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">Products</BreadcrumbLink>
+                  <BreadcrumbLink href="#">{capitalize_first_letters(current_page)?.replace('-',' ') }</BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -122,7 +123,7 @@ export default function PrivateLayout({}: Props) {
                 <Avatar className="rounded-sm">
                   <AvatarImage src={"/"} alt={"user"} />
                   <AvatarFallback className="rounded-md text-sm">
-                    CN
+                    {profile_date?.name?.[0]}
                   </AvatarFallback>
                 </Avatar>
               </DropdownMenuTrigger>
@@ -136,24 +137,19 @@ export default function PrivateLayout({}: Props) {
                     <Avatar className="rounded-sm">
                       <AvatarImage src={"/"} alt={"user"} />
                       <AvatarFallback className="rounded-md text-sm">
-                        CN
+                        {profile_date?.name?.[0]}
                       </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-medium">jeevan jose</span>
+                      <span className="truncate font-medium">{profile_date?.name}</span>
                       <span className="truncate text-xs">
-                        jeevanjose@gmail.com
+                        {profile_date?.email}
                       </span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <DropdownMenuItem>
-                    <BadgeCheck />
-                    Account
-                  </DropdownMenuItem>
-                </DropdownMenuGroup>
+ 
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut />
                   Log out

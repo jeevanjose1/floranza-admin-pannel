@@ -13,19 +13,16 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
-  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { Input } from "~/components/ui/input";
 import {
   Table,
   TableBody,
@@ -42,9 +39,7 @@ import { Link } from "react-router";
 import { useDeleteBrand } from "~/services/queries";
 import { toast } from "sonner";
 
-// Updated sample data with product information
 
-// Updated type definition
 export type Brand = {
   id: string;
   name: string;
@@ -119,13 +114,7 @@ export const columns: ColumnDef<Brand>[] = [
       <div className="text-right text-[13px]">{row.getValue("count")}</div>
     ),
   },
-  // {
-  //   accessorKey: "hsn",
-  //   header: () => <div className="text-right ">HSN code</div>,
-  //   cell: ({ row }) => (
-  //     <div className="text-right text-[13px]">{row.getValue("hsn")}</div>
-  //   ),
-  // },
+
     {
     accessorKey: "status",
     header: "Status",

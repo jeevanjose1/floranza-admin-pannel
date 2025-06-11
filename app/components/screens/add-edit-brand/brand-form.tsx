@@ -145,32 +145,6 @@ export default function BrandForm({ id }: Props) {
                 <ErrorMessage error={formState.errors.image?.message as any} />
               </div>
 
-              {/* Slug */}
-              {/* <div className="mb-4">
-                <Label>Slug</Label>
-                <Controller
-                  control={control}
-                  name="slug"
-                  render={({ field }) => (
-                    <Input {...field} placeholder="Slug" />
-                  )}
-                />
-                <ErrorMessage error={formState.errors.slug?.message} />
-              </div> */}
-
-              {/* HSN Code */}
-              {/* <div className="mb-4">
-                <Label>HSN Code</Label>
-                <Controller
-                  control={control}
-                  name="hsn_code"
-                  render={({ field }) => (
-                    <Input {...field} placeholder="HSN code" />
-                  )}
-                />
-                <ErrorMessage error={formState.errors.hsn_code?.message} />
-              </div> */}
-
               {/* Meta Title */}
               <div className="mb-3">
                 <Label>Meta Title</Label>

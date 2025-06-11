@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetcher, queryFilter } from "~/lib/utils";
 import type { COMMON_LIST_PAYLOAD } from "~/shared/types";
 import { PRODUCT } from "~/shared/urls";
+import { COMMON } from "~/shared/urls/common";
 
 const useListProduct = (payload: COMMON_LIST_PAYLOAD) => {
   return useQuery({
@@ -11,6 +12,29 @@ const useListProduct = (payload: COMMON_LIST_PAYLOAD) => {
         url: `${PRODUCT.LIST}${queryFilter(payload)}`,
         type: "get",
       }),
+  });
+};
+const useLowQtyProduct = (payload: COMMON_LIST_PAYLOAD) => {
+  return useQuery({
+    queryKey: ["LOW_QTY_PRODUCT_LIST", payload],
+    queryFn: () =>
+      fetcher({
+        url: `${PRODUCT.QTY_LIST}${queryFilter(payload)}`,
+        type: "get",
+      }),
+  });
+};
+
+const useGlobalCount = () => {
+  return useQuery({
+    queryKey: ["GLOBAL_COUNT"],
+    queryFn: () =>
+      fetcher({
+        url: `${COMMON.GLOBAL_COUNT}`,
+        type: "get",
+      }),
+      refetchOnMount:false,
+      refetchOnWindowFocus:false
   });
 };
 
@@ -78,7 +102,25 @@ const useUpdateProduct = () => {
     onError: (error) => error,
   });
 };
+const useUpdateQtyProduct = () => {
+  const query = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: any) =>
+      fetcher({
+        url: `${PRODUCT.QTY_UPDATE}`,
+        type: "post",
+        data: payload,
+      }),
+    onSuccess: (response) => {
+      query.invalidateQueries({ queryKey: ["LOW_QTY_PRODUCT_LIST"] });
+      query.invalidateQueries({ queryKey: ["GLOBAL_COUNT"] });
 
+      
+      return response;
+    },
+    onError: (error) => error,
+  });
+};
 const useDuplicateProduct = () => {
   const query = useQueryClient();
   return useMutation({
@@ -117,4 +159,7 @@ export {
   useUpdateProduct,
   useDuplicateProduct,
   useSearchProduct,
+  useLowQtyProduct,
+  useUpdateQtyProduct,
+  useGlobalCount
 };

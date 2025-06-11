@@ -1,6 +1,6 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetcher } from "~/lib/utils";
-import type { LOGIN_PAYLOAD } from "~/shared/types";
+import type { COMMON_LIST_PAYLOAD, LOGIN_PAYLOAD } from "~/shared/types";
 import { AUTH } from "~/shared/urls";
 
 const useLogin = () => {
@@ -14,15 +14,45 @@ const useLogin = () => {
       }),
   });
 };
-const useLogout = ()=>{
-	return useMutation({
-		mutationFn:()=>fetcher({
-			url:`${AUTH.LOGOUT}`,
-			type:'post',
-		}),
-		onSuccess:(data)=>data,
-		onError:(error)=>error
-		})
-}
+const useLogout = () => {
+  return useMutation({
+    mutationFn: () =>
+      fetcher({
+        url: `${AUTH.LOGOUT}`,
+        type: "post",
+      }),
+    onSuccess: (data) => data,
+    onError: (error) => error,
+  });
+};
 
-export { useLogin,useLogout };
+const useGetProfile = () => {
+  return useQuery({
+    queryKey: ["PROFILE"],
+    queryFn: () =>
+      fetcher({
+        url: `${AUTH.PROFILE}`,
+        type: "get",
+      }),
+      refetchOnMount:false,
+      refetchOnWindowFocus:false
+  });
+};
+const useUpdateProfile = () => {
+  const query = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: any) =>
+      fetcher({
+        url: `${AUTH.UPDATE_USER}`,
+        type: "post",
+        data: payload,
+      }),
+    onSuccess: (data) => {
+      query.invalidateQueries({ queryKey: ["PROFILE"] });
+
+      return data;
+    },
+    onError: (error) => error,
+  });
+};
+export { useLogin, useLogout, useUpdateProfile, useGetProfile };

@@ -16,7 +16,7 @@ import {
   getExpandedRowModel,
 } from "@tanstack/react-table";
 import {
-  ArrowUpDown,
+
   ChevronDown,
   ChevronRight,
   Eye,
@@ -28,11 +28,9 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import { Input } from "~/components/ui/input";
 import {
   Table,
   TableBody,
@@ -44,7 +42,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Badge } from "~/components/ui/badge";
 import Loader from "~/components/ui/loader";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { PopConfirm } from "~/components/ui/pop-confirm";
 import {
   useDeleteProduct,
@@ -219,34 +217,31 @@ export const columns: ColumnDef<Product>[] = [
       ),
   },
 
-{
-  accessorKey: "scheduled",
-  header: () => <div className="text-right">Scheduled</div>,
-  cell: ({ row }) =>
-    row.getValue("scheduled") === 1 ? (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <div className="w-full flex justify-end">
-              <Badge className="bg-blue-100 text-blue-800 border border-blue-300">
-                Scheduled
-              </Badge>
-            </div>
-          </TooltipTrigger>
-          <TooltipContent>
-            
-            {row.original?.sheduled_at
-              ? dayjs(row.original.sheduled_at).format("MMM D, YYYY h:mm A")
-              : "N/A"}
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    ) : (
-      <div className="w-full flex justify-end">
-        -
-      </div>
-    ),
-},
+  {
+    accessorKey: "scheduled",
+    header: () => <div className="text-right">Scheduled</div>,
+    cell: ({ row }) =>
+      row.getValue("scheduled") === 1 ? (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className="w-full flex justify-end">
+                <Badge className="bg-blue-100 text-blue-800 border border-blue-300">
+                  Scheduled
+                </Badge>
+              </div>
+            </TooltipTrigger>
+            <TooltipContent>
+              {row.original?.sheduled_at
+                ? dayjs(row.original.sheduled_at).format("MMM D, YYYY h:mm A")
+                : "N/A"}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      ) : (
+        <div className="w-full flex justify-end">-</div>
+      ),
+  },
 
   {
     accessorKey: "prebook",
@@ -263,29 +258,31 @@ export const columns: ColumnDef<Product>[] = [
               </div>
             </TooltipTrigger>
             <TooltipContent>
-               {row.original?.preorder_at
-              ? dayjs(row.original.preorder_at).format("MMM D, YYYY h:mm A")
-              : "N/A"}
+              {row.original?.preorder_at
+                ? dayjs(row.original.preorder_at).format("MMM D, YYYY h:mm A")
+                : "N/A"}
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
       ) : (
-        <div className="w-full flex justify-end">
-          -
-        </div>
+        <div className="w-full flex justify-end">-</div>
       ),
   },
   {
-  accessorKey: "date",
-  header: () => <div className="text-right">Published</div>,
-  cell: ({ row }) => (
-    <div className="text-right text-sm">
-      <p className="font-semibold">Published</p>
-      <p className="mb-0">{dayjs(row.original.date).format("MMM D, YYYY")} at</p>
-      <p className="mb-0 text-sm text-gray-500">{dayjs(row.original.date).format("h:mm A")}</p>
-    </div>
-  )
-},
+    accessorKey: "date",
+    header: () => <div className="text-right">Published</div>,
+    cell: ({ row }) => (
+      <div className="text-right text-sm">
+        <p className="font-semibold">Published</p>
+        <p className="mb-0">
+          {dayjs(row.original.date).format("MMM D, YYYY")} at
+        </p>
+        <p className="mb-0 text-sm text-gray-500">
+          {dayjs(row.original.date).format("h:mm A")}
+        </p>
+      </div>
+    ),
+  },
   {
     accessorKey: "status",
     header: "Status",
