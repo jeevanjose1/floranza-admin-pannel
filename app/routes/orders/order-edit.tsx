@@ -1,8 +1,10 @@
+import { ArrowLeft } from "lucide-react";
 import React from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import BgWrapper from "~/components/common/bg-wrapper";
 import GeneralDetails from "~/components/screens/order-edit/general-details";
 import OrderDetails from "~/components/screens/order-edit/order-details";
+import { Button } from "~/components/ui/button";
 import Loader from "~/components/ui/loader";
 import { useOrderView } from "~/services/queries/order";
 
@@ -10,6 +12,8 @@ type Props = {};
 
 export default function OrderEdit({}: Props) {
   const params = useParams();
+    const navigate = useNavigate();
+
   const { data: order_details ,isLoading} = useOrderView(params?.order_id);
    if(isLoading){
     return <div className="w-full h-screen flex items-center justify-center">
@@ -17,6 +21,16 @@ export default function OrderEdit({}: Props) {
     </div>
    }
   return (
+    <>
+    <Button
+        onClick={() => navigate(-1)}
+        variant={"ghost"}
+        className="hover:bg-transparent text-lg has-[>svg]:px-0 mb-3"
+      >
+        <ArrowLeft />
+       Order Details
+      </Button>
+  
     <div className="flex gap-4 ">
       <div className="flex-1 flex flex-col gap-4">
         <BgWrapper title="General Details">
@@ -47,5 +61,6 @@ export default function OrderEdit({}: Props) {
         </BgWrapper>
       </div>
     </div>
+      </>
   );
 }

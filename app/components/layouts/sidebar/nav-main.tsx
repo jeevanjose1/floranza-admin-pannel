@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { Badge } from "~/components/ui/badge";
@@ -38,7 +38,7 @@ export function NavMain({
   const location = useLocation();
 
   const is_active = (url: string) => {
-    const item_url = url?.replaceAll("/", "");
+    const item_url = url?.split("/")?.[1];
     const path_array = location.pathname
       .split("/")
       ?.filter((item) => item !== "");
@@ -114,7 +114,7 @@ export function NavMain({
                       <item.icon size={16} />
                       <span>{item.title}</span>
                     </div>
-                    {item.count && item?.count > 0  && (
+                    {item.count && item?.count > 0 && (
                       <Badge
                         className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums bg-white"
                         variant="outline"

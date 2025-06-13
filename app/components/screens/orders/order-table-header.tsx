@@ -23,6 +23,7 @@ import { base_url } from "~/services/instance";
 import { COMMON } from "~/shared/urls/common";
 import useQueryParams from "~/hooks/use-query-param";
 import _ from "lodash";
+import { PopConfirm } from "~/components/ui/pop-confirm";
 
 type Props = { selected: string[]; setSelected: any };
 const containerVariants = {
@@ -139,6 +140,9 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
       }
     );
   };
+  const handleSelect = (e: any) => {
+    e.preventDefault();
+  };
 
   const menu_render = () => {
     switch (params?.order_menu) {
@@ -151,13 +155,24 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
               Change Status
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-
-            <DropdownMenuItem onSelect={() => handleChangeStatus("2")}>
-              Action Taken
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleChangeStatus("5")}>
-              Hold
-            </DropdownMenuItem>
+            <PopConfirm
+              type="warning"
+              description="Are you realy want to change the status"
+              title="Change status"
+              action={() => handleChangeStatus("2")}
+            >
+              <DropdownMenuItem onSelect={handleSelect}>
+                Action Taken
+              </DropdownMenuItem>
+            </PopConfirm>
+            <PopConfirm
+              type="warning"
+              description="Are you realy want to change the status"
+              title="Change status"
+              action={() => handleChangeStatus("5")}
+            >
+              <DropdownMenuItem onSelect={handleSelect}>Hold</DropdownMenuItem>
+            </PopConfirm>
           </>
         );
       case "action-taken":
@@ -176,15 +191,34 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
               Change Status
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => handleChangeStatus("1")}>
-              Processing
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleChangeStatus("7")}>
-              Canceled
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleChangeStatus("5")}>
-              Hold
-            </DropdownMenuItem>
+            <PopConfirm
+              type="warning"
+              description="Are you realy want to change the status"
+              title="Change status"
+              action={() => handleChangeStatus("1")}
+            >
+              <DropdownMenuItem onSelect={handleSelect}>
+                Processing
+              </DropdownMenuItem>
+            </PopConfirm>
+            <PopConfirm
+              type="warning"
+              description="Are you realy want to change the status"
+              title="Change status"
+              action={() => handleChangeStatus("7")}
+            >
+              <DropdownMenuItem onSelect={handleSelect}>
+                Canceled
+              </DropdownMenuItem>
+            </PopConfirm>
+            <PopConfirm
+              type="warning"
+              description="Are you realy want to change the status"
+              title="Change status"
+              action={() => handleChangeStatus("5")}
+            >
+              <DropdownMenuItem onSelect={handleSelect}>Hold</DropdownMenuItem>
+            </PopConfirm>
           </>
         );
       case "shipping":
@@ -203,15 +237,34 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
               Change Status
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => handleChangeStatus("4")}>
-              Completed
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleChangeStatus("7")}>
-              Canceled
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleChangeStatus("2")}>
-              Hold
-            </DropdownMenuItem>
+            <PopConfirm
+              type="warning"
+              description="Are you realy want to change the status"
+              title="Change status"
+              action={() => handleChangeStatus("4")}
+            >
+              <DropdownMenuItem onSelect={handleSelect}>
+                Completed
+              </DropdownMenuItem>
+            </PopConfirm>
+            <PopConfirm
+              type="warning"
+              description="Are you realy want to change the status"
+              title="Change status"
+              action={() => handleChangeStatus("7")}
+            >
+              <DropdownMenuItem onSelect={handleSelect}>
+                Canceled
+              </DropdownMenuItem>
+            </PopConfirm>
+            <PopConfirm
+              type="warning"
+              description="Are you realy want to change the status"
+              title="Change status"
+              action={() => handleChangeStatus("2")}
+            >
+              <DropdownMenuItem onSelect={handleSelect}>Hold</DropdownMenuItem>
+            </PopConfirm>
           </>
         );
       case "completed":
@@ -242,12 +295,26 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
               Change Status
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => handleChangeStatus("2")}>
-              Action Taken
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleChangeStatus("7")}>
-              Canceled
-            </DropdownMenuItem>
+            <PopConfirm
+              type="warning"
+              description="Are you realy want to change the status"
+              title="Change status"
+              action={() => handleChangeStatus("2")}
+            >
+              <DropdownMenuItem onSelect={handleSelect}>
+                Action Taken
+              </DropdownMenuItem>
+            </PopConfirm>
+            <PopConfirm
+              type="warning"
+              description="Are you realy want to change the status"
+              title="Change status"
+              action={() => handleChangeStatus("7")}
+            >
+              <DropdownMenuItem onSelect={handleSelect}>
+                Canceled
+              </DropdownMenuItem>
+            </PopConfirm>
           </>
         );
       case "refund":
@@ -281,12 +348,24 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
               Change Status
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onSelect={() => handleChangeStatus("2")}>
-              Action Taken
-            </DropdownMenuItem>
-            <DropdownMenuItem onSelect={() => handleChangeStatus("5")}>
-              Hold
-            </DropdownMenuItem>
+            <PopConfirm
+              type="warning"
+              description="Are you realy want to change the status"
+              title="Change status"
+              action={() => handleChangeStatus("2")}
+            >
+              <DropdownMenuItem onSelect={handleSelect}>
+                Action Taken
+              </DropdownMenuItem>
+            </PopConfirm>
+            <PopConfirm
+              type="warning"
+              description="Are you realy want to change the status"
+              title="Change status"
+              action={() => handleChangeStatus("5")}
+            >
+              <DropdownMenuItem onSelect={handleSelect}>Hold</DropdownMenuItem>
+            </PopConfirm>
           </>
         );
       default:

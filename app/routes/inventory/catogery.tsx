@@ -33,7 +33,7 @@ export default function Catogery({}: Props) {
         status: item?.status,
         slug: item?.slug,
         image: item?.image.mini,
-        count: 4,
+        count: item?.product_count,
       };
     }) || [];
   return (

@@ -16,12 +16,14 @@ type prop = {
   title: string;
   description: string;
   action: any;
+  type?:'warning'|'default'
 };
 export function PopConfirm({
   children,
   action,
   description,
   title,
+  type='default'
 }: prop) {
   return (
     <AlertDialog>
@@ -33,7 +35,7 @@ export function PopConfirm({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={action}>Continue</AlertDialogAction>
+          <AlertDialogAction className={`${type==='warning'? 'bg-error':''}`} onClick={action}>Continue</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

@@ -33,12 +33,11 @@ import {
 import { Badge } from "~/components/ui/badge";
 import Loader from "~/components/ui/loader";
 import { PopConfirm } from "~/components/ui/pop-confirm";
-import {  useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { status_options } from "~/shared/others/others";
 import { useDeleteOrder } from "~/services/queries/order";
 import Pagination from "~/components/common/pagination";
-
 
 export type Order = {
   id: string;
@@ -57,15 +56,16 @@ export type Order = {
   order_via: string;
   paid_status: string;
   pre_order_date: string;
-  courier:string
-  is_reserved:boolean
+  courier: string;
+  is_reserved: boolean;
+  is_all: boolean;
 };
 type props = {
   table_data: Order[];
   loading: boolean;
   setSelected: any;
   selected: object;
-    is_previous: boolean;
+  is_previous: boolean;
   is_next: boolean;
   current_page: number;
 };
@@ -73,28 +73,34 @@ type props = {
 export const columns: ColumnDef<Order>[] = [
   {
     id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onClick={(e) => e.stopPropagation()}
-        onCheckedChange={(value) => {
-          table.toggleAllPageRowsSelected(!!value);
-        }}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <div onClick={(e) => e.stopPropagation()}>
+    header: ({ table }) => {
+      if (table.getRowModel()?.rows[0]?.original?.is_all) return false;
+      return (
         <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onClick={(e) => e.stopPropagation()}
+          onCheckedChange={(value) => {
+            table.toggleAllPageRowsSelected(!!value);
+          }}
+          aria-label="Select all"
         />
-      </div>
-    ),
+      );
+    },
+    cell: ({ row }) => {
+      if (row.original.is_all) return false;
+      return (
+        <div onClick={(e) => e.stopPropagation()}>
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+          />
+        </div>
+      );
+    },
     enableSorting: false,
     enableHiding: false,
   },
@@ -181,37 +187,37 @@ export const columns: ColumnDef<Order>[] = [
     ),
   },
 
+  // {
+  //   accessorKey: "download",
+  //   header: () => <div className="text-left font-medium">Download Label</div>,
+  //   cell: () => {
+  //     return (
+  //       <div className="py-3">
+  //         <Badge
+  //           variant="secondary"
+  //           className="h-7 px-3 text-xs bg-gray-100 text-gray-600 border-gray-200 rounded-full"
+  //         >
+  //           Not Synced
+  //         </Badge>
+  //       </div>
+  //     );
+  //   },
+  // },
   {
-    accessorKey: "download",
-    header: () => <div className="text-left font-medium">Download Label</div>,
-    cell: () => {
-      return (
-        <div className="py-3">
-          <Badge
-            variant="secondary"
-            className="h-7 px-3 text-xs bg-gray-100 text-gray-600 border-gray-200 rounded-full"
-          >
-            Not Synced
-          </Badge>
+    accessorKey: "track_id",
+    header: () => <div className="text-left font-medium">Tracking Details</div>,
+    cell: ({ row }) => (
+      <div className="py-3">
+        <div className="text-sm font-medium text-gray-900">
+          {row.original.courier}
         </div>
-      );
-    },
+        <div className="text-sm text-gray-600 font-mono">
+          {row.original.track_id}
+        </div>
+      </div>
+    ),
   },
- {
-  accessorKey: "track_id",
-  header: () => <div className="text-left font-medium">Tracking Details</div>,
-  cell: ({ row }) => (
-    <div className="py-3">
-      <div className="text-sm font-medium text-gray-900">
-        {row.original.courier}
-      </div>
-      <div className="text-sm text-gray-600 font-mono">
-        {row.original.track_id}
-      </div>
-    </div>
-  ),
-},
-{
+  {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
@@ -225,7 +231,7 @@ export const columns: ColumnDef<Order>[] = [
         });
       };
 
-      if(!row.original.is_reserved) return false
+      if (!row.original.is_reserved) return false;
       return (
         <div className="py-3" onClick={(e) => e.stopPropagation()}>
           <DropdownMenu>
@@ -238,10 +244,7 @@ export const columns: ColumnDef<Order>[] = [
                 <MoreHorizontal className="h-4 w-4 text-gray-600" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent
-              align="end"
-              className="w-48 shadow-lg "
-            >
+            <DropdownMenuContent align="end" className="w-48 shadow-lg ">
               <PopConfirm
                 action={handleDelete}
                 description="Are you really want to delete this order"
@@ -254,14 +257,12 @@ export const columns: ColumnDef<Order>[] = [
                   Delete
                 </DropdownMenuItem>
               </PopConfirm>
-             
-             
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
       );
     },
-},
+  },
 ];
 
 export function OrderTable({
@@ -297,6 +298,11 @@ export function OrderTable({
       columnFilters,
       columnVisibility,
       rowSelection: selected as any,
+
+      pagination: {
+        pageIndex: 0,
+        pageSize: 1000,
+      },
     },
   });
 
@@ -370,11 +376,11 @@ export function OrderTable({
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-      <Pagination
-                is_next={is_next}
-                is_previous={is_previous}
-                current_page={current_page}
-              />
+        <Pagination
+          is_next={is_next}
+          is_previous={is_previous}
+          current_page={current_page}
+        />
       </div>
     </div>
   );

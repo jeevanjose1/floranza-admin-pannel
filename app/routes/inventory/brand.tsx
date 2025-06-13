@@ -32,7 +32,7 @@ export default function Brand({}: Props) {
         status: item?.status === 1 ? "Active" : "Inactive",
         image: item?.image?.mini,
         slug: item?.slug,
-        count: 45,
+        count: item?.product_count,
       };
     }) || [];
   return (

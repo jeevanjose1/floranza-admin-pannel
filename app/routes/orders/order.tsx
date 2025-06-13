@@ -32,8 +32,8 @@ export default function Slider({}: Props) {
     start_date: query_params?.from,
     end_date: query_params?.to,
   });
-
-
+ 
+ 
   const filtred_order =
     order_list?.data?.data?.map((item: any) => {
       return {
@@ -49,6 +49,7 @@ export default function Slider({}: Props) {
         track_id: item?.track_id ? item?.track_id : "-",
         courier: item?.courier,
         is_reserved: params.order_menu === "reserved",
+        is_all: params.order_menu === "all",
       };
     }) || [];
 

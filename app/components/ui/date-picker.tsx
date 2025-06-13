@@ -58,8 +58,6 @@ export function DatePicker({
         setDate(selectedDate as Date);
         if (onChange) onChange(selectedDate as Date);
       } else {
-        console.log(selectedDate);
-
         setDateRange(selectedDate as DateRange);
         if (onChange) onChange(selectedDate as DateRange);
       }

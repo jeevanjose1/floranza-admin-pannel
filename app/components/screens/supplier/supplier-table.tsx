@@ -92,7 +92,7 @@ export const columns: ColumnDef<Supplier>[] = [
 
   {
     accessorKey: "count",
-    header: () => <div className="text-right ">Count</div>,
+    header: () => <div className="text-right ">Products</div>,
     cell: ({ row }) => (
       <div className="text-right text-[13px]">{row.getValue("count")}</div>
     ),

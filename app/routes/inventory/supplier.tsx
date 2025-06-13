@@ -34,7 +34,7 @@ export default function Supplier({}: Props) {
         image: item?.image?.mini,
         slug: item?.slug,
         hsn: item?.hsn_code,
-        count: 45,
+        count: item?.product_count,
       };
     }) || [];
 

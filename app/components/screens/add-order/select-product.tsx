@@ -245,11 +245,11 @@ export default function SelectProduct({ form }: Props) {
 
       <div className="mt-4">
         {data && <h1 className="text-sm font-medium mb-2">Search result</h1>}
-        <ScrollArea className="max-h-100 overflow-auto">
+        <ScrollArea className="max-h-100 overflow-y-auto">
           {data?.data?.map((item: any) => {
             return <ProductCard form={form} key={item?.id} data={item} />;
           })}
-          <ScrollBar orientation="vertical" />
+          <ScrollBar orientation="horizontal" />
         </ScrollArea>
         <ErrorMessage
           error={form?.formState.errors.products?.message as string}
