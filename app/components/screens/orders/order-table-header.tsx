@@ -1,11 +1,5 @@
-import {
-  ArrowDownUp,
-  ArrowUpNarrowWide,
-  ArrowUpWideNarrow,
-  EllipsisVertical,
-  FilterIcon,
-} from "lucide-react";
-import  { useCallback, useState } from "react";
+import { EllipsisVertical, FilterIcon } from "lucide-react";
+import { useCallback, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "~/components/ui/button";
 import { DatePicker } from "~/components/ui/date-picker";
@@ -14,20 +8,11 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import { Input } from "~/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
+
 import { Separator } from "~/components/ui/separator";
 import { useBulkInvoice, useBulkStatus } from "~/services/queries/order";
 import { toast } from "sonner";
@@ -36,6 +21,8 @@ import dayjs from "dayjs";
 import { Link, useParams } from "react-router";
 import { base_url } from "~/services/instance";
 import { COMMON } from "~/shared/urls/common";
+import useQueryParams from "~/hooks/use-query-param";
+import _ from "lodash";
 
 type Props = { selected: string[]; setSelected: any };
 const containerVariants = {
@@ -74,76 +61,42 @@ const containerVariants = {
     },
   },
 };
-const Filter = () => {
+const Filter = ({ onClearAll }: { onClearAll: () => void }) => {
+  const { updateUrl, getParam } = useQueryParams();
+  const handleFilter = (type: string, value: string) => {
+    updateUrl({
+      [type]: value,
+    });
+  };
+
+  const fromDateValue = getParam("from")
+    ? new Date(getParam("from")!)
+    : undefined;
+  const toDateValue = getParam("to") ? new Date(getParam("to")!) : undefined;
+
   return (
     <div className="px-4 pb-4 flex items-center gap-3">
-      <Select>
-        <SelectTrigger size="sm" className="">
-          <SelectValue placeholder="Status" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="inactive">Inactive</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-      <Select>
-        <SelectTrigger size="sm" className="">
-          <SelectValue placeholder="Catogery" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectItem value="electronic">Electronics</SelectItem>
-            <SelectItem value="audio">Audio</SelectItem>
-            <SelectItem value="wearable">Wearables</SelectItem>
-            <SelectItem value="display">Displays</SelectItem>
-            <SelectItem value="peer">Peripherals</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
-      <div className="w-56">
-        <DatePicker />
+      <div>
+        <DatePicker
+          defaultDateRange={{
+            from: fromDateValue,
+            to: toDateValue,
+          }}
+          onChange={(e: any) => {
+            if (e.from) {
+              handleFilter("from", dayjs(e.from).format("YYYY-MM-DD"));
+            }
+            if (e.to) {
+              handleFilter("to", dayjs(e.to).format("YYYY-MM-DD"));
+            }
+          }}
+          pickerType="range"
+        />
       </div>
+      <Button onClick={onClearAll} size={"sm"}>
+        Clear
+      </Button>
     </div>
-  );
-};
-
-const Sort = () => {
-  const [position, setPosition] = useState("price");
-  const [ass, setAss] = useState("");
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant={"transparent"} size={"icon"}>
-          <ArrowDownUp size={10} />{" "}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-44">
-        <DropdownMenuLabel className="text-[13px]">Sorted By</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-          <DropdownMenuRadioItem value="stocks">Stocks</DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup>
-
-        <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup value={ass} onValueChange={setAss}>
-          <DropdownMenuRadioItem
-            indicator={<ArrowUpNarrowWide className="size-4 fill-current" />}
-            value="lowest"
-          >
-            Lowest to Highest
-          </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem
-            indicator={<ArrowUpWideNarrow className="size-4 fill-current" />}
-            value="highest"
-          >
-            Highest to Lowest
-          </DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 };
 
@@ -153,6 +106,8 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
   const handleToggle = () => setFilterOpen((pre) => !pre);
   const { mutateAsync: change } = useBulkStatus();
   const { mutateAsync: download } = useBulkInvoice();
+  const { replaceParams, clearParams, getParam } = useQueryParams();
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleDownloadInvoice = useCallback(() => {
     const formData = new FormData();
@@ -339,10 +294,35 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
     }
   };
 
+  const handleSearch = _.debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchValue = e.target.value.trim();
+
+    if (searchValue) {
+      replaceParams({ search: searchValue });
+    } else {
+      clearParams();
+    }
+  }, 700);
+
+  const handleClearAll = () => {
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
+    clearParams();
+  };
+
+  const searchValue = getParam("search") || "";
+
   return (
     <>
       <div className="w-full flex items-center gap-3 pt-4 pb-3 px-4 justify-end">
-        <Input placeholder="Search brand" className="max-w-96 mr-auto" />
+        <Input
+          ref={searchInputRef}
+          defaultValue={searchValue}
+          onChange={handleSearch}
+          placeholder="Search here..."
+          className="max-w-96 mr-auto"
+        />
         {params?.order_menu === "shipping" && (
           <Link to={`${base_url}${COMMON.EXCEL_DOWNLOAD}`} download>
             <Button size={"sm"}>Excel Download</Button>
@@ -356,8 +336,6 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
         >
           <FilterIcon size={10} />{" "}
         </Button>
-        <Sort />
-
         {selected?.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -384,7 +362,7 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
           >
             <div className="overflow-hidden">
               <Separator className="mb-3 bg-muted" />
-              <Filter />
+              <Filter onClearAll={handleClearAll} />
             </div>
           </motion.div>
         )}

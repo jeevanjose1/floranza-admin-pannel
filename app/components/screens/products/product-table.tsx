@@ -61,10 +61,14 @@ import {
   TooltipTrigger,
 } from "~/components/ui/tooltip";
 import dayjs from "dayjs";
+import Pagination from "~/components/common/pagination";
 
 type props = {
   table_data: Product[];
   loading: boolean;
+  is_previous:boolean;
+  is_next:boolean;
+  current_page:number
 };
 
 // Updated type definition
@@ -96,28 +100,28 @@ export type Product = {
 };
 
 export const columns: ColumnDef<Product>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && "indeterminate")
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     id: "expander",
     header: "",
@@ -394,29 +398,28 @@ const VariationRow = ({
 
   return (
     <TableRow className="bg-gray-50/50">
-      <TableCell></TableCell> {/* Select column */}
       <TableCell></TableCell> {/* Expander column */}
-      <TableCell colSpan={columnCount - 2}>
-        <div className="pl-6 py-2">
+      <TableCell colSpan={columnCount - 1}>
+        <div className="pl-6 py-2 ">
           <div className="grid grid-cols-5 gap-4 text-sm">
             <div>
-              <span className="font-medium text-gray-600">Attribute:</span>
+              <span className="font-medium ">Attribute:</span>
               <p className="text-[13px]">{variation.attribute_name}</p>
             </div>
             <div>
-              <span className="font-medium text-gray-600">Option:</span>
+              <span className="font-medium ">Option:</span>
               <p className="text-[13px]">{variation.attribute_option_name}</p>
             </div>
             <div>
-              <span className="font-medium text-gray-600">Regular Price:</span>
+              <span className="font-medium ">Regular Price:</span>
               <p className="text-[13px] font-medium">{formatted_reg_price}</p>
             </div>
             <div>
-              <span className="font-medium text-gray-600">Sale Price:</span>
+              <span className="font-medium ">Sale Price:</span>
               <p className="text-[13px] font-medium">{formatted_sale_price}</p>
             </div>
             <div>
-              <span className="font-medium text-gray-600">Quantity:</span>
+              <span className="font-medium ">Quantity:</span>
               <p className="text-[13px]">{variation.qty}</p>
             </div>
           </div>
@@ -426,7 +429,7 @@ const VariationRow = ({
   );
 };
 
-export function ProductTable({ loading, table_data }: props) {
+export function ProductTable({ loading, table_data,is_next,is_previous,current_page }: props) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -531,28 +534,11 @@ export function ProductTable({ loading, table_data }: props) {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 p-4">
-        <div className="flex-1 text-sm text-muted-foreground">
+        {/* <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+        </div> */}
+        <Pagination is_next={is_next} is_previous={is_previous} current_page={current_page}/>
       </div>
     </div>
   );

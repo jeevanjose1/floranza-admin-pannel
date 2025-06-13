@@ -36,7 +36,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     navMain: [
       {
         title: "Home",
-        url: "#",
+        url: "/",
         icon: Home,
       },
       {

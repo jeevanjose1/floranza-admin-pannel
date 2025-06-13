@@ -5,7 +5,7 @@ import {
   FilterIcon,
   Trash2,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "~/components/ui/button";
 import { DatePicker } from "~/components/ui/date-picker";
@@ -32,16 +32,65 @@ import { useDeleteMedia } from "~/services/queries";
 import { PopConfirm } from "~/components/ui/pop-confirm";
 import { toast } from "sonner";
 import type { MediaProp } from "~/routes/inventory/media";
+import useQueryParams from "~/hooks/use-query-param";
+import dayjs from "dayjs";
+import _ from "lodash";
 
 type Props = {
   select: MediaProp[];
   setSelect: React.Dispatch<React.SetStateAction<MediaProp[]>>;
 };
+const containerVariants = {
+  hidden: {
+    height: 0,
+    opacity: 0,
+    overflow: "hidden",
+  },
+  visible: {
+    height: "auto",
+    opacity: 1,
+    overflow: "visible",
+    transition: {
+      height: {
+        duration: 0.25,
+        ease: [0.04, 0.62, 0.23, 0.98],
+      },
+      opacity: {
+        duration: 0.2,
+        delay: 0.05,
+      },
+    },
+  },
+  exit: {
+    height: 0,
+    opacity: 0,
+    overflow: "hidden",
+    transition: {
+      height: {
+        duration: 0.25,
+        ease: [0.04, 0.62, 0.23, 0.98],
+      },
+      opacity: {
+        duration: 0.15,
+      },
+    },
+  },
+};
 
-const Filter = () => {
+const Filter = ({ onClearAll }: { onClearAll: () => void }) => {
+  const { updateUrl, getParam } = useQueryParams();
+  const handleFilter = (type: string, value: string) => {
+    updateUrl({
+      [type]: value,
+    });
+  };
+
+  const typeValue = getParam("type") || "";
+  const dateValue = getParam("date") ? new Date(getParam("date")!) : undefined;
+
   return (
     <div className="px-4 pb-4 flex items-center gap-3">
-      <Select>
+      <Select value={typeValue} onValueChange={(e) => handleFilter("type", e)}>
         <SelectTrigger size="sm" className="">
           <SelectValue placeholder="Type" />
         </SelectTrigger>
@@ -53,60 +102,45 @@ const Filter = () => {
         </SelectContent>
       </Select>
 
-     <DatePicker/>
+      <div>
+        <DatePicker
+          defaultDate={dateValue}
+          onChange={(e: any) => {
+            handleFilter("date", dayjs(e).format("YYYY-MM-DD"));
+          }}
+          pickerType="single"
+        />
+      </div>
+      <Button onClick={onClearAll} size={"sm"}>
+        Clear
+      </Button>
     </div>
-  );
-};
-
-const Sort = () => {
-  const [ass, setAss] = useState("");
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant={"transparent"} size={"icon"}>
-          <ArrowDownUp size={10} />{" "}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-44">
-        <DropdownMenuLabel className="text-[13px]">Sorted By</DropdownMenuLabel>
-        {/* <DropdownMenuSeparator /> */}
-        {/* <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-          
-          <DropdownMenuRadioItem value="stocks">Stocks</DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup> */}
-
-        <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup value={ass} onValueChange={setAss}>
-          <DropdownMenuRadioItem
-            indicator={<ArrowUpNarrowWide className="size-4 fill-current" />}
-            value="lowest"
-          >
-            Lowest to Highest
-          </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem
-            indicator={<ArrowUpWideNarrow className="size-4 fill-current" />}
-            value="highest"
-          >
-            Highest to Lowest
-          </DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 };
 
 export default function MediaListHeader({ select, setSelect }: Props) {
   const [filterOpen, setFilterOpen] = useState(false);
   const handleToggle = () => setFilterOpen((pre) => !pre);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
   const { mutateAsync: delete_medias } = useDeleteMedia();
+  const { replaceParams, clearParams, getParam } = useQueryParams();
+
+  const handleSearch = _.debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchValue = e.target.value.trim();
+
+    if (searchValue) {
+      replaceParams({ search: searchValue });
+    } else {
+      clearParams();
+    }
+  }, 700);
 
   const handleDelete = () => {
     const form_data = new FormData();
-    select.forEach((item,index)=>{
+    select.forEach((item, index) => {
       form_data.append(`ids[${index}]`, item.id);
-
-    })
+    });
     toast.promise(delete_medias(form_data), {
       loading: "Removing items",
       success: () => {
@@ -117,48 +151,25 @@ export default function MediaListHeader({ select, setSelect }: Props) {
     });
   };
 
-  const containerVariants = {
-    hidden: {
-      height: 0,
-      opacity: 0,
-      overflow: "hidden",
-    },
-    visible: {
-      height: "auto",
-      opacity: 1,
-      overflow: "visible",
-      transition: {
-        height: {
-          duration: 0.25,
-          ease: [0.04, 0.62, 0.23, 0.98],
-        },
-        opacity: {
-          duration: 0.2,
-          delay: 0.05,
-        },
-      },
-    },
-    exit: {
-      height: 0,
-      opacity: 0,
-      overflow: "hidden",
-      transition: {
-        height: {
-          duration: 0.25,
-          ease: [0.04, 0.62, 0.23, 0.98],
-        },
-        opacity: {
-          duration: 0.15,
-        },
-      },
-    },
+  const handleClearAll = () => {
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
+    clearParams();
   };
+
+  const searchValue = getParam("search") || "";
 
   return (
     <>
       <div className="w-full flex items-center gap-3 pt-4 pb-3 px-4 justify-end">
-        <Input placeholder="Search media" className="max-w-96 mr-auto" />
-
+        <Input
+          ref={searchInputRef}
+          defaultValue={searchValue}
+          onChange={handleSearch}
+          placeholder="Search here..."
+          className="max-w-96 mr-auto"
+        />
         <PopConfirm
           title="Remove medias"
           description="Are you realy want to delete this items"
@@ -182,7 +193,6 @@ export default function MediaListHeader({ select, setSelect }: Props) {
         >
           <FilterIcon size={10} />{" "}
         </Button>
-        <Sort />
       </div>
 
       <AnimatePresence initial={false}>
@@ -197,7 +207,7 @@ export default function MediaListHeader({ select, setSelect }: Props) {
           >
             <div className="overflow-hidden">
               <Separator className="mb-3 bg-muted" />
-              <Filter />
+              <Filter onClearAll={handleClearAll} />
             </div>
           </motion.div>
         )}

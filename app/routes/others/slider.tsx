@@ -7,17 +7,20 @@ import AddEditSliderModal from "~/components/screens/slider/add-edit-slider";
 import { SliderTable } from "~/components/screens/slider/slider-table";
 import SliderTableHeader from "~/components/screens/slider/slider-table-header";
 import { Button } from "~/components/ui/button";
+import useQueryParams from "~/hooks/use-query-param";
 import { useListBrand } from "~/services/queries";
 import { useListSlider } from "~/services/queries/slider";
 
 type Props = {};
 
 export default function Slider({}: Props) {
+  const { getAllParams } = useQueryParams();
+  const query_params = getAllParams();
   const {
     data: slider_data,
     isLoading,
     isFetching,
-  } = useListSlider({ page: 1 });
+  } = useListSlider({ page: query_params.page, keyword: query_params.search });
 
   const filtred_brand =
     slider_data?.data?.data?.map((item: any) => {
@@ -46,6 +49,9 @@ export default function Slider({}: Props) {
       <BgWrapper>
         <SliderTableHeader />
         <SliderTable
+          is_next={slider_data?.data?.next_page_url}
+          current_page={slider_data?.data?.current_page}
+          is_previous={slider_data?.data?.prev_page_url}
           table_data={filtred_brand}
           loading={isLoading || isFetching}
         />

@@ -1,5 +1,8 @@
 type MEDIA_PAYLOAD = {
-    page:number
+    keyword:string
+    type:string
+    date:string
+
 }
 
 

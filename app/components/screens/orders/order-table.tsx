@@ -37,6 +37,7 @@ import {  useNavigate } from "react-router";
 import { toast } from "sonner";
 import { status_options } from "~/shared/others/others";
 import { useDeleteOrder } from "~/services/queries/order";
+import Pagination from "~/components/common/pagination";
 
 
 export type Order = {
@@ -64,6 +65,9 @@ type props = {
   loading: boolean;
   setSelected: any;
   selected: object;
+    is_previous: boolean;
+  is_next: boolean;
+  current_page: number;
 };
 
 export const columns: ColumnDef<Order>[] = [
@@ -265,6 +269,9 @@ export function OrderTable({
   table_data,
   setSelected,
   selected,
+  is_next,
+  is_previous,
+  current_page,
 }: props) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -363,24 +370,11 @@ export function OrderTable({
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+      <Pagination
+                is_next={is_next}
+                is_previous={is_previous}
+                current_page={current_page}
+              />
       </div>
     </div>
   );

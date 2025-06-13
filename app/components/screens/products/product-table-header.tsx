@@ -1,22 +1,9 @@
-import {
-  ArrowDownUp,
-  ArrowUpNarrowWide,
-  ArrowUpWideNarrow,
-  FilterIcon,
-} from "lucide-react";
-import React, { useState } from "react";
+import { FilterIcon } from "lucide-react";
+import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "~/components/ui/button";
-import {DatePicker } from "~/components/ui/date-picker";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuLabel,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu";
+import { DatePicker } from "~/components/ui/date-picker";
+
 import { Input } from "~/components/ui/input";
 import {
   Select,
@@ -27,129 +14,149 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { Separator } from "~/components/ui/separator";
-
+import useQueryParams from "~/hooks/use-query-param";
+import _ from "lodash";
+import { useListCatogery } from "~/services/queries";
+import dayjs from "dayjs";
+const containerVariants = {
+  hidden: {
+    height: 0,
+    opacity: 0,
+    overflow: "hidden",
+  },
+  visible: {
+    height: "auto",
+    opacity: 1,
+    overflow: "visible",
+    transition: {
+      height: {
+        duration: 0.25,
+        ease: [0.04, 0.62, 0.23, 0.98],
+      },
+      opacity: {
+        duration: 0.2,
+        delay: 0.05,
+      },
+    },
+  },
+  exit: {
+    height: 0,
+    opacity: 0,
+    overflow: "hidden",
+    transition: {
+      height: {
+        duration: 0.25,
+        ease: [0.04, 0.62, 0.23, 0.98],
+      },
+      opacity: {
+        duration: 0.15,
+      },
+    },
+  },
+};
 type Props = {};
 
-const Filter = () => {
+const Filter = ({ onClearAll }: { onClearAll: () => void }) => {
+  const { updateUrl, getAllParams } = useQueryParams();
+  const { data: catogery_list } = useListCatogery({});
+  const { status, catogery, date } = getAllParams();
+  const filterd_catogery = catogery_list?.data?.data?.map((item: any) => {
+    return {
+      label: item?.name,
+      value: item?.id,
+    };
+  });
+  const statusValue = status || "";
+  const dateValue = date ? new Date(date!) : undefined;
+  const catogeryValue = catogery || "";
+  const handleFilter = (type: string, value: string) => {
+    updateUrl({
+      [type]: value,
+    });
+  };
+
   return (
     <div className="px-4 pb-4 flex items-center gap-3">
-      <Select>
+      <Select
+        value={statusValue}
+        onValueChange={(e) => handleFilter("status", e)}
+      >
         <SelectTrigger size="sm" className="">
           <SelectValue placeholder="Status" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="inactive">Inactive</SelectItem>
+            <SelectItem value="1">Active</SelectItem>
+            <SelectItem value="0">Inactive</SelectItem>
           </SelectGroup>
         </SelectContent>
       </Select>
-      <Select>
+      <Select
+        value={catogeryValue}
+        onValueChange={(e) => handleFilter("catogery", e)}
+      >
         <SelectTrigger size="sm" className="">
           <SelectValue placeholder="Catogery" />
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
-            <SelectItem value="electronic">Electronics</SelectItem>
-            <SelectItem value="audio">Audio</SelectItem>
-            <SelectItem value="wearable">Wearables</SelectItem>
-            <SelectItem value="display">Displays</SelectItem>
-            <SelectItem value="peer">Peripherals</SelectItem>
+            {filterd_catogery?.map((item: any) => {
+              return <SelectItem value={item?.value}>{item?.label}</SelectItem>;
+            })}
           </SelectGroup>
         </SelectContent>
       </Select>
-     <DatePicker/>
+      <div>
+        <DatePicker
+          defaultDate={dateValue}
+          onChange={(e: any) => {
+            handleFilter("date", dayjs(e).format("YYYY-MM-DD"));
+          }}
+          pickerType="single"
+        />
+      </div>
+      <Button onClick={onClearAll} size={"sm"}>
+        Clear
+      </Button>
     </div>
-  );
-};
-
-const Sort = () => {
-  const [position, setPosition] = useState("price");
-  const [ass, setAss] = useState("");
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant={"transparent"} size={"icon"}>
-          <ArrowDownUp size={10} />{" "}
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-44">
-        <DropdownMenuLabel className="text-[13px]">Sorted By</DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup value={position} onValueChange={setPosition}>
-          <DropdownMenuRadioItem value="price">Price</DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="catogery">
-            Catogery
-          </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value="stocks">Stocks</DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup>
-
-        <DropdownMenuSeparator />
-        <DropdownMenuRadioGroup value={ass} onValueChange={setAss}>
-          <DropdownMenuRadioItem
-            indicator={<ArrowUpNarrowWide className="size-4 fill-current" />}
-            value="lowest"
-          >
-            Lowest to Highest
-          </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem
-            indicator={<ArrowUpWideNarrow className="size-4 fill-current" />}
-            value="highest"
-          >
-            Highest to Lowest
-          </DropdownMenuRadioItem>
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 };
 
 export default function ProductTableHeader({}: Props) {
   const [filterOpen, setFilterOpen] = useState(false);
   const handleToggle = () => setFilterOpen((pre) => !pre);
+  const { replaceParams, getParam, clearParams } = useQueryParams();
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
-  const containerVariants = {
-    hidden: {
-      height: 0,
-      opacity: 0,
-      overflow: "hidden",
-    },
-    visible: {
-      height: "auto",
-      opacity: 1,
-      overflow: "visible",
-      transition: {
-        height: {
-          duration: 0.25,
-          ease: [0.04, 0.62, 0.23, 0.98],
-        },
-        opacity: {
-          duration: 0.2,
-          delay: 0.05,
-        },
-      },
-    },
-    exit: {
-      height: 0,
-      opacity: 0,
-      overflow: "hidden",
-      transition: {
-        height: {
-          duration: 0.25,
-          ease: [0.04, 0.62, 0.23, 0.98],
-        },
-        opacity: {
-          duration: 0.15,
-        },
-      },
-    },
+  const handleSearch = _.debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchValue = e.target.value.trim();
+
+    if (searchValue) {
+      replaceParams({ search: searchValue });
+    } else {
+      clearParams();
+    }
+  }, 700);
+
+  const handleClearAll = () => {
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
+    clearParams();
   };
+
+  const searchValue = getParam("search") || "";
 
   return (
     <>
       <div className="w-full flex items-center gap-3 pt-4 pb-3 px-4 justify-end">
-        <Input placeholder="Search catogery" className="max-w-96 mr-auto" />
+        <Input
+          ref={searchInputRef}
+          onChange={handleSearch}
+          placeholder="Search catogery"
+          className="max-w-96 mr-auto"
+          defaultValue={searchValue}
+        />
         <Button
           onClick={handleToggle}
           variant={"transparent"}
@@ -158,7 +165,6 @@ export default function ProductTableHeader({}: Props) {
         >
           <FilterIcon size={10} />{" "}
         </Button>
-        <Sort />
       </div>
 
       <AnimatePresence initial={false}>
@@ -173,7 +179,7 @@ export default function ProductTableHeader({}: Props) {
           >
             <div className="overflow-hidden">
               <Separator className="mb-3 bg-muted" />
-              <Filter />
+              <Filter onClearAll={handleClearAll} />
             </div>
           </motion.div>
         )}
@@ -181,6 +187,3 @@ export default function ProductTableHeader({}: Props) {
     </>
   );
 }
-
-
-

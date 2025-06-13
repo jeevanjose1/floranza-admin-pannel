@@ -28,24 +28,24 @@ export function DatePicker({
   className?: string;
 } & React.HTMLAttributes<HTMLDivElement>) {
   // Initialize state based on picker type
-  const [date, setDate] = React.useState<Date | undefined>(
-    undefined
-  );
-
+  const [date, setDate] = React.useState<Date | undefined>(undefined);
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(
     defaultDateRange && defaultDateRange.from ? defaultDateRange : undefined
   );
 
   // Update state when defaultDate or defaultDateRange changes
   React.useEffect(() => {
-    if (defaultDate && isValid(defaultDate)) {
-      setDate(defaultDate);
+    if (defaultDate && isValid(defaultDate) && defaultDate !== undefined) {
+    } else {
+      setDate(undefined);
     }
   }, [defaultDate]);
 
   React.useEffect(() => {
-    if (defaultDateRange && defaultDateRange.from) {
+    if (defaultDateRange && defaultDateRange.from && defaultDateRange !== undefined) {
       setDateRange(defaultDateRange);
+    }else {
+      setDateRange(undefined);
     }
   }, [defaultDateRange]);
 
@@ -58,6 +58,8 @@ export function DatePicker({
         setDate(selectedDate as Date);
         if (onChange) onChange(selectedDate as Date);
       } else {
+        console.log(selectedDate);
+
         setDateRange(selectedDate as DateRange);
         if (onChange) onChange(selectedDate as DateRange);
       }
@@ -86,7 +88,7 @@ export function DatePicker({
         <PopoverTrigger className="w-full" asChild>
           <Button
             variant="outline"
-            size={'sm'}
+            size={"sm"}
             className="w-full justify-start text-left font-normal"
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
@@ -94,14 +96,6 @@ export function DatePicker({
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
-          <div className="p-4 border-b">
-            <div className="flex justify-between items-center">
-              <div className="text-sm font-medium">
-                {pickerType === "range" ? "Select Date Range" : "Select Date"}
-              </div>
-              <div className="text-lg font-bold">{formattedDate}</div>
-            </div>
-          </div>
           <Calendar
             mode={pickerType as any}
             defaultMonth={pickerType === "single" ? date : dateRange?.from}

@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import {  MoreHorizontal } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Button } from "~/components/ui/button";
 import {
@@ -36,9 +36,9 @@ import Loader from "~/components/ui/loader";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { PopConfirm } from "~/components/ui/pop-confirm";
 import { Link } from "react-router";
-import {  useDeleteMaterial } from "~/services/queries";
+import { useDeleteMaterial } from "~/services/queries";
 import { toast } from "sonner";
-
+import Pagination from "~/components/common/pagination";
 
 // Updated type definition
 export type Material = {
@@ -53,31 +53,34 @@ export type Material = {
 type props = {
   table_data: Material[];
   loading: boolean;
+  is_previous: boolean;
+  is_next: boolean;
+  current_page: number;
 };
 
 export const columns: ColumnDef<Material>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && "indeterminate")
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: "name",
     header: "Product",
@@ -114,7 +117,7 @@ export const columns: ColumnDef<Material>[] = [
       <div className="text-right text-[13px]">{row.getValue("count")}</div>
     ),
   },
-    {
+  {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
@@ -178,7 +181,13 @@ export const columns: ColumnDef<Material>[] = [
   },
 ];
 
-export function MaterialTable({ loading, table_data }: props) {
+export function MaterialTable({
+  loading,
+  table_data,
+  is_next,
+  is_previous,
+  current_page,
+}: props) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -267,28 +276,15 @@ export function MaterialTable({ loading, table_data }: props) {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2  p-4">
-        <div className="flex-1 text-sm text-muted-foreground">
+        {/* <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+        </div> */}
+        <Pagination
+          is_next={is_next}
+          is_previous={is_previous}
+          current_page={current_page}
+        />
       </div>
     </div>
   );

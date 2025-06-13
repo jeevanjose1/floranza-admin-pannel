@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import { ChevronRight, type LucideIcon } from "lucide-react";
 import { Link, useLocation } from "react-router";
 import { Badge } from "~/components/ui/badge";
@@ -38,9 +37,20 @@ export function NavMain({
 }) {
   const location = useLocation();
 
+  const is_active = (url: string) => {
+    const item_url = url?.replaceAll("/", "");
+    const path_array = location.pathname
+      .split("/")
+      ?.filter((item) => item !== "");
+    if (Boolean(path_array.length)) {
+      return path_array?.includes(item_url);
+    } else if (item_url == "") {
+      return true;
+    }
+  };
+
   return (
     <SidebarGroup>
-      {/* <SidebarGroupLabel>Platform</SidebarGroupLabel> */}
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
@@ -49,7 +59,7 @@ export function NavMain({
                 <>
                   <CollapsibleTrigger className="cursor-pointer" asChild>
                     <SidebarMenuButton
-                      isActive={location.pathname?.includes(item.url)}
+                      isActive={is_active(item.url)}
                       size={"sm"}
                       className="data-[state=open]:[&>button]:rotate-90"
                     >
@@ -68,7 +78,7 @@ export function NavMain({
                       {item.items?.map((subItem) => (
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton
-                            isActive={location.pathname?.includes(subItem.url)}
+                            isActive={is_active(subItem.url)}
                             size={"sm"}
                             asChild
                           >
@@ -77,7 +87,7 @@ export function NavMain({
                               className="flex w-full justify-between"
                             >
                               <span>{subItem.title}</span>
-                              {subItem.count && (
+                              {subItem.count && subItem?.count > 0 && (
                                 <Badge
                                   className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums bg-white"
                                   variant="outline"
@@ -94,7 +104,7 @@ export function NavMain({
                 </>
               ) : (
                 <SidebarMenuButton
-                  isActive={location.pathname?.includes(item.url)}
+                  isActive={is_active(item.url)}
                   size={"sm"}
                   asChild
                   tooltip={item.title}
@@ -104,7 +114,7 @@ export function NavMain({
                       <item.icon size={16} />
                       <span>{item.title}</span>
                     </div>
-                    {item.count && (
+                    {item.count && item?.count > 0  && (
                       <Badge
                         className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums bg-white"
                         variant="outline"

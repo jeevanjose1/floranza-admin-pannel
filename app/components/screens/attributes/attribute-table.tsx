@@ -61,6 +61,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { Badge } from "~/components/ui/badge";
+import Pagination from "~/components/common/pagination";
 
 const RowDragHandleCell = ({ rowId }: { rowId: string }) => {
   const { attributes, listeners, setNodeRef, isDragging } = useSortable({
@@ -136,15 +137,24 @@ export type Attribute = {
   date: string;
   slug: string;
   items: ItemType[];
-  status:number
+  status: number;
 };
 
 type props = {
   table_data: Attribute[];
   loading: boolean;
+  is_previous: boolean;
+  is_next: boolean;
+  current_page: number;
 };
 
-export function AttributeTable({ loading, table_data }: props) {
+export function AttributeTable({
+  loading,
+  table_data,
+  is_next,
+  is_previous,
+  current_page,
+}: props) {
   const [data, setData] = useState<Attribute[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -172,29 +182,29 @@ export function AttributeTable({ loading, table_data }: props) {
       ),
       size: 60,
     },
-    {
-      id: "select",
-      header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      ),
-      size: 40, // Set fixed width for checkbox column
-      cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
+    // {
+    //   id: "select",
+    //   header: ({ table }) => (
+    //     <Checkbox
+    //       checked={
+    //         table.getIsAllPageRowsSelected() ||
+    //         (table.getIsSomePageRowsSelected() && "indeterminate")
+    //       }
+    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+    //       aria-label="Select all"
+    //     />
+    //   ),
+    //   size: 40, // Set fixed width for checkbox column
+    //   cell: ({ row }) => (
+    //     <Checkbox
+    //       checked={row.getIsSelected()}
+    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+    //       aria-label="Select row"
+    //     />
+    //   ),
+    //   enableSorting: false,
+    //   enableHiding: false,
+    // },
     {
       accessorKey: "name",
       header: "Attribute",
@@ -215,7 +225,7 @@ export function AttributeTable({ loading, table_data }: props) {
         </div>
       ),
     },
-   
+
     {
       accessorKey: "items",
       header: "Items",
@@ -241,27 +251,27 @@ export function AttributeTable({ loading, table_data }: props) {
         );
       },
     },
-     {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status") as string;
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.getValue("status") as string;
 
-      // Apply different styling based on status
-      const statusStyles: Record<string, string> = {
-        Active: "bg-green-200 border border-green-300 text-green-500",
-        Inactive: "bg-red-200 border border-red-300 text-red-500",
-      };
+        // Apply different styling based on status
+        const statusStyles: Record<string, string> = {
+          Active: "bg-green-200 border border-green-300 text-green-500",
+          Inactive: "bg-red-200 border border-red-300 text-red-500",
+        };
 
-      const style = statusStyles[status] || "";
+        const style = statusStyles[status] || "";
 
-      return (
-        <Badge variant={"default"} className={`${style} text-[13px]`}>
-          {status}
-        </Badge>
-      );
+        return (
+          <Badge variant={"default"} className={`${style} text-[13px]`}>
+            {status}
+          </Badge>
+        );
+      },
     },
-  },
     {
       id: "actions",
       enableHiding: false,
@@ -349,7 +359,6 @@ export function AttributeTable({ loading, table_data }: props) {
         update_attribute(value_data, {
           onSuccess: () => toast.success("Attribute order updated"),
         });
-        
       }
     }
   }
@@ -357,7 +366,7 @@ export function AttributeTable({ loading, table_data }: props) {
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
-        distance: 5, 
+        distance: 5,
       },
     }),
     useSensor(TouchSensor, {
@@ -437,28 +446,15 @@ export function AttributeTable({ loading, table_data }: props) {
         </DndContext>
       </div>
       <div className="flex items-center justify-end space-x-2 p-4">
-        <div className="flex-1 text-sm text-muted-foreground">
+        {/* <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+        </div> */}
+        <Pagination
+          is_next={is_next}
+          is_previous={is_previous}
+          current_page={current_page}
+        />
       </div>
     </div>
   );

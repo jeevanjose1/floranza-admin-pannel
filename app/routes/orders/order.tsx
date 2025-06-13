@@ -5,12 +5,14 @@ import { OrderTable } from "~/components/screens/orders/order-table";
 import { transform_name } from "~/lib/utils";
 import OrderTableHeader from "~/components/screens/orders/order-table-header";
 import { useState } from "react";
+import useQueryParams from "~/hooks/use-query-param";
 
 type Props = {};
 
 export default function Slider({}: Props) {
   const { data: menu_list } = useOrderMenuList({ page: 1 });
-
+  const { getAllParams } = useQueryParams();
+  const query_params = getAllParams();
   const [selected, setSelected] = useState({});
   const params = useParams();
   const menu_id = () => {
@@ -23,7 +25,14 @@ export default function Slider({}: Props) {
     data: order_list,
     isLoading,
     isFetching,
-  } = useOrderList({ page: 1, type: menu_id() });
+  } = useOrderList({
+    type: menu_id(),
+    page: query_params.page,
+    keyword: query_params.search,
+    start_date: query_params?.from,
+    end_date: query_params?.to,
+  });
+
 
   const filtred_order =
     order_list?.data?.data?.map((item: any) => {
@@ -39,7 +48,7 @@ export default function Slider({}: Props) {
         pre_order_date: item?.pre_order_date,
         track_id: item?.track_id ? item?.track_id : "-",
         courier: item?.courier,
-        is_reserved:params.order_menu==='reserved'
+        is_reserved: params.order_menu === "reserved",
       };
     }) || [];
 
@@ -56,6 +65,9 @@ export default function Slider({}: Props) {
         setSelected={setSelected}
       />
       <OrderTable
+        is_next={order_list?.data?.next_page_url}
+        current_page={order_list?.data?.current_page}
+        is_previous={order_list?.data?.prev_page_url}
         selected={selected}
         setSelected={setSelected}
         table_data={filtred_order}

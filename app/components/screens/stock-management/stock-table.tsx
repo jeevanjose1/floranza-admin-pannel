@@ -34,10 +34,15 @@ import Loader from "~/components/ui/loader";
 
 import { Badge } from "~/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "~/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 import dayjs from "dayjs";
 import UpdateQty from "./update-qty";
-
+import Pagination from "~/components/common/pagination";
 
 // Updated type definition
 export type Brand = {
@@ -46,41 +51,44 @@ export type Brand = {
   stock: string;
   attribute: string;
   preorder_at: string;
-  status:string
-  name:string
-  image:string
-  variation_id:string
+  status: string;
+  name: string;
+  image: string;
+  variation_id: string;
 };
 type props = {
   table_data: Brand[];
   loading: boolean;
+  is_previous: boolean;
+  is_next: boolean;
+  current_page: number;
 };
 
 export const columns: ColumnDef<Brand>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && "indeterminate")
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
 
-   {
+  {
     accessorKey: "name",
     header: "Product",
     cell: ({ row }) => (
@@ -114,7 +122,7 @@ export const columns: ColumnDef<Brand>[] = [
       <div className="text-right text-[13px]">{row.getValue("attribute")}</div>
     ),
   },
-   {
+  {
     accessorKey: "prebook",
     header: () => <div className="text-right">Pre Order</div>,
     cell: ({ row }) =>
@@ -139,27 +147,7 @@ export const columns: ColumnDef<Brand>[] = [
         <div className="w-full flex justify-end">-</div>
       ),
   },
-{
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status");
 
-      // Apply different styling based on status
-      const statusStyles: Record<string, string> = {
-        Active: "bg-green-200 border border-green-300 text-green-500",
-        Inactive: "bg-red-200 border border-red-300 text-red-500",
-      };
-
-      const style = statusStyles[status === 1 ? "Active" : "Inactive"] || "";
-
-      return (
-        <Badge variant={"default"} className={`${style} text-[13px]`}>
-          {status === 1 ? "Active" : "Inactive"}
-        </Badge>
-      );
-    },
-  },
   {
     id: "actions",
     enableHiding: false,
@@ -174,12 +162,10 @@ export const columns: ColumnDef<Brand>[] = [
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <UpdateQty data={row.original}>
-
-           
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 Update Quandity
               </DropdownMenuItem>
-               </UpdateQty>
+            </UpdateQty>
           </DropdownMenuContent>
         </DropdownMenu>
       );
@@ -187,7 +173,13 @@ export const columns: ColumnDef<Brand>[] = [
   },
 ];
 
-export function StockTable({ loading, table_data }: props) {
+export function StockTable({
+  loading,
+  table_data,
+  is_next,
+  is_previous,
+  current_page,
+}: props) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -276,28 +268,15 @@ export function StockTable({ loading, table_data }: props) {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2  p-4">
-        <div className="flex-1 text-sm text-muted-foreground">
+        {/* <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+        </div> */}
+        <Pagination
+          is_next={is_next}
+          is_previous={is_previous}
+          current_page={current_page}
+        />
       </div>
     </div>
   );

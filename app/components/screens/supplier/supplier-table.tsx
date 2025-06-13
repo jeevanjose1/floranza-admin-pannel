@@ -18,7 +18,6 @@ import { Checkbox } from "~/components/ui/checkbox";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
-
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
@@ -38,7 +37,7 @@ import { PopConfirm } from "~/components/ui/pop-confirm";
 import { Link } from "react-router";
 import { toast } from "sonner";
 import { useDeleteSupplier } from "~/services/queries/supplier";
-
+import Pagination from "~/components/common/pagination";
 
 export type Supplier = {
   id: string;
@@ -53,42 +52,43 @@ export type Supplier = {
 type props = {
   table_data: Supplier[];
   loading: boolean;
+  is_previous: boolean;
+  is_next: boolean;
+  current_page: number;
 };
 
 export const columns: ColumnDef<Supplier>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
+  // {
+  //   id: "select",
+  //   header: ({ table }) => (
+  //     <Checkbox
+  //       checked={
+  //         table.getIsAllPageRowsSelected() ||
+  //         (table.getIsSomePageRowsSelected() && "indeterminate")
+  //       }
+  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+  //       aria-label="Select all"
+  //     />
+  //   ),
+  //   cell: ({ row }) => (
+  //     <Checkbox
+  //       checked={row.getIsSelected()}
+  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
+  //       aria-label="Select row"
+  //     />
+  //   ),
+  //   enableSorting: false,
+  //   enableHiding: false,
+  // },
   {
     accessorKey: "name",
     header: "Supplier",
     cell: ({ row }) => (
       <div className="font-medium text-[13px] flex items-center gap-2">
-
         {row.getValue("name")}
       </div>
     ),
   },
-  
 
   {
     accessorKey: "count",
@@ -168,7 +168,13 @@ export const columns: ColumnDef<Supplier>[] = [
   },
 ];
 
-export function SupplierTable({ loading, table_data }: props) {
+export function SupplierTable({
+  loading,
+  table_data,
+  is_next,
+  is_previous,
+  current_page,
+}: props) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -257,28 +263,15 @@ export function SupplierTable({ loading, table_data }: props) {
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2  p-4">
-        <div className="flex-1 text-sm text-muted-foreground">
+        {/* <div className="flex-1 text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
+        </div> */}
+        <Pagination
+          is_next={is_next}
+          is_previous={is_previous}
+          current_page={current_page}
+        />
       </div>
     </div>
   );

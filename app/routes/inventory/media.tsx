@@ -6,13 +6,24 @@ import MediaList from "~/components/screens/media/media-list";
 import MediaListHeader from "~/components/screens/media/media-list-header";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
+import useQueryParams from "~/hooks/use-query-param";
 import { useListMedia, useUploadMedia } from "~/services/queries";
 
 type Props = {};
-export type MediaProp = {id:string,url:string,file:string}
+export type MediaProp = { id: string; url: string; file: string };
 export default function Media({}: Props) {
   const { mutateAsync: upload } = useUploadMedia();
-  const { data: media_data, isFetching, isLoading } = useListMedia({ page: 1 });
+  const { getAllParams } = useQueryParams();
+  const query_params = getAllParams();
+  const {
+    data: media_data,
+    isFetching,
+    isLoading,
+  } = useListMedia({
+    keyword: query_params.search,
+    type: query_params.type,
+    date: query_params.date,
+  });
   const [select, setSelected] = useState<MediaProp[]>([]);
   const handleUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -30,16 +41,17 @@ export default function Media({}: Props) {
     });
   };
 
-  const filtred_media = media_data?.data?.data?.map((item: any) => {
-    return {
-      name: item?.file_name,
-      url: item?.url,
-      id: item?.id,
-      size: item?.size,
-      date: item?.created_at,
-      type: item?.file?.split(".")[item?.file?.split(".")?.length - 1],
-    };
-  })||[];
+  const filtred_media =
+    media_data?.data?.data?.map((item: any) => {
+      return {
+        name: item?.file_name,
+        url: item?.url,
+        id: item?.id,
+        size: item?.size,
+        date: item?.created_at,
+        type: item?.file?.split(".")[item?.file?.split(".")?.length - 1],
+      };
+    }) || [];
 
   return (
     <div>
