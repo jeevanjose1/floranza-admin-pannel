@@ -93,6 +93,7 @@ const useBulkInvoice = () => {
     mutationFn: (payload: any) =>
       fetcher({
         url: `${ORDER.INVOICE_BULK}`,
+
         type: "post",
         data: payload,
         rest: {
@@ -105,6 +106,7 @@ const useBulkInvoice = () => {
     onError: (error) => {
       return error;
     },
+    
   });
 };
 
