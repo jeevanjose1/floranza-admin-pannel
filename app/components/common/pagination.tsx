@@ -33,7 +33,7 @@ export default function Pagination({
   };
 
   return (
-    <div className="flex items-center justify-end space-x-2 p-4">
+    <div className="flex items-center justify-end space-x-2 ">
       <div className="space-x-2">
         <Button
           variant="outline"

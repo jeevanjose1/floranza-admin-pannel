@@ -33,7 +33,7 @@ import {
 import { Badge } from "~/components/ui/badge";
 import Loader from "~/components/ui/loader";
 import { PopConfirm } from "~/components/ui/pop-confirm";
-import { useNavigate } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import { toast } from "sonner";
 import { status_options } from "~/shared/others/others";
 import { useDeleteOrder } from "~/services/queries/order";
@@ -278,6 +278,7 @@ export function OrderTable({
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
+  const params = useParams()
   const navigate = useNavigate();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -319,6 +320,17 @@ export function OrderTable({
 
   return (
     <div className="w-full max-w-screen tablet-lg:max-w-[calc(100vw-266px)]">
+       <div className="flex items-center justify-end   p-4 ">
+       {params.order_menu!== "all"&& <div className="flex-1  text-[13px] text-muted-foreground">
+          {table.getFilteredSelectedRowModel().rows.length} of{" "}
+          {table.getFilteredRowModel().rows.length} row(s) selected.
+        </div>}
+        <Pagination
+          is_next={is_next}
+          is_previous={is_previous}
+          current_page={current_page}
+        />
+      </div>
       <div>
         <Table>
           <TableHeader>
@@ -372,10 +384,10 @@ export function OrderTable({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2  p-4">
-        <div className="flex-1  text-[13px] text-muted-foreground">
+          {params.order_menu!== "all"&& <div className="flex-1  text-[13px] text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>
+        </div>}
         <Pagination
           is_next={is_next}
           is_previous={is_previous}

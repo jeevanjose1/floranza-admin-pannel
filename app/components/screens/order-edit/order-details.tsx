@@ -79,7 +79,7 @@ export default function OrderDetails({ data }: Props) {
                     </div>
                   </div>
                 </TableCell>
-                
+
                 <TableCell className="text-right align-top py-3 font-medium">
                   ₹{item.cost.toFixed(2)}
                 </TableCell>

@@ -3,7 +3,6 @@ import { fetcher, queryFilter } from "~/lib/utils";
 import type {
   COMMON_LIST_PAYLOAD,
   COMMON_MUTATION,
-  COMMON_PAYLOAD,
 } from "~/shared/types";
 import { COMMON } from "~/shared/urls/common";
 import { ORDER } from "~/shared/urls/order";
@@ -149,6 +148,7 @@ const useSingleStatus = () => {
     },
   });
 };
+
 const useAddOrder = () => {
   const query = useQueryClient();
   return useMutation({
@@ -168,6 +168,7 @@ const useAddOrder = () => {
     },
   });
 };
+
 const usePaymentStatus = () => {
   const query = useQueryClient();
   return useMutation({
@@ -207,6 +208,46 @@ const useDeleteOrder = () => {
     },
   });
 };
+
+const useAddOrderNote = () => {
+  const query = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: any) =>
+      fetcher({
+        url: `${ORDER.ORDER_NOTES_CREATE}/${payload.id}`,
+        type: "post",
+        data:payload.data
+      }),
+    onSuccess: (response) => {
+      query.invalidateQueries({ queryKey: ["ORDER_LIST"] });
+      query.invalidateQueries({ queryKey: ["ORDER_VIEW"] });
+      return response;
+    },
+    onError: (error) => {
+      return error;
+    },
+  });
+};
+
+const useOrderNoteDelete = () => {
+  const query = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: any) =>
+      fetcher({
+        url: `${ORDER.ORDER_NOTES_DELETE}/${payload}`,
+        type: "delete",
+        
+      }),
+    onSuccess: (response) => {
+      query.invalidateQueries({ queryKey: ["ORDER_LIST"] });
+      query.invalidateQueries({ queryKey: ["ORDER_VIEW"] });
+      return response;
+    },
+    onError: (error) => {
+      return error;
+    },
+  });
+};
 export {
   useOrderList,
   useOrderMenuList,
@@ -219,5 +260,7 @@ export {
   useAddOrder,
   usePaymentStatus,
   useDeleteOrder,
-  useTransactionList
+  useTransactionList,
+  useOrderNoteDelete,
+  useAddOrderNote
 };

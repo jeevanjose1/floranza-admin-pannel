@@ -2,7 +2,9 @@ import { ArrowLeft } from "lucide-react";
 import React from "react";
 import { useNavigate, useParams } from "react-router";
 import BgWrapper from "~/components/common/bg-wrapper";
+import AdminNotes from "~/components/screens/order-edit/admin-notes";
 import GeneralDetails from "~/components/screens/order-edit/general-details";
+import History from "~/components/screens/order-edit/history";
 import OrderDetails from "~/components/screens/order-edit/order-details";
 import { Button } from "~/components/ui/button";
 import Loader from "~/components/ui/loader";
@@ -12,9 +14,11 @@ type Props = {};
 
 export default function OrderEdit({}: Props) {
   const params = useParams();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const { data: order_details ,isLoading} = useOrderView(params?.order_id);
+ console.log(order_details);
+   
    if(isLoading){
     return <div className="w-full h-screen flex items-center justify-center">
       <Loader/>
@@ -40,7 +44,7 @@ export default function OrderEdit({}: Props) {
           <OrderDetails data={order_details?.data} />
         </BgWrapper>
       </div>
-      <div className="flex-[0.3]">
+      <div className="flex-[0.3] flex flex-col gap-4">
         <BgWrapper title="Customer History">
           <div className="p-4">
             <div className="mb-3">
@@ -59,6 +63,8 @@ export default function OrderEdit({}: Props) {
             </div>
           </div>
         </BgWrapper>
+        <History data={order_details?.data?.orders_logs}/>
+        <AdminNotes data={order_details?.data}/>
       </div>
     </div>
       </>
