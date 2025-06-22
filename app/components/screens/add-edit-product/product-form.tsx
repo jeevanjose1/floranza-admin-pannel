@@ -14,7 +14,7 @@ import Advance from "./advance";
 import Shipping from "./shipping";
 import PreBook from "./pre-book";
 import { useSingleProduct, useUpdateProduct } from "~/services/queries/product";
-import {, useParams } from "react-router";
+import { useParams } from "react-router";
 import SelectSizeChart from "./select-size-chart";
 
 type Props = {};
