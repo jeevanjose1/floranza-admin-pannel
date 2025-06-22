@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetcher, queryFilter } from "~/lib/utils";
 import type { COMMON_LIST_PAYLOAD, COMMON_PAYLOAD,COMMON_MUTATION } from "~/shared/types";
-import { BRAND, SLIDER } from "~/shared/urls";
+import { SLIDER } from "~/shared/urls";
 
 const useListSlider = (payload: COMMON_LIST_PAYLOAD) => {
   return useQuery({

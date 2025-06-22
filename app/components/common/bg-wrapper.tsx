@@ -1,4 +1,4 @@
-import { type ReactNode, useState } from "react";
+import { type ReactElement, type ReactNode, useState } from "react";
 import { cn } from "~/lib/utils";
 import { Button } from "../ui/button";
 import { ChevronDown } from "lucide-react";
@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 type Props = {
   children: ReactNode;
   className?: string;
-  title?: string;
+  title?: string | ReactElement;
   collapsible?: boolean;
   defaultCollapsed?: boolean;
   variant?: "default" | "subtle" | "outline";
@@ -54,12 +54,12 @@ export default function BgWrapper({
           )}
         >
           {title && (
-            <motion.h3 
-              className="font-semibold text-sm text-slate-800"
+            <motion.div 
+              className="font-semibold w-full text-sm text-slate-800"
               layout="position"
             >
               {title}
-            </motion.h3>
+            </motion.div>
           )}
           
           {collapsible && (

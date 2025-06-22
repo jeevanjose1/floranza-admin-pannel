@@ -6,6 +6,7 @@ import AdminNotes from "~/components/screens/order-edit/admin-notes";
 import GeneralDetails from "~/components/screens/order-edit/general-details";
 import History from "~/components/screens/order-edit/history";
 import OrderDetails from "~/components/screens/order-edit/order-details";
+import Wallet from "~/components/screens/order-edit/wallet";
 import { Button } from "~/components/ui/button";
 import Loader from "~/components/ui/loader";
 import { useOrderView } from "~/services/queries/order";
@@ -17,7 +18,6 @@ export default function OrderEdit({}: Props) {
   const navigate = useNavigate();
 
   const { data: order_details ,isLoading} = useOrderView(params?.order_id);
- console.log(order_details);
    
    if(isLoading){
     return <div className="w-full h-screen flex items-center justify-center">
@@ -40,9 +40,7 @@ export default function OrderEdit({}: Props) {
         <BgWrapper title="General Details">
           <GeneralDetails data={order_details?.data} />
         </BgWrapper>
-        <BgWrapper title="Order details">
           <OrderDetails data={order_details?.data} />
-        </BgWrapper>
       </div>
       <div className="flex-[0.3] flex flex-col gap-4">
         <BgWrapper title="Customer History">
@@ -63,6 +61,8 @@ export default function OrderEdit({}: Props) {
             </div>
           </div>
         </BgWrapper>
+        {Boolean(order_details?.data?.is_change_product)&& <Wallet data={order_details?.data}/>}
+       
         <History data={order_details?.data?.orders_logs}/>
         <AdminNotes data={order_details?.data}/>
       </div>

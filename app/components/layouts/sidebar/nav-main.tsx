@@ -87,7 +87,7 @@ export function NavMain({
                               className="flex w-full justify-between"
                             >
                               <span>{subItem.title}</span>
-                              {subItem.count && subItem?.count > 0 && (
+                              {subItem.count !== undefined && subItem?.count > 0 && (
                                 <Badge
                                   className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums bg-white"
                                   variant="outline"
@@ -114,7 +114,7 @@ export function NavMain({
                       <item.icon size={16} />
                       <span>{item.title}</span>
                     </div>
-                    {item.count && item?.count > 0 && (
+                    {item.count!==undefined && item?.count > 0 && (
                       <Badge
                         className="h-5 min-w-5 rounded-full px-1 font-mono tabular-nums bg-white"
                         variant="outline"

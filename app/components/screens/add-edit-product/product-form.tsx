@@ -14,7 +14,8 @@ import Advance from "./advance";
 import Shipping from "./shipping";
 import PreBook from "./pre-book";
 import { useSingleProduct, useUpdateProduct } from "~/services/queries/product";
-import { useNavigate, useParams } from "react-router";
+import {, useParams } from "react-router";
+import SelectSizeChart from "./select-size-chart";
 
 type Props = {};
 type FormValues = z.infer<typeof product_form_schema>;
@@ -46,6 +47,7 @@ export default function ProductForm({}: Props) {
       isEditing: false,
       tempNewTitle: item?.option_title,
       prd_var_value_id: item?.prd_var_value_id,
+
     };
   });
   const attribute = () => {
@@ -82,6 +84,7 @@ export default function ProductForm({}: Props) {
       title: product?.name || "",
       slug: product?.slug || "",
       description: product?.description || "",
+      size_chart:product?.size_chart_id||'',
       media: media || [],
       sku: product?.sku || "",
       supplier: product?.supplier_id || "",
@@ -123,7 +126,7 @@ export default function ProductForm({}: Props) {
     },
     resolver: zodResolver(product_form_schema as any),
   });
-
+ 
   const handleAdd = (values: FormValues) => {
     const schedule_date = values.shedule_date;
     const schedule_time = `${values.shedule_time}`;
@@ -145,6 +148,7 @@ export default function ProductForm({}: Props) {
     form_data.append("status", values.status as string);
     form_data.append(`category`, JSON.stringify(values.categories));
     form_data.append("free_shipping", values.is_free_shipping ? "1" : "0");
+    form_data.append("size_chart_id", values.size_chart);
 
     form_data.append("is_variation", values.is_variants ? "1" : "0");
 
@@ -250,6 +254,7 @@ export default function ProductForm({}: Props) {
         <div className="flex-1/12 flex flex-col gap-3 sticky top-12">
           <Status form={form} />
           <CatogerySelect form={form} />
+          <SelectSizeChart form={form} />
           <PreBook form={form} />
         </div>
       </form>

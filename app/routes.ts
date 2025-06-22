@@ -11,7 +11,7 @@ export default [
   ]),
 
   layout("components/layouts/privet-layout.tsx", [
-    
+
     index("routes/home.tsx"),
     route("/products", "routes/inventory/products.tsx"),
     route("/products/new", "routes/inventory/add-edit-product.tsx", {
@@ -62,6 +62,13 @@ export default [
         id: "edit_material",
       }
     ),
+    route("/size-charts", "routes/inventory/size-chart.tsx"),
+    route("/size-charts/new", "routes/inventory/add-edit-size-chart.tsx", {
+      id: 'add_size_chart'
+    }),
+  route("/size-charts/edit/:chart_id", "routes/inventory/add-edit-size-chart.tsx", {
+      id: 'edit_size_chart'
+    }),
     route("/media", "routes/inventory/media.tsx"),
     route("/attributes", "routes/inventory/attributes.tsx"),
     route("/slider", "routes/others/slider.tsx"),
@@ -70,6 +77,7 @@ export default [
     layout("components/layouts/order-layout.tsx", [
       route("/orders/:order_menu", "routes/orders/order.tsx"),
     ]),
+
     route("/edit-order/:order_id", "routes/orders/order-edit.tsx"),
     route("/add-order", "routes/orders/add-order.tsx"),
     route("/stock-management", "routes/inventory/stock-management.tsx"),

@@ -105,7 +105,7 @@ const useBulkInvoice = () => {
     onError: (error) => {
       return error;
     },
-    
+
   });
 };
 
@@ -136,7 +136,7 @@ const useSingleStatus = () => {
       fetcher({
         url: `${ORDER.SINGLE_STATUS_CHANGE}/${payload?.id}`,
         type: "post",
-        data:payload?.data
+        data: payload?.data
       }),
     onSuccess: (response) => {
       query.invalidateQueries({ queryKey: ["ORDER_LIST"] });
@@ -156,7 +156,7 @@ const useAddOrder = () => {
       fetcher({
         url: `${ORDER.ADD_ORDER}`,
         type: "post",
-        data:payload
+        data: payload
       }),
     onSuccess: (response) => {
       query.invalidateQueries({ queryKey: ["ORDER_LIST"] });
@@ -176,7 +176,7 @@ const usePaymentStatus = () => {
       fetcher({
         url: `${ORDER.PAID_STATUS}/${payload.id}`,
         type: "post",
-        data:payload.data
+        data: payload.data
       }),
     onSuccess: (response) => {
       query.invalidateQueries({ queryKey: ["ORDER_LIST"] });
@@ -196,7 +196,7 @@ const useDeleteOrder = () => {
       fetcher({
         url: `${ORDER.DELETE_ORDER}/${payload}`,
         type: "get",
-        
+
       }),
     onSuccess: (response) => {
       query.invalidateQueries({ queryKey: ["ORDER_LIST"] });
@@ -216,7 +216,7 @@ const useAddOrderNote = () => {
       fetcher({
         url: `${ORDER.ORDER_NOTES_CREATE}/${payload.id}`,
         type: "post",
-        data:payload.data
+        data: payload.data
       }),
     onSuccess: (response) => {
       query.invalidateQueries({ queryKey: ["ORDER_LIST"] });
@@ -236,7 +236,7 @@ const useOrderNoteDelete = () => {
       fetcher({
         url: `${ORDER.ORDER_NOTES_DELETE}/${payload}`,
         type: "delete",
-        
+
       }),
     onSuccess: (response) => {
       query.invalidateQueries({ queryKey: ["ORDER_LIST"] });
@@ -248,6 +248,47 @@ const useOrderNoteDelete = () => {
     },
   });
 };
+
+const useOrderItemDelete = () => {
+  const query = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: any) =>
+      fetcher({
+        url: `${ORDER.ORDER_ITEM_DELETE}/${payload}`,
+        type: "delete",
+
+      }),
+    onSuccess: (response) => {
+      query.invalidateQueries({ queryKey: ["ORDER_LIST"] });
+      query.invalidateQueries({ queryKey: ["ORDER_VIEW"] });
+      return response;
+    },
+    onError: (error) => {
+      return error;
+    },
+  });
+};
+
+const useAddOrderItems = () => {
+  const query = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: any) =>
+      fetcher({
+        url: `${ORDER.ADD_ORDER_ITEMS}/${payload.id}`,
+        type: "post",
+        data: payload.data
+      }),
+    onSuccess: (response) => {
+      query.invalidateQueries({ queryKey: ["ORDER_LIST"] });
+      query.invalidateQueries({ queryKey: ["ORDER_VIEW"] });
+      return response;
+    },
+    onError: (error) => {
+      return error;
+    },
+  });
+};
+
 export {
   useOrderList,
   useOrderMenuList,
@@ -262,5 +303,7 @@ export {
   useDeleteOrder,
   useTransactionList,
   useOrderNoteDelete,
-  useAddOrderNote
+  useAddOrderNote,
+  useOrderItemDelete,
+  useAddOrderItems
 };

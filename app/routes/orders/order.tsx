@@ -34,6 +34,7 @@ export default function Slider({}: Props) {
   });
  
  
+  
   const filtred_order =
     order_list?.data?.data?.map((item: any) => {
       return {

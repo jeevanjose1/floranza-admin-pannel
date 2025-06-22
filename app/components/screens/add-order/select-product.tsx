@@ -152,13 +152,11 @@ const ProductCard = ({ data, form }: ProductCardProps) => {
                 disabled={
                   sizeInfo?.qty === 0 || !sizeInfo.attribute_option_name
                 }
-                className={`text-xs px-2 rounded-sm cursor-pointer transition-colors ${
-                  variation?.prd_var_value_id === sizeInfo.prd_var_value_id
+                className={`text-xs px-2 rounded-sm cursor-pointer transition-colors ${variation?.prd_var_value_id === sizeInfo.prd_var_value_id
                     ? "hover:bg-main/90 bg-primary/100 text-white"
                     : ""
-                } ${
-                  sizeInfo?.qty === 0 ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                  } ${sizeInfo?.qty === 0 ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
                 variant={"outline"}
               >
                 {sizeInfo.attribute_option_name}

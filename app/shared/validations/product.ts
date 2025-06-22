@@ -29,7 +29,7 @@ const product_form_schema = z
     stock_notification: z.boolean().default(false),
     is_schedule: z.boolean().default(false),
     is_free_shipping: z.boolean().default(false),
-
+    size_chart : z.string().min(1,'Size chart is required'),
     is_prebook: z.boolean().default(false),
     shedule_date: z.string().optional(),
     shedule_time: z.string().optional(),

@@ -57,7 +57,7 @@ export default function AdminNotes({ data }: Props) {
                 <ScrollArea className='mb-3 max-h-100 overflow-y-auto'>
                     {Boolean(data?.admin_order_note?.length) ?
                         data?.admin_order_note?.map((item: any) => {
-                            return <NoteCard data={item} />
+                            return <NoteCard key={item?.id} data={item} />
                         }) : <div className='flex justify-center flex-col items-center'>
                             <FileWarning />
                             <p className='text-[13px]'>

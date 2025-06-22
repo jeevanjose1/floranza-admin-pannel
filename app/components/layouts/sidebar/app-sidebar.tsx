@@ -69,6 +69,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "Attributes",
             url: "/attributes",
           },
+          {
+            title: "Size Chart",
+            url: "/size-charts",
+          },
         ],
       },
       {
@@ -127,6 +131,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             title: "Admin Users",
             url: "/admin-users",
           },
+          
         ],
       },
     ],
