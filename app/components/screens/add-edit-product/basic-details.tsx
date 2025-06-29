@@ -52,14 +52,14 @@ const promiseOptionsHsn = async () => {
 const promiseOptionsMaterial = async () => {
   try {
     const response = await fetcher({
-      url: `${MATERIAL.LIST}${queryFilter({ page: 1 })}`,
+      url: `${MATERIAL.LIST_IN_PRODUCT}${queryFilter({ page: 1 })}`,
       type: "get",
     });
 
     return response?.data?.data?.map((item: any) => ({
       value: item?.id,
       label: `${item?.name}`,
-    }))?.sort((a:any,b:any)=> a.label.localeCompare(b.label));
+    }))
 
   } catch (error) {
     return [];

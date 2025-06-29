@@ -4,4 +4,5 @@ export enum MATERIAL {
   UPDATE = "material/update/",
   DELETE = "material/delete/",
   SHOW = "material/show/",
+  LIST_IN_PRODUCT='material/productCreateView/list'
 }
