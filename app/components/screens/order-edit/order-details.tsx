@@ -16,11 +16,12 @@ import BgWrapper from "~/components/common/bg-wrapper";
 import { useOrderItemDelete } from "~/services/queries/order";
 import { toast } from "sonner";
 import AddOrderItems from "./add-order-items";
+import { useParams } from "react-router";
 
 type Props = { data: any };
 
 export default function OrderDetails({ data }: Props) {
-
+  const params = useParams()
   const { mutateAsync: delete_item } = useOrderItemDelete()
   const order_item =
     data?.order_items?.map((item: any, index: number) => {
@@ -57,13 +58,17 @@ export default function OrderDetails({ data }: Props) {
   const totalSGST = Number(data?.gst) || 0;
   const orderTotal = Number(data?.price);
   const amountPaid = Number(data?.price);
+  const is_delete = () => {
+    if (String(data?.order_status) === '1' || String(data?.order_status) === '9' || String(data?.order_status) === '10') return true
+    else return false
+  }
+  console.log(params?.order_menu);
 
- 
   return (
     <BgWrapper title={<div className="w-full flex items-center justify-between">
       <p>Order Details</p>
       <AddOrderItems current_item={data?.order_items
-}><Button size={'sm'}>Add items</Button></AddOrderItems>
+      }><Button size={'sm'}>Add items</Button></AddOrderItems>
     </div>}  >
       <div className=" mx-auto space-y-6">
         <div>
@@ -124,13 +129,13 @@ export default function OrderDetails({ data }: Props) {
                   <TableCell className="text-right align-top py-3">
                     ₹{item.sgst.toFixed(2)}
                   </TableCell>
-                  <TableCell className="text-right align-top py-3">
+                  {is_delete() && <TableCell className="text-right align-top py-3">
                     <PopConfirm action={() => handleDelete(item?.item_id)} description="Are you really want to delete this item?" title="Delete item">
                       <Button size={'icon'} variant={'destructive'} className="w-6 h-6 [&_svg:not([class*='size-'])]:size-3 rounded-sm">
                         <Trash />
                       </Button>
                     </PopConfirm>
-                  </TableCell>
+                  </TableCell>}
                 </TableRow>
               ))}
             </TableBody>

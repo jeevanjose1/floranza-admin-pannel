@@ -13,7 +13,7 @@ export default function Wallet({ data }: Props) {
             <div className="p-4 flex flex-col gap-3">
                 <div className="bg-muted/30 rounded-md p-4 ">
                     <p className="text-sm text-muted-foreground/80">Current Credit</p>
-                    <p className="text-xl font-semibold  mt-1">
+                    <p className="text-xl text-green-600 font-semibold  mt-1">
                         ₹
                         {data?.chg_wallet_amount ?? 0}
                     </p>
