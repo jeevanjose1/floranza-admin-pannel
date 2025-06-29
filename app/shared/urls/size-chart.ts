@@ -4,5 +4,6 @@ export enum SIZE_CHART {
     UPDATE = "size_chart/update/",
     DELETE = "size_chart/delete/",
     SHOW = "size_chart/show/",
-    SHOW_IN_PRODUCT='size_chart/productCreateView/list'
+    SHOW_IN_PRODUCT='size_chart/productCreateView/list',
+    CLONE='size_chart/duplicate/'
 }

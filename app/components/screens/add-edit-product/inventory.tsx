@@ -23,11 +23,11 @@ export default function Inventory({ control }: Props) {
               }}
             />
             <label htmlFor="terms" className="text-[13px] ">
-              Notify when low stock quandity
+              Notify when low stock quantity
             </label>
           </div>
           <div>
-            <Label>Quandity</Label>
+            <Label>Quantity</Label>
             <Controller
               control={control}
               name="notification_qty"

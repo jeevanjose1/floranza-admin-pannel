@@ -22,6 +22,7 @@ export default function Supplier({}: Props) {
     keyword: query_params.search,
     status: query_params.status,
     date: query_params.date,
+    per_page:10
   });
 
   const filtred_supplier =

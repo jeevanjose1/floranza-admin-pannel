@@ -111,7 +111,7 @@ export const columns: ColumnDef<Product>[] = [
       if (!hasVariations) {
         return <div className="w-6" />; // Empty space for alignment
       }
-
+        
       return (
         <Button
           variant="ghost"
@@ -438,7 +438,10 @@ export function ProductTable({ loading, table_data,is_next,is_previous,current_p
       columnVisibility,
       rowSelection,
       expanded,
+    
     },
+
+    
   });
 
   if (loading)

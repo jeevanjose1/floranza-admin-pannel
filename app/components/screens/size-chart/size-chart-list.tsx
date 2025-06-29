@@ -1,4 +1,4 @@
-import { Edit, Eye, Trash } from 'lucide-react';
+import { Copy, Edit, Eye, Trash } from 'lucide-react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
 import { Badge } from '~/components/ui/badge';
@@ -7,12 +7,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import Loader from '~/components/ui/loader';
 import { PopConfirm } from '~/components/ui/pop-confirm';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
-import { useDeleteChart, useListChart } from '~/services/queries/size-chart';
+import { useCloneChart, useDeleteChart, useListChart } from '~/services/queries/size-chart';
 
 type CardProps = { data: any }
 
 const ChartCard = ({ data }: CardProps) => {
     const { mutateAsync: remove, isPending } = useDeleteChart()
+    const { mutateAsync: clone, isPending: clonePending } = useCloneChart()
+
     const status = Boolean(data?.status) ? 'Active' : 'Inactive'
     const statusStyles: Record<string, string> = {
         Active: "bg-emerald-50 border-emerald-200 text-emerald-700 shadow-sm",
@@ -27,14 +29,22 @@ const ChartCard = ({ data }: CardProps) => {
         toast.promise(remove(data.id), {
             loading: 'Removing Chart',
             success: 'Chart Removed',
-            error: (err) => {
-                console.log(err);
-                return 'Faild to remove chart'
+            error: (error) => {
+                return error?.data?.message
 
             }
         })
     }
+    const handleClone = () => {
+        toast.promise(clone(data.id), {
+            loading: 'Cloning Chart',
+            success: 'Chart Clonned',
+            error: (error) => {
+                return error?.data?.message
 
+            }
+        })
+    }
     return (
         <div className="group relative">
             <div className="bg-white border border-gray-200 rounded-md  transition-all duration-200 overflow-hidden">
@@ -120,7 +130,21 @@ const ChartCard = ({ data }: CardProps) => {
                                 Edit
                             </Button>
                         </Link>
-
+                        <PopConfirm
+                            title="Clone chart"
+                            description="Are you really want to clone this chart"
+                            action={handleClone}
+                        >
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            className="h-8 px-3 text-green-600 hover:text-green-800 hover:bg-green-50"
+                            disabled={isPending}
+                        >
+                            <Copy className="h-4 w-4 mr-1.5" />
+                            Clone
+                        </Button>
+                        </PopConfirm>
                         <PopConfirm
                             title="Remove chart"
                             description="Are you really want to remove this chart"
@@ -136,6 +160,7 @@ const ChartCard = ({ data }: CardProps) => {
                                 Delete
                             </Button>
                         </PopConfirm>
+
                     </div>
                 </div>
             </div>
@@ -146,10 +171,15 @@ const ChartCard = ({ data }: CardProps) => {
 export default function SizeChartList() {
     const { data: size_chart, isLoading } = useListChart({})
     const chart_data = size_chart?.data?.data || []
+    if (!Boolean(chart_data?.length)) {
+        return <div className="p-6 w-full h-50 flex items-center justify-center">
 
+            <p className='text-sm'>Size chart not found</p>
+        </div>
+    }
     return (
         <div className="p-6 w-full">
-            {isLoading ? <div className='w-full h-60 flex items-center justify-center'>
+            {isLoading ? <div className='w-full h-50 flex items-center justify-center'>
                 <Loader />
             </div> : <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
                 {chart_data?.map((item: any) => (

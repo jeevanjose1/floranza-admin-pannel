@@ -163,7 +163,7 @@ export const columns: ColumnDef<Brand>[] = [
           <DropdownMenuContent align="end">
             <UpdateQty data={row.original}>
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                Update Quandity
+                Update Quantity
               </DropdownMenuItem>
             </UpdateQty>
           </DropdownMenuContent>

@@ -66,6 +66,21 @@ const useDeleteChart = () => {
         onError: (error) => error,
     });
 };
+const useCloneChart = () => {
+    const query = useQueryClient();
+    return useMutation({
+        mutationFn: (payload: COMMON_MUTATION["id"]) =>
+            fetcher({
+                url: `${SIZE_CHART. CLONE}${payload}`,
+                type: "get",
+            }),
+        onSuccess: (response) => {
+            query.invalidateQueries({ queryKey: ["CHART_LIST"] });
+            return response;
+        },
+        onError: (error) => error,
+    });
+};
 const useUpadteChart = () => {
     const query = useQueryClient();
     return useMutation({
@@ -89,5 +104,6 @@ export {
     useDeleteChart,
     useListChart,
     useUpadteChart,
-    useListChartInProduct
+    useListChartInProduct,
+    useCloneChart
 };

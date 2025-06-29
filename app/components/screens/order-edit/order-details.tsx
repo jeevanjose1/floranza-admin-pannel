@@ -52,12 +52,13 @@ export default function OrderDetails({ data }: Props) {
   }
 
   const subtotal = Number(data?.price);
-  const shipping = 0;
+  const shipping = Number(data?.shipping_charge);
   const totalCGST = Number(data?.gst) || 0;
   const totalSGST = Number(data?.gst) || 0;
   const orderTotal = Number(data?.price);
   const amountPaid = Number(data?.price);
 
+ 
   return (
     <BgWrapper title={<div className="w-full flex items-center justify-between">
       <p>Order Details</p>

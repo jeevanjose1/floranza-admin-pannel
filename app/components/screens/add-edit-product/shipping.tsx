@@ -55,7 +55,7 @@ export default function Shipping({ control, formState }: Props) {
                       field.onChange(e);
                     }}
                     type="text"
-                    placeholder="Lenght"
+                    placeholder="Length"
                   />
                 );
               }}
@@ -122,7 +122,7 @@ export default function Shipping({ control, formState }: Props) {
                   htmlFor={`is_free_shipping`}
                   className="text-sm mb-0 cursor-pointer"
                 >
-                  Free shiping
+                  Free shipping
                 </Label>
               </div>
             )}

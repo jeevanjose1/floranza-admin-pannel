@@ -50,8 +50,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             url: "/products",
           },
           {
-            title: "Catogeries",
-            url: "/catogery",
+            title: "Categories",
+            url: "/category",
           },
           {
             title: "Brands",

@@ -153,7 +153,7 @@ export default function ProductTableHeader({}: Props) {
         <Input
           ref={searchInputRef}
           onChange={handleSearch}
-          placeholder="Search catogery"
+          placeholder="Search products"
           className="max-w-96 mr-auto"
           defaultValue={searchValue}
         />

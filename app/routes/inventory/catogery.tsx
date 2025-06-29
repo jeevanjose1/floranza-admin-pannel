@@ -38,11 +38,11 @@ export default function Catogery({}: Props) {
     }) || [];
   return (
     <div>
-      <PageHeader title="Catogery">
+      <PageHeader title="Category">
         <div className="flex items-center gap-2 ">
-          <Link to={"/catogery/new"}>
+          <Link to={"/category/new"}>
             <Button variant={"secondary"} size={"sm"}>
-              Add Catogery
+              Add Category
             </Button>
           </Link>
         </div>

@@ -59,7 +59,8 @@ const promiseOptionsMaterial = async () => {
     return response?.data?.data?.map((item: any) => ({
       value: item?.id,
       label: `${item?.name}`,
-    }));
+    }))?.sort((a:any,b:any)=> a.label.localeCompare(b.label));
+
   } catch (error) {
     return [];
   }
@@ -90,10 +91,8 @@ const BasicDetails = ({ form }: Props) => {
   const getOptionByValue = (
     options: SelectOption[],
     value: any,
-    is_hsn = false
   ): SelectOption | null => {
     if (!value) return null;
-
     return options.find((option) => option.value === value) || null;
   };
 
@@ -165,7 +164,7 @@ const BasicDetails = ({ form }: Props) => {
             name="supplier"
             render={({ field }) => (
               <AsyncSelectCustom
-                value={getOptionByValue(supplierOptions, field.value, true)}
+                value={getOptionByValue(supplierOptions, field.value)}
                 cacheOptions
                 onChange={(selectedOption: any) =>
                   field.onChange(selectedOption?.value)

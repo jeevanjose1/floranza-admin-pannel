@@ -147,8 +147,8 @@ export const columns: ColumnDef<Catogery>[] = [
       const { mutateAsync: delete_catogery } = useDeleteCatogery();
       const handleDelete = () => {
         toast.promise(delete_catogery(catogery_id), {
-          success: "Catogery deleted",
-          loading: "Deleting catogery",
+          success: "Category deleted",
+          loading: "Deleting category",
           error: (error) => error.data?.message,
         });
       };
@@ -163,8 +163,8 @@ export const columns: ColumnDef<Catogery>[] = [
           <DropdownMenuContent align="end">
             <PopConfirm
               action={handleDelete}
-              description="Are you realy want to delete this catogery"
-              title="Delete catogery"
+              description="Are you realy want to delete this category"
+              title="Delete category"
             >
               <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                 Delete
@@ -173,7 +173,7 @@ export const columns: ColumnDef<Catogery>[] = [
 
             <DropdownMenuSeparator />
             <DropdownMenuItem>
-              <Link to={`/catogery/edit/${catogery_id}`}>Edit</Link>
+              <Link to={`/category/edit/${catogery_id}`}>Edit</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -277,10 +277,7 @@ export function CatogeryTable({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2  p-4">
-        {/* <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div> */}
+        
         <Pagination
           is_next={is_next}
           is_previous={is_previous}

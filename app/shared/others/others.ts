@@ -143,6 +143,11 @@ export const status_options = [
     name: "Shipping",
     color: "bg-purple-50 text-purple-600 border-purple-300",
   },
+   {
+    status: 33,
+    name: "Shipping",
+    color: "bg-purple-50 text-purple-600 border-purple-300",
+  },
   {
     status: 4,
     name: "Completed",

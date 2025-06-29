@@ -60,7 +60,7 @@ export default function SingleProduct({ form }: Props) {
           />
         </div>
         <div className="w-full">
-          <Label>Quandity</Label>
+          <Label>Quantity</Label>
           <Controller
             control={form?.control}
             name="quandity"

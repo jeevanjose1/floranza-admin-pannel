@@ -25,11 +25,11 @@ export default [
       }
     ),
 
-    route("/catogery", "routes/inventory/catogery.tsx"),
-    route("/catogery/new", "routes/inventory/add-edit-catogery.tsx", {
+    route("/category", "routes/inventory/catogery.tsx"),
+    route("/category/new", "routes/inventory/add-edit-catogery.tsx", {
       id: "add_catogery",
     }),
-    route("/catogery/edit/:cat_id", "routes/inventory/add-edit-catogery.tsx", {
+    route("/category/edit/:cat_id", "routes/inventory/add-edit-catogery.tsx", {
       id: "edit_catogery",
     }),
 

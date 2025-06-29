@@ -51,11 +51,11 @@ export default function UpdateQty({ data, children }: Props) {
 
     update(form_data, {
       onSuccess: () => {
-        toast.success("Quandity updated");
+        toast.success("Quantity updated");
         setOpen(false);
       },
       onError() {
-        toast.error("Failed to update quandity");
+        toast.error("Failed to update quantity");
       },
     });
   };
@@ -70,7 +70,7 @@ export default function UpdateQty({ data, children }: Props) {
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Update Quandity</DialogTitle>
+          <DialogTitle>Update Quantity</DialogTitle>
         </DialogHeader>
 
         <div className="w-full px-4 py-2">
@@ -89,7 +89,7 @@ export default function UpdateQty({ data, children }: Props) {
 
             <div className="mb-4">
               <Label htmlFor="qty" className="text-sm font-medium">
-                Quandity
+                Quantity
               </Label>
               <Controller
                 control={control}
@@ -99,7 +99,7 @@ export default function UpdateQty({ data, children }: Props) {
                     id="qty"
                     {...field}
                     type="number"
-                    placeholder="Enter uuandity"
+                    placeholder="Enter quantity"
                     className="mt-1"
                   />
                 )}
