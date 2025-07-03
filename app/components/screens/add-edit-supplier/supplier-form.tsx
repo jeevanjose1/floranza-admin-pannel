@@ -1,0 +1,168 @@
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import BgWrapper from "~/components/common/bg-wrapper";
+import { Label } from "~/components/ui/label";
+import { Input } from "~/components/ui/input";
+import ErrorMessage from "~/components/ui/error-message";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
+import { Button } from "~/components/ui/button";
+import { toast } from "sonner";
+import { useNavigate } from "react-router";
+import {
+  useCreateSupplier,
+  useSupplierDetails,
+  useUpadteSupplier,
+} from "~/services/queries/supplier";
+import { supplier_schema } from "~/shared/validations/supplier-schema";
+import { input_restrictions } from "~/lib/utils";
+
+type BrandFormValues = z.infer<typeof supplier_schema>;
+
+type Props = { id: string | undefined };
+
+export default function SupplierForm({ id }: Props) {
+  const { mutateAsync: add_supplier, isPending: add_pending } =
+    useCreateSupplier();
+  const { mutateAsync: edit_supplier, isPending: edit_pending } =
+    useUpadteSupplier();
+  const { data: supplier_data } = useSupplierDetails(id as string);
+  const navigate = useNavigate();
+
+  const { control, handleSubmit, formState } = useForm<BrandFormValues>({
+    resolver: zodResolver(supplier_schema),
+    values: {
+      title: supplier_data?.data?.name || "",
+
+      hsn_code: JSON.stringify(supplier_data?.data?.hsn_code) || "",
+
+      status: supplier_data?.data?.status === 1 ? "active" : "inactive",
+    },
+  });
+
+  const onSubmit = (values: BrandFormValues) => {
+    const form_data = new FormData();
+    form_data.append("name", values.title);
+    form_data.append("hsn_code", values.hsn_code);
+
+    form_data.append("status", values.status === "active" ? "1" : "0");
+    form_data.append("display_order", "1");
+
+    if (id) {
+      edit_supplier(
+        { id: id, data: form_data },
+        {
+          onSuccess: (response) => {
+            toast.success(response.message);
+            navigate("/supplier");
+          },
+          onError: (error: any) => {
+            toast.error(error.data?.message);
+          },
+        }
+      );
+    } else {
+      add_supplier(form_data, {
+        onSuccess: (response) => {
+          toast.success(response.message);
+          navigate("/supplier");
+        },
+        onError: (error: any) => {
+            toast.error(error.data?.message);
+        },
+      });
+    }
+  };
+
+  return (
+    <div className="container-md">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex w-full gap-3">
+        <div className="flex-1/2 grid gap-3">
+          <BgWrapper>
+            <div className="p-4">
+              {/* Title */}
+              <div className="mb-4">
+                <Label>Supplier Name</Label>
+                <Controller
+                  control={control}
+                  name="title"
+                  render={({ field }) => (
+                    <Input {...field} placeholder="Name" />
+                  )}
+                />
+                <ErrorMessage error={formState.errors.title?.message} />
+              </div>
+
+              {/* HSN Code */}
+              <div className="mb-4">
+                <Label>HSN Code</Label>
+                <Controller
+                  control={control}
+                  name="hsn_code"
+                  render={({ field }) => (
+                    <Input
+                      onKeyDown={input_restrictions.numbersOnly}
+                      {...field}
+                      placeholder="HSN code"
+                    />
+                  )}
+                />
+                <ErrorMessage error={formState.errors.hsn_code?.message} />
+              </div>
+            </div>
+          </BgWrapper>
+
+          {/* Submit Button */}
+          <div className="ml-auto">
+            <Button
+              loading={add_pending || edit_pending}
+              type="submit"
+              variant={"secondary"}
+            >
+              {id ? "Update" : "Add"}
+            </Button>
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div className="flex-1/12 flex flex-col gap-3 sticky top-12">
+          <BgWrapper>
+            <div className="p-4 w-full">
+              <div className="mb-4">
+                <h1 className="text-sm font-semibold">Status</h1>
+                <Controller
+                  control={control}
+                  name="status"
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        size="sm"
+                        className="w-full rounded-sm py-0"
+                      >
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="active">Active</SelectItem>
+                          <SelectItem value="inactive">Inactive</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <ErrorMessage error={formState.errors.status?.message} />
+              </div>
+            </div>
+          </BgWrapper>
+        </div>
+      </form>
+    </div>
+  );
+}
