@@ -54,8 +54,8 @@ export default function UpdateQty({ data, children }: Props) {
         toast.success("Quantity updated");
         setOpen(false);
       },
-      onError() {
-        toast.error("Failed to update quantity");
+      onError(error:any) {
+        toast.error(error?.data?.message);
       },
     });
   };

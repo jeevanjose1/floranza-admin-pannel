@@ -54,8 +54,8 @@ export default function GeneralDetails({ data }: Props) {
           toast.success("Invoice generated");
           download_pdf(response, data?.order_no);
         },
-        onError: () => {
-          toast.error("Failed to generate invoice");
+        onError: (error: any) => {
+          toast.error(error?.data?.message);
         },
       }
     );
@@ -98,8 +98,8 @@ export default function GeneralDetails({ data }: Props) {
           toast.success("Status updated successfully");
           navigate(-1);
         },
-        onError: () => {
-          toast.error("Failed to update status");
+        onError: (error: any) => {
+          toast.error(error?.data?.message);
         },
       }
     );

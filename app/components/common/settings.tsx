@@ -55,8 +55,8 @@ export default function Settings({ children }: Props) {
       onSuccess: () => {
         toast.success("Profile updated");
       },
-      onError: () => {
-        toast.error("Profile updation failed");
+      onError: (error:any) => {
+        toast.error(error?.data?.message);
       },
     });
   };

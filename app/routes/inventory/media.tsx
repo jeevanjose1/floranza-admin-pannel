@@ -39,7 +39,8 @@ export default function Media() {
     toast.promise(upload(formData), {
       loading: "Uploading...",
       success: "Upload successful!",
-      error: "Upload failed.",
+      error:(error:any)=> error?.data?.message
+,
     });
   };
 

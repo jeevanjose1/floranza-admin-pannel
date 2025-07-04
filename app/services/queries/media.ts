@@ -3,7 +3,7 @@ import { fetcher, queryFilter } from "~/lib/utils";
 import type { COMMON_PAYLOAD, MEDIA_PAYLOAD } from "~/shared/types";
 import { MEDIA } from "~/shared/urls";
 
-const useListMedia = (payload: MEDIA_PAYLOAD) => {
+const useListMedia = (payload: any) => {
   return useQuery({
     queryKey: ["MEDIA_LIST", payload],
     queryFn: () =>

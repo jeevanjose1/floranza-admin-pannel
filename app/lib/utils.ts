@@ -189,13 +189,18 @@ export const permission_loader = async (
   permission: Permission | Permission[],
   options: { reload?: boolean; ttl?: number } = {}
 ) => {
+  console.log('dasdas');
   
-  const now = Date.now();
+  // Add auth check at the beginning
+  if (!is_auth()) {
+    return
+  }else{
+ const now = Date.now();
   const cacheTtl = options.ttl || CACHE_TTL;
   
   // Check if we should use cached data
-  const shouldUseCache = !options.reload && 
-    permissionCache && 
+  const shouldUseCache = !options.reload &&
+    permissionCache &&
     (now - permissionCache.timestamp) < permissionCache.ttl;
   
   let response;
@@ -204,7 +209,6 @@ export const permission_loader = async (
     // Use cached response
     response = permissionCache?.data;
   } else {
-    // Fetch fresh data
     response = await fetcher({
       url: `${AUTH.PROFILE}`,
       type: "get",
@@ -218,8 +222,8 @@ export const permission_loader = async (
     };
   }
   
-  const permissions = response?.data?.user?.permission 
-    ? JSON.parse(response?.data?.user?.permission) 
+  const permissions = response?.data?.user?.permission
+    ? JSON.parse(response?.data?.user?.permission)
     : [];
   
   if (!has_permission(permission, permissions)) {
@@ -227,8 +231,10 @@ export const permission_loader = async (
   }
   
   return null;
+  }
+  
+ 
 };
-
 export const clearPermissionCache = () => {
   permissionCache = null;
 };

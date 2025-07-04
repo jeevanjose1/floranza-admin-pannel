@@ -227,7 +227,8 @@ export const columns: ColumnDef<Order>[] = [
         toast.promise(delete_order(order_id), {
           success: "Order deleted",
           loading: "Deleting order",
-          error: "Failed to delete order",
+          error: (error: any) => error?.data?.message
+          ,
         });
       };
 
@@ -320,8 +321,8 @@ export function OrderTable({
 
   return (
     <div className="w-full max-w-screen tablet-lg:max-w-[calc(100vw-266px)]">
-       <div className="flex items-center justify-end   p-4 ">
-       {params.order_menu!== "all"&& <div className="flex-1  text-[13px] text-muted-foreground">
+      <div className="flex items-center justify-end   p-4 ">
+        {params.order_menu !== "all" && <div className="flex-1  text-[13px] text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>}
@@ -342,9 +343,9 @@ export function OrderTable({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                     </TableHead>
                   );
                 })}
@@ -384,7 +385,7 @@ export function OrderTable({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2  p-4">
-          {params.order_menu!== "all"&& <div className="flex-1  text-[13px] text-muted-foreground">
+        {params.order_menu !== "all" && <div className="flex-1  text-[13px] text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} row(s) selected.
         </div>}

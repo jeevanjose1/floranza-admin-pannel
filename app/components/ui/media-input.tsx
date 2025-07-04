@@ -73,7 +73,7 @@ const MediaUploader = () => {
     toast.promise(upload(formData), {
       loading: "Uploading...",
       success: "Upload successful!",
-      error: "Upload failed.",
+      error: (error:any)=>error?.data?.message,
     });
   };
   
