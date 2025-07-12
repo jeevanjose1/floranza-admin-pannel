@@ -367,7 +367,6 @@ function ProductVariationsTable({ form }: Props) {
       data: form_data
     }, {
       onSuccess: (response) => {
-        console.log(response);
                 toast.success(response?.message)
 
         const newVariations = [...variations];

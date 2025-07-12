@@ -131,7 +131,6 @@ export default function ProductForm({ }: Props) {
   });
 
   const handleAdd = (values: FormValues) => {
-    console.log(values);
 
     const schedule_date = values.shedule_date;
     const schedule_time = `${values.shedule_time}`;

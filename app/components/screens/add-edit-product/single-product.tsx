@@ -23,7 +23,6 @@ export default function SingleProduct({ form }: Props) {
   const params = useParams()
   const { mutateAsync: update, isPending } = useUpdateStock()
 
-  console.log(form.getValues('action_type'));
 
   const handleQuantityUpdate = () => {
     const currentQty = Number(form.getValues('quandity')) || 0;

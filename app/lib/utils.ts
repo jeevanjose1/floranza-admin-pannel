@@ -189,7 +189,6 @@ export const permission_loader = async (
   permission: Permission | Permission[],
   options: { reload?: boolean; ttl?: number } = {}
 ) => {
-  console.log('dasdas');
   
   // Add auth check at the beginning
   if (!is_auth()) {
