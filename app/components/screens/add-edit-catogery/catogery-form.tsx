@@ -79,7 +79,7 @@ export default function CategoryForm({ id }: Props) {
         {
           onSuccess: (response) => {
             toast.success(response.message);
-            navigate("/catogery");
+            navigate("/category");
           },
           onError: (error:any) => {
             toast.error(error.data?.message);
@@ -90,7 +90,7 @@ export default function CategoryForm({ id }: Props) {
       add_catogery(form_data, {
         onSuccess: (response) => {
           toast.success(response.message);
-          navigate("/catogery");
+          navigate("/category");
         },
         onError: (error:any) => {
             toast.error(error.data?.message);
