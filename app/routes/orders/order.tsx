@@ -52,6 +52,7 @@ export default function Order() {
         courier: item?.courier,
         is_reserved: params.order_menu === "reserved",
         is_all: params.order_menu === "all",
+        reserved_order:Boolean(item?.reserved_order)
       };
     }) || [];
 

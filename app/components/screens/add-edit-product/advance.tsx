@@ -29,7 +29,7 @@ export default function Advance({ form }: Props) {
               return (
                 <div className=" flex items-center border  rounded-sm text-foreground/70  text-[13px] ">
                   <div className="h-full px-3 mr-3  py-1.5 bg-muted/60">
-                    <p className="  h-full">http://localhost:5173/products/</p>
+                    <p className="  h-full">https://webapp.floranzafashion.com/products/</p>
                   </div>
                   <Input
                     className="ring-0 border-0 px-0 focus-visible:ring-0  md:text-[13px] underline"

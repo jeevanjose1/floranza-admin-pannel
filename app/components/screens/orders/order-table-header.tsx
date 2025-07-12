@@ -120,7 +120,7 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
         download_pdf(response, dayjs().format("DD/MM/YYYY"));
         return "Invoice Generated";
       },
-      error: (error:any) => error?.data?.message,
+      error: (error: any) => error?.data?.message,
     });
   }, [selected, download]);
 
@@ -136,8 +136,8 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
           setSelected({});
           return "Status changed";
         },
-        error:(error:any)=> error.data?.message
-,
+        error: (error: any) => error.data?.message
+        ,
       }
     );
   };
@@ -416,7 +416,7 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
         >
           <FilterIcon size={10} />{" "}
         </Button>
-        {selected?.length > 0 && (
+        {selected?.length > 0  && menu_render() && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size={"sm"} title="Bulk Action" variant={"secondary"}>

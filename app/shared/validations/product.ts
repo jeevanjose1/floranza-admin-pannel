@@ -22,6 +22,9 @@ const product_form_schema = z
     price: z.string().optional(),
     sale_price: z.string().optional(),
     quandity: z.string().optional(),
+    action_type: z.string().optional(),
+    new_quantity: z.string().optional(),
+    qty_note: z.string().optional(),
     weight: z.string().min(1, "Weight is required"),
     length: z.string().min(1, "Length is required"),
     width: z.string().min(1, "Width is required"),
@@ -134,6 +137,7 @@ const product_form_schema = z
 
 const qty_schema = z.object({
   qty: z.string().min(1, "Atleast one qty is required"),
+  qty_note:z.string().min(1, "Note is required"),
 });
 
 export { product_form_schema ,qty_schema};

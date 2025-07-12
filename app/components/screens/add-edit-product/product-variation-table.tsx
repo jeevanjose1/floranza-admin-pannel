@@ -6,6 +6,13 @@ import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Input } from "~/components/ui/input";
 import ErrorMessage from "~/components/ui/error-message";
+import { useLocation, useParams } from "react-router";
+import { Textarea } from "~/components/ui/textarea";
+import { Separator } from "~/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { Label } from "~/components/ui/label";
+import { useUpdateStock } from "~/services/queries/product";
+import { toast } from "sonner";
 
 type Props = { form: UseFormReturn<any> };
 type Attribute = {
@@ -29,6 +36,9 @@ type Variation = {
   isEditing?: boolean;
   tempNewTitle?: string;
   prd_var_value_id: string;
+  action_type?: string;
+  note?: string;
+  new_quantity?: string;
 };
 
 function ProductVariationsTable({ form }: Props) {
@@ -36,11 +46,11 @@ function ProductVariationsTable({ form }: Props) {
   const [expandedVariation, setExpandedVariation] = useState<string | null>(
     null
   );
-  const [dataSource, setDataSource] = useState<"api" | "attributes">(
-    "attributes"
-  );
+  const location = useLocation();
+  const isEdit = location.pathname?.includes('edit');
   const [initialApiDataLoaded, setInitialApiDataLoaded] = useState(false);
-
+  const params = useParams()
+  const { mutateAsync: update, isPending } = useUpdateStock()
   // Check if we have variations from the parent form (from API)
   useEffect(() => {
     const existingVariations = form.getValues("variations");
@@ -51,7 +61,6 @@ function ProductVariationsTable({ form }: Props) {
       !initialApiDataLoaded
     ) {
       setVariations(existingVariations);
-      setDataSource("api");
       setInitialApiDataLoaded(true);
 
       // Auto-expand the first variation
@@ -101,7 +110,7 @@ function ProductVariationsTable({ form }: Props) {
     const activeAttributeIds = new Set(
       activeAttributes.map((attr: Attribute) => attr.id)
     );
-    
+
     // Create a map of active attribute values for quick lookup
     const activeAttributeValues = new Map();
     activeAttributes.forEach((attr: Attribute) => {
@@ -158,6 +167,9 @@ function ProductVariationsTable({ form }: Props) {
         isEditing: false,
         tempNewTitle: "",
         prd_var_value_id: "",
+        action_type: "",
+        note: "",
+        new_quantity: "",
       };
     });
 
@@ -173,19 +185,19 @@ function ProductVariationsTable({ form }: Props) {
           // Check if all attribute IDs in this variation are still active
           const variationAttributeIds = variation.attribute_id.split(",");
           const variationValueIds = variation.value_id.split(",");
-          
+
           // All attribute IDs must be active
           const allAttributesActive = variationAttributeIds.every((attrId) =>
             activeAttributeIds.has(attrId)
           );
-          
+
           // All values must still exist in their respective attributes
           const allValuesExist = variationAttributeIds.every((attrId, index) => {
             const valueId = variationValueIds[index];
             const activeValues = activeAttributeValues.get(attrId);
             return activeValues && activeValues.has(valueId);
           });
-          
+
           return allAttributesActive && allValuesExist;
         }
 
@@ -230,11 +242,11 @@ function ProductVariationsTable({ form }: Props) {
 
     // Only update if there's an actual change
     const currentVariations = variations.length > 0 ? variations : form.getValues("variations") || [];
-    const hasChanged = 
+    const hasChanged =
       finalVariations.length !== currentVariations.length ||
       finalVariations.some((newVar, index) => {
         const oldVar = currentVariations[index];
-        return !oldVar || 
+        return !oldVar ||
           newVar.attribute_id !== oldVar.attribute_id ||
           newVar.value_id !== oldVar.value_id ||
           newVar.name !== oldVar.name;
@@ -270,7 +282,10 @@ function ProductVariationsTable({ form }: Props) {
       | "qty_infinity"
       | "new_title"
       | "tempNewTitle"
-      | "prd_var_value_id",
+      | "prd_var_value_id"
+      | "action_type"
+      | "note"
+      | "new_quantity",
     value: any
   ) => {
     const newVariations = [...variations];
@@ -324,6 +339,60 @@ function ProductVariationsTable({ form }: Props) {
     setExpandedVariation(expandedVariation === id ? null : id);
   };
 
+  // Handle quantity update
+  const handleQuantityUpdate = (index: number) => {
+    const variation = variations[index];
+    const currentQty = Number(variation.quantity) || 0;
+    const newQty = Number(variation.new_quantity) || 0;
+
+    if (!variation.action_type || newQty <= 0) {
+      return;
+    }
+
+    let updatedQuantity: number;
+    if (variation.action_type === 'add') {
+      updatedQuantity = currentQty + newQty;
+    } else {
+      updatedQuantity = Math.max(0, currentQty - newQty);
+    }
+
+    const form_data = new FormData()
+    form_data.append('qty', String(newQty))
+    form_data.append('prd_var_value_id', variation.prd_var_value_id)
+    form_data.append('stock_type', variation.action_type === 'add' ? 'ADD' : 'SUBTRACT')
+    form_data.append('note', String(variation.note))
+
+    update({
+      product_id: params?.product_id,
+      data: form_data
+    }, {
+      onSuccess: (response) => {
+        console.log(response);
+                toast.success(response?.message)
+
+        const newVariations = [...variations];
+        newVariations[index].quantity = updatedQuantity.toString();
+        newVariations[index].new_quantity = "";
+        newVariations[index].action_type = "";
+        newVariations[index].note = "";
+
+        setVariations(newVariations);
+        form.setValue(`variations.${index}.quantity`, updatedQuantity.toString());
+        form.setValue(`variations.${index}.new_quantity`, "");
+        form.setValue(`variations.${index}.action_type`, "");
+        form.setValue(`variations.${index}.note`, "");
+
+      },
+      onError: (error:any) => {
+        toast.error(error?.data?.message)
+
+      }
+    })
+
+
+
+  };
+
   // If no variations, show message
   if (variations.length === 0) {
     return (
@@ -368,9 +437,8 @@ function ProductVariationsTable({ form }: Props) {
             }}
           >
             <div
-              className={`flex items-center justify-between px-4 py-2 cursor-pointer ${
-                expandedVariation === variation.id ? "bg-muted/30" : ""
-              }`}
+              className={`flex items-center justify-between px-4 py-2 cursor-pointer ${expandedVariation === variation.id ? "bg-muted/30" : ""
+                }`}
               onClick={() => toggleExpandVariation(variation.id)}
             >
               <div className="flex items-center gap-2 flex-1 min-w-0">
@@ -418,8 +486,9 @@ function ProductVariationsTable({ form }: Props) {
                   <div className="flex items-center gap-2 min-w-0 flex-1">
                     <div className="font-medium text-[13px] flex gap-1 text-slate-800 truncate ">
                       <span>{variation.name}</span>
-                      {variation?.tempNewTitle !== "" &&
-                        variation?.tempNewTitle}
+                      {variation?.new_title && (
+                        <span className="text-blue-600">({variation.new_title})</span>
+                      )}
                     </div>
                     <Button
                       type="button"
@@ -487,7 +556,7 @@ function ProductVariationsTable({ form }: Props) {
                       Original: {variation.name}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className={`grid grid-cols-1 ${isEdit ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-4`}>
                       <div>
                         <label className="block text-xs font-medium text-slate-700 mb-1">
                           Price
@@ -522,43 +591,119 @@ function ProductVariationsTable({ form }: Props) {
                         />
                       </div>
 
-                      <div>
-                        <div className="flex items-center justify-between mb-1">
-                          <label className="text-xs font-medium text-slate-700">
-                            Quantity
-                          </label>
-                          <div className="flex items-center gap-1">
-                            <Checkbox
-                              id={`qty-infinity-${index}`}
-                              checked={variation.qty_infinity}
-                              onCheckedChange={(checked) =>
-                                handleInputChange(
-                                  index,
-                                  "qty_infinity",
-                                  checked
-                                )
+                      {isEdit ? (
+                        <div className="col-span-2 p-3 rounded-md bg-white">
+                          <div>
+                            <h2 className="text-[13px] mb-1">Current quantity</h2>
+                            <p className="text-xl font-semibold">{variation.quantity || "0"}</p>
+                          </div>
+                          <Separator className="my-3 bg-muted" />
+                          <div className="mb-3">
+                            <RadioGroup
+                              value={variation.action_type || ""}
+                              onValueChange={(value) =>
+                                handleInputChange(index, "action_type", value)
                               }
-                              className="bg-white"
-                            />
-                            <label
-                              htmlFor={`qty-infinity-${index}`}
-                              className="text-xs text-slate-600 flex items-center gap-1 cursor-pointer"
+                              className="flex mb-3"
                             >
-                              Unlimited <Infinity className="h-3 w-3" />
-                            </label>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="add" id={`add-${index}`} />
+                                <Label className="mb-0 text-xs font-medium text-slate-700" htmlFor={`add-${index}`}>
+                                  Add Stock
+                                </Label>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <RadioGroupItem value="remove" id={`remove-${index}`} />
+                                <Label className="mb-0 text-xs font-medium text-slate-700" htmlFor={`remove-${index}`}>
+                                  Remove Stock
+                                </Label>
+                              </div>
+                            </RadioGroup>
+
+                            <div>
+                              <div className="flex items-center justify-between mb-1">
+                                <label className="text-xs font-medium text-slate-700">
+                                  {variation.action_type === 'add'
+                                    ? 'Enter quantity you want to add'
+                                    : variation.action_type === 'remove'
+                                      ? 'Enter quantity you want to remove'
+                                      : 'Select action type first'}
+                                </label>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Input
+                                  type="number"
+                                  placeholder="0"
+                                  min="1"
+                                  value={variation.new_quantity || ""}
+                                  disabled={!variation.action_type}
+                                  onChange={(e) => handleInputChange(index, "new_quantity", e.target.value)}
+                                  className="h-9 text-sm bg-white"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <div>
+                            <Textarea
+                              value={variation.note || ""}
+                              onChange={(e) => handleInputChange(index, "note", e.target.value)}
+                              className="resize-none"
+                              placeholder="Type your note here..."
+                            />
+                          </div>
+                          <div className="mt-3 w-full flex justify-end">
+                            <Button
+                              disabled={!variation.action_type || !variation.new_quantity || Number(variation.new_quantity) <= 0}
+                              type="button"
+                              onClick={() => handleQuantityUpdate(index)}
+                              size="sm"
+                              loading={isPending}
+                            >
+                              Update
+                            </Button>
                           </div>
                         </div>
-                        <Input
-                          type="number"
-                          placeholder="0"
-                          value={variation.quantity}
-                          disabled={variation.qty_infinity}
-                          onChange={(e) =>
-                            handleInputChange(index, "quantity", e.target.value)
-                          }
-                          className="h-9 text-sm bg-white"
-                        />
-                      </div>
+                      ) : (
+                        <div>
+                          <div className="flex items-center justify-between mb-1">
+                            <label className="text-xs font-medium text-slate-700">
+                              Quantity
+                            </label>
+                            <div className="flex items-center gap-1">
+                              <Checkbox
+                                id={`qty-infinity-${index}`}
+                                checked={variation.qty_infinity}
+                                onCheckedChange={(checked) =>
+                                  handleInputChange(
+                                    index,
+                                    "qty_infinity",
+                                    checked
+                                  )
+                                }
+                                className="bg-white"
+                              />
+                              <label
+                                htmlFor={`qty-infinity-${index}`}
+                                className="text-xs text-slate-600 flex items-center gap-1 cursor-pointer"
+                              >
+                                Unlimited <Infinity className="h-3 w-3" />
+                              </label>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Input
+                              type="number"
+                              placeholder="0"
+                              value={variation.quantity}
+                              disabled={variation.qty_infinity}
+                              onChange={(e) =>
+                                handleInputChange(index, "quantity", e.target.value)
+                              }
+                              className="h-9 text-sm bg-white"
+                            />
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 </motion.div>

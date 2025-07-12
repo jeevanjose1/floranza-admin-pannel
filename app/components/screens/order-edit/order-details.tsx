@@ -58,6 +58,7 @@ export default function OrderDetails({ data }: Props) {
   const totalSGST = Number(data?.gst) || 0;
   const orderTotal = Number(data?.price);
   const amountPaid = Number(data?.price);
+
   const is_delete = () => {
     if (String(data?.order_status) === '1' || String(data?.order_status) === '9' || String(data?.order_status) === '10') return true
     else return false
@@ -66,8 +67,8 @@ export default function OrderDetails({ data }: Props) {
   return (
     <BgWrapper title={<div className="w-full flex items-center justify-between">
       <p>Order Details</p>
-      <AddOrderItems current_item={data?.order_items
-      }><Button size={'sm'}>Add items</Button></AddOrderItems>
+      {String(data?.order_status) === '1' &&<AddOrderItems current_item={data?.order_items
+      }><Button size={'sm'}>Add items</Button></AddOrderItems>}
     </div>}  >
       <div className=" mx-auto space-y-6">
         <div>
@@ -94,7 +95,7 @@ export default function OrderDetails({ data }: Props) {
                     <img
                       src={item.image}
                       alt={item.name}
-                      className="min-w-20 min-h-24 object-cover rounded-sm border"
+                      className="min-w-20 max-w-20 min-h-24 object-cover rounded-sm border"
                     />
                   </TableCell>
                   <TableCell className="align-top py-3">

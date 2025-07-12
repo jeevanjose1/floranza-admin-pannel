@@ -83,12 +83,13 @@ export const status_filter = (current_status: string) => {
     },
     "3": {
       updates: [
-        { value: "4", label: "Completed" },
+        // { value: "4", label: "Completed" },
         { value: "7", label: "Canceled" },
         { value: "5", label: "Hold" },
       ],
       invoice: true,
     },
+    
     "4": { updates: [], invoice: true },
     "5": {
       updates: [
@@ -140,8 +141,8 @@ export const status_options = [
   },
   {
     status: 3,
-    name: "Shipping",
-    color: "bg-purple-50 text-purple-600 border-purple-300",
+    name: "Packing Completed",
+    color: "bg-green-50 text-green-600 border-green-300",
   },
   {
     status: 33,

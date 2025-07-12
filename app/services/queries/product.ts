@@ -121,6 +121,27 @@ const useUpdateQtyProduct = () => {
     onError: (error) => error,
   });
 };
+
+const useUpdateStock = () => {
+  const query = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: any) =>
+      fetcher({
+        url: `${PRODUCT.UPDATE_STOCK}/${payload?.product_id}`,
+        type: "post",
+        data: payload?.data,
+      }),
+    onSuccess: (response) => {
+      query.invalidateQueries({ queryKey: ["PRODUCT_DETAILS"] });
+      query.invalidateQueries({ queryKey: ["GLOBAL_COUNT"] });
+      query.invalidateQueries({ queryKey: ["LOW_QTY_PRODUCT_LIST"] });
+
+      return response;
+    },
+    onError: (error) => error,
+  });
+};
+
 const useDuplicateProduct = () => {
   const query = useQueryClient();
   return useMutation({
@@ -161,5 +182,6 @@ export {
   useSearchProduct,
   useLowQtyProduct,
   useUpdateQtyProduct,
-  useGlobalCount
+  useGlobalCount,
+  useUpdateStock
 };

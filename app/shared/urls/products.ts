@@ -7,5 +7,6 @@ export enum PRODUCT {
     DUPLICATE='product/duplicate/',
     SEARCH_PRODUCT='reserved_order/product_search',
     QTY_LIST='product/low_qty/list',
-    QTY_UPDATE='product/qty/update'
+    QTY_UPDATE='product/qty/update',
+    UPDATE_STOCK='product/update_stock'
  }

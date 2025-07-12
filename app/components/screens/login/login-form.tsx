@@ -2,7 +2,7 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { cn, current_path, has_permission } from "~/lib/utils";
+import { cn, current_path } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -18,7 +18,6 @@ import { login_schema } from "~/shared/validations";
 import { useLogin } from "~/services/queries";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
-import { routes } from "~/shared/routes/routes";
 
 
 type LoginFormValues = z.infer<typeof login_schema>;
@@ -83,7 +82,7 @@ export function LoginForm({
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="Enter your email"
                   {...register("email")}
                 />
 
@@ -101,6 +100,7 @@ export function LoginForm({
                 </div>
                 <Input
                   id="password"
+                  placeholder="Enter yout password"
                   type="password"
                   {...register("password")}
                 />

@@ -38,6 +38,7 @@ import { toast } from "sonner";
 import { status_options } from "~/shared/others/others";
 import { useDeleteOrder } from "~/services/queries/order";
 import Pagination from "~/components/common/pagination";
+import { images } from "~/shared/images/image";
 
 export type Order = {
   id: string;
@@ -59,6 +60,7 @@ export type Order = {
   courier: string;
   is_reserved: boolean;
   is_all: boolean;
+  reserved_order:boolean
 };
 type props = {
   table_data: Order[];
@@ -111,9 +113,13 @@ export const columns: ColumnDef<Order>[] = [
     cell: ({ row }) => (
       <div className="flex items-center gap-3 py-3">
         <div className="flex flex-col">
+          <div className="flex items-center gap-1">
+
+          {row.original.reserved_order && <img src={images.whatsapp} className="w-5" alt="whatsapp" />}
           <span className="font-semibold text-[13px] text-gray-900">
             #{row.original.order_no}
           </span>
+           </div>
           <span className="text-xs text-gray-500 mt-0.5">
             {row.original.name}
           </span>

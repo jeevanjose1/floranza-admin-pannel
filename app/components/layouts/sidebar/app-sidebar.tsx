@@ -37,7 +37,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const allNavItems = [
       {
         title: "Home",
-        url: "/home",
+        url: "/",
         icon: Home,
         permission: PERMISSIONS.HOME_VIEW,
       },
@@ -116,18 +116,18 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
         ],
       },
-      {
-        title: "Analytics",
-        url: "#",
-        icon: ChartNetwork,
-        permission: PERMISSIONS.ANALATICS_VIEW,
-      },
-      {
-        title: "Customers",
-        url: "#",
-        icon: Users,
-        permission: PERMISSIONS.CUSTOMER_VIEW, 
-      },
+      // {
+      //   title: "Analytics",
+      //   url: "#",
+      //   icon: ChartNetwork,
+      //   permission: PERMISSIONS.ANALATICS_VIEW,
+      // },
+      // {
+      //   title: "Customers",
+      //   url: "#",
+      //   icon: Users,
+      //   permission: PERMISSIONS.CUSTOMER_VIEW, 
+      // },
       {
         title: "Stock",
         url: "/stock-management",
@@ -146,6 +146,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "#",
         icon: Component,
         permission: null, 
+                isActive: true,
+
         items: [
           {
             title: "Slider",

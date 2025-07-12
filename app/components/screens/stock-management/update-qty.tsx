@@ -13,11 +13,13 @@ import {
 } from "~/components/ui/dialog";
 import ErrorMessage from "~/components/ui/error-message";
 import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
 
 import { toast } from "sonner";
 import { qty_schema } from "~/shared/validations/product";
-import { useUpdateQtyProduct } from "~/services/queries/product";
+import {  useUpdateStock } from "~/services/queries/product";
+import { Textarea } from "~/components/ui/textarea";
+import { Separator } from "~/components/ui/separator";
+import { Label } from "~/components/ui/label";
 
 type UserFormData = z.infer<typeof qty_schema>;
 
@@ -27,34 +29,37 @@ type Props = {
 };
 
 export default function UpdateQty({ data, children }: Props) {
-  
+
   const [open, setOpen] = useState(false);
-  const { mutateAsync: update, isPending } = useUpdateQtyProduct();
+  const { mutateAsync: update, isPending } = useUpdateStock();
 
   const {
     control,
     handleSubmit,
     formState: { errors },
     reset,
+    watch
   } = useForm<UserFormData>({
     resolver: zodResolver(qty_schema),
-    values: {
+    defaultValues: {
       qty: "",
+      qty_note: '',
     },
   });
 
   const onSubmitForm = async (values: UserFormData) => {
     const form_data = new FormData();
     form_data.append("qty", values.qty);
-    form_data.append("product_id", data.id);
-    form_data.append("variation_id", data.variation_id);
+    form_data.append("prd_var_value_id", data.variation_id);
+    form_data.append("stock_type", 'ADD');
+    form_data.append("note", values.qty_note || "");
 
-    update(form_data, {
-      onSuccess: () => {
-        toast.success("Quantity updated");
+    update({ data: form_data, product_id: data.id }, {
+      onSuccess: (response) => {
+        toast.success(response?.message);
         setOpen(false);
       },
-      onError(error:any) {
+      onError(error: any) {
         toast.error(error?.data?.message);
       },
     });
@@ -77,34 +82,61 @@ export default function UpdateQty({ data, children }: Props) {
 
           <div className="flex mb-4 gap-3">
             <img className="w-20 rounded-lg " src={data?.image} alt="" />
-             <div>
+            <div>
               <p className="font-semibold mb-1">{data?.name}</p>
               <p className="text-sm font-medium">Qty: {data?.stock}</p>
-             </div>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit(onSubmitForm)}>
-            {/* User Name Field */}
+            <div className="col-span-2   ">
 
+              <Separator className="my-3 bg-muted" />
+              <div className="mb-3">
 
-            <div className="mb-4">
-              <Label htmlFor="qty" className="text-sm font-medium">
-                Quantity
-              </Label>
-              <Controller
-                control={control}
-                name="qty"
-                render={({ field }) => (
-                  <Input
-                    id="qty"
-                    {...field}
-                    type="number"
-                    placeholder="Enter quantity"
-                    className="mt-1"
-                  />
-                )}
-              />
-              <ErrorMessage error={errors.qty?.message} />
+                <div>
+                  <div className="flex items-center justify-between mb-1">
+                    <Label >
+                     Enter quantity you want to add
+                    </Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Controller
+                      name="qty"
+                      control={control}
+                      render={({ field }) => (
+                        <Input
+                          type="number"
+                          placeholder="0"
+                          min="1"
+                          value={field.value}
+                          onChange={field.onChange}
+                          onBlur={field.onBlur}
+                          className="h-9 text-sm"
+                        />
+                      )}
+                    />
+                  </div>
+                  {<ErrorMessage error={errors?.qty?.message} />}
+                </div>
+              </div>
+              <div>
+                <Controller
+                  name="qty_note"
+                  control={control}
+                  render={({ field }) => (
+                    <Textarea
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      className="resize-none test-sm placeholder:text-sm"
+                      placeholder="Type your note here..."
+                    />
+                  )}
+                />
+                {errors.qty_note && <ErrorMessage error={errors.qty_note.message} />}
+              </div>
+
             </div>
 
             <DialogFooter

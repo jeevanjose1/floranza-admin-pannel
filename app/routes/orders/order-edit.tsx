@@ -45,7 +45,7 @@ export default function OrderEdit() {
           <OrderDetails data={order_details?.data} />
       </div>
       <div className="flex-[0.3] flex flex-col gap-4">
-        <BgWrapper title="Customer History">
+        {/* <BgWrapper title="Customer History">
           <div className="p-4">
             <div className="mb-3">
               <p className="text-[13px] font-semibold mb-1">Total Order</p>
@@ -62,7 +62,7 @@ export default function OrderEdit() {
               <p className="text-sm">₹1,302.00</p>
             </div>
           </div>
-        </BgWrapper>
+        </BgWrapper> */}
         {Boolean(order_details?.data?.is_change_product)&& <Wallet data={order_details?.data}/>}
        
         <History data={order_details?.data?.orders_logs}/>

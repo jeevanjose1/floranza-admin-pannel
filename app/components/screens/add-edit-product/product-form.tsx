@@ -20,7 +20,7 @@ import SelectSizeChart from "./select-size-chart";
 type Props = {};
 type FormValues = z.infer<typeof product_form_schema>;
 
-export default function ProductForm({}: Props) {
+export default function ProductForm({ }: Props) {
   const params = useParams() as any;
   const { data } = useSingleProduct(params?.product_id);
 
@@ -82,9 +82,12 @@ export default function ProductForm({}: Props) {
     values: {
       order: product?.display_order || "",
       title: product?.name || "",
+      action_type: "",
+      new_quantity: "",
+      qty_note: '',
       slug: product?.slug || "",
       description: product?.description || "",
-      size_chart:product?.size_chart_id||'',
+      size_chart: product?.size_chart_id || '',
       media: media || [],
       sku: product?.sku || "",
       supplier: product?.supplier_id || "",
@@ -126,8 +129,10 @@ export default function ProductForm({}: Props) {
     },
     resolver: zodResolver(product_form_schema as any),
   });
- 
+
   const handleAdd = (values: FormValues) => {
+    console.log(values);
+
     const schedule_date = values.shedule_date;
     const schedule_time = `${values.shedule_time}`;
     const prebook_date = values.prebook_date;
@@ -167,6 +172,8 @@ export default function ProductForm({}: Props) {
       form_data.append("reg_price", values.price as string);
       form_data.append("sale_price", values.sale_price as string);
       form_data.append("qty", values.quandity as string);
+      form_data.append("qty_note", values.qty_note as string);
+
     }
 
     form_data.append("is_notify_stock", values.stock_notification ? "1" : "0");

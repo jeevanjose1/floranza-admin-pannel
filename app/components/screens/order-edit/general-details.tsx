@@ -111,6 +111,8 @@ export default function GeneralDetails({ data }: Props) {
   const statusColor =
     currentStatus?.color || "bg-gray-50 text-gray-500 border-gray-300";
 
+  const promo_amount = data?.promo_discount ? Number(data?.promo_discount) : false;
+
   return (
     <div className="p-4 space-y-4 ">
       <Card className="border-0 bg-muted/20 rounded-md shadow-none">
@@ -163,6 +165,17 @@ export default function GeneralDetails({ data }: Props) {
                   </p>
                 </div>
               )}
+
+              {
+                Boolean(data?.reserved_order) && <div className="text-sm text-muted-foreground">
+                  <p>Reserved order taken by : </p>
+                  <p className="font-semibold">{data?.reservedOrderTakeUser} </p>
+
+                </div>
+              }
+              {Boolean(promo_amount)&& <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Coupon code used - ₹{promo_amount}</span>
+                </div>}
             </div>
           </div>
           <div className="flex  gap-3">

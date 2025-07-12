@@ -29,7 +29,7 @@ export default function OrderLayout({}: Props) {
 
       <BgWrapper>
         <div className="relative  ">
-          <ScrollArea >
+          <ScrollArea className="max-w-[calc(100vw-260px)]">
             <div className="flex space-x-5 border-b border-gray-200">
               {menus.map((item: any, index: number) => {
                 const path = transform_name(item?.name);
