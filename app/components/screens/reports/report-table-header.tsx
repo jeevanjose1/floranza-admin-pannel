@@ -1,4 +1,4 @@
-import { FilterIcon } from "lucide-react";
+import { FilterIcon, Download } from "lucide-react";
 import { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "~/components/ui/button";
@@ -8,6 +8,13 @@ import { Separator } from "~/components/ui/separator";
 import useQueryParams from "~/hooks/use-query-param";
 import dayjs from "dayjs";
 import _ from "lodash";
+import { useLocation } from "react-router";
+import {
+  useDownloadOrderReport,
+  useDownloadGSTReport,
+  useDownloadTopSellingReport,
+  useDownloadPreOrderReport,
+} from "~/services/queries/report";
 
 type Props = {};
 
@@ -94,7 +101,15 @@ export default function ReportTableHeader({}: Props) {
   const [filterOpen, setFilterOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const handleToggle = () => setFilterOpen((pre) => !pre);
-  const { replaceParams, clearParams, getParam } = useQueryParams();
+  const { replaceParams, clearParams, getParam, getAllParams } =
+    useQueryParams();
+  const location = useLocation();
+  const pathname = location.pathname.split("/")[1];
+
+  const downloadOrderReport = useDownloadOrderReport();
+  const downloadGSTReport = useDownloadGSTReport();
+  const downloadTopSellingReport = useDownloadTopSellingReport();
+  const downloadPreOrderReport = useDownloadPreOrderReport();
 
   const handleSearch = _.debounce((e: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = e.target.value.trim();
@@ -113,6 +128,37 @@ export default function ReportTableHeader({}: Props) {
     clearParams();
   };
 
+  const handleDownload = () => {
+    const params = getAllParams();
+    const filters = {
+      keyword: params.search,
+      start_date: params?.from,
+      end_date: params?.to,
+    };
+
+    switch (pathname) {
+      case "order-report":
+        downloadOrderReport(filters);
+        break;
+      case "top-selling-report":
+        downloadTopSellingReport(filters);
+        break;
+      case "pre-order-report":
+        downloadPreOrderReport(filters);
+        break;
+    }
+  };
+
+  const handleGSTDownload = () => {
+    const params = getAllParams();
+    const filters = {
+      keyword: params.search,
+      start_date: params?.from,
+      end_date: params?.to,
+    };
+    downloadGSTReport(filters);
+  };
+
   const searchValue = getParam("search") || "";
 
   return (
@@ -125,6 +171,16 @@ export default function ReportTableHeader({}: Props) {
           placeholder="Search here..."
           className="max-w-96 mr-auto"
         />
+        {pathname === "order-report" && (
+          <Button onClick={handleGSTDownload} variant={"outline"} size={"sm"}>
+            <Download className="h-4 w-4 mr-2" />
+            GST Report
+          </Button>
+        )}
+        <Button onClick={handleDownload} variant={"outline"} size={"sm"}>
+          <Download className="h-4 w-4 mr-2" />
+          Download
+        </Button>
         <Button
           onClick={handleToggle}
           variant={"transparent"}

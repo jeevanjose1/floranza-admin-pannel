@@ -3,16 +3,15 @@ import { fetcher, queryFilter } from "~/lib/utils";
 import { REPORT } from "~/shared/urls";
 
 const useListReport = (payload: any) => {
+  const getUrl = () => {
+    const urls: any = {
+      order: REPORT.ORDER,
+      top_selling: REPORT.TOP_SELLEING,
+      pre_order: REPORT.PRE_ORDER,
+    };
 
-    const getUrl = ()=>{
-        const urls : any = {
-            order:REPORT.ORDER,
-            top_selling:REPORT.TOP_SELLEING,
-            pre_order:REPORT.PRE_ORDER
-        }
-
-        return urls?.[payload.type]
-    }
+    return urls?.[payload.type];
+  };
   return useQuery({
     queryKey: ["ORDER_REPORT_LIST", payload],
     queryFn: () =>
@@ -20,7 +19,7 @@ const useListReport = (payload: any) => {
         url: `${getUrl()}${queryFilter(payload.filter)}`,
         type: "get",
       }),
-      refetchOnWindowFocus:false
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -32,7 +31,7 @@ const useListTopSellingReport = (payload: any) => {
         url: `${REPORT.TOP_SELLEING}${queryFilter(payload)}`,
         type: "get",
       }),
-      refetchOnWindowFocus:false
+    refetchOnWindowFocus: false,
   });
 };
 
@@ -44,12 +43,46 @@ const useListPreOrderReport = (payload: any) => {
         url: `${REPORT.PRE_ORDER}${queryFilter(payload)}`,
         type: "get",
       }),
-      refetchOnWindowFocus:false
+    refetchOnWindowFocus: false,
   });
 };
 
+const useDownloadOrderReport = () => {
+  return (payload: any) => {
+    const baseUrl = import.meta.env.VITE_BASE_URL || "";
+    const url = `${baseUrl}${REPORT.ORDER_CSV}${queryFilter(payload)}`;
+    window.open(url, "_blank");
+  };
+};
+
+const useDownloadGSTReport = () => {
+  return (payload: any) => {
+    const baseUrl = import.meta.env.VITE_BASE_URL || "";
+    const url = `${baseUrl}${REPORT.GST_CSV}${queryFilter(payload)}`;
+    window.open(url, "_blank");
+  };
+};
+
+const useDownloadTopSellingReport = () => {
+  return (payload: any) => {
+    const baseUrl = import.meta.env.VITE_BASE_URL || "";
+    const url = `${baseUrl}${REPORT.TOP_SELLING_CSV}${queryFilter(payload)}`;
+    window.open(url, "_blank");
+  };
+};
+
+const useDownloadPreOrderReport = () => {
+  return (payload: any) => {
+    const baseUrl = import.meta.env.VITE_BASE_URL || "";
+    const url = `${baseUrl}${REPORT.PRE_ORDER_CSV}${queryFilter(payload)}`;
+    window.open(url, "_blank");
+  };
+};
 
 export {
-    useListReport
-
-}
+  useListReport,
+  useDownloadOrderReport,
+  useDownloadGSTReport,
+  useDownloadTopSellingReport,
+  useDownloadPreOrderReport,
+};
