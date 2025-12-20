@@ -71,7 +71,7 @@ export const status_filter = (current_status: string) => {
         { value: "2", label: "Action Taken" },
         { value: "5", label: "Hold" },
       ],
-      invoice: false,
+      invoice: true,
     },
     "2": {
       updates: [
@@ -89,8 +89,11 @@ export const status_filter = (current_status: string) => {
       ],
       invoice: true,
     },
-    
-    "4": { updates: [], invoice: true },
+
+    "4": {
+      updates: [{ value: "7", label: "Cancel" },
+      ], invoice: true
+    },
     "5": {
       updates: [
         { value: "2", label: "Action Taken" },
@@ -99,18 +102,23 @@ export const status_filter = (current_status: string) => {
       invoice: true,
     },
     "6": { updates: [], invoice: true },
-    "7": { updates: [], invoice: false },
+    "7": {
+      updates: [{ value: "6", label: "Refund" },
+      ], invoice: false
+    },
     "8": { updates: [], invoice: false },
     "9": {
       updates: [
         { value: "2", label: "Action Taken" },
         { value: "5", label: "Hold" },
+        { value: "3", label: "Packing" },
+
       ],
       invoice: true,
     },
     "10": {
       updates: [
-        { value: "1", label: "Processing" },
+        // { value: "1", label: "Processing" },
         { value: "5", label: "Hold" },
       ],
       invoice: true,
@@ -326,7 +334,7 @@ export const PERMISSIONS = {
   STOCK_ACTION: 'stock:action',
 
   ADMIN_USERS_VIEW: 'admin_users:view',
-    ADMIN_USERS_CREATE: 'admin_users:create',
+  ADMIN_USERS_CREATE: 'admin_users:create',
 
   ADMIN_USERS_EDIT: 'admin_users:edit',
   ADMIN_USERS_ACTION: 'admin_users:action',
@@ -338,6 +346,9 @@ export const PERMISSIONS = {
   SLIDER_EDIT: 'slider:edit',
 
   TRANSACTIONS_VIEW: 'transactions:view',
+
+  REPORT_VIEW: 'report:view',
+  REPORT_ACTION: 'report:action',
 
   ANALATICS_VIEW: 'analatics:view',
   CUSTOMER_VIEW: 'customer:view'

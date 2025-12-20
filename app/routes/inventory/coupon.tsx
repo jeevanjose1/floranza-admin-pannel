@@ -10,7 +10,7 @@ import useQueryParams from "~/hooks/use-query-param";
 import { permission_loader } from "~/lib/utils";
 import { useListCoupon } from "~/services/queries/coupon";
 
-export const clientLoader = ()=> permission_loader('coupons:view')
+export const clientLoader = () => permission_loader('coupons:view')
 
 export default function Coupon() {
   const { getAllParams } = useQueryParams();
@@ -36,7 +36,11 @@ export default function Coupon() {
         status: item?.status === 1 ? "Active" : "Inactive",
         date: item?.expiry_date,
         is_used: item?.is_used,
-
+        type:item?.discount_type,
+        value:item?.value,
+        coupon_type:item?.type,
+        balance:item?.balance,
+        used_count:item?.used_count
 
       };
     }) || [];
@@ -63,6 +67,8 @@ export default function Coupon() {
           is_previous={coupon_data?.data?.prev_page_url}
           table_data={filtred_supplier}
           loading={isFetching || isLoading}
+          total_page={Math.ceil(coupon_data?.data?.total / coupon_data?.data?.per_page)}
+
         />
       </BgWrapper>
     </div>

@@ -12,6 +12,8 @@ export enum ORDER {
   DELETE_ORDER = 'reserved_order/delete',
   ORDER_NOTES_CREATE = 'order/admin_order_note/create',
   ORDER_NOTES_DELETE = 'order/admin_order_note/delete',
-  ORDER_ITEM_DELETE='order/item_delete',
-  ADD_ORDER_ITEMS='order/product/change'
+  ORDER_ITEM_DELETE = 'order/item_delete',
+  ADD_ORDER_ITEMS = 'order/product/change',
+  WALLET_REFUND = 'order/cp/current_credit/refund',
+  WALLET_PAID = 'order/cp/payable_amount/paid',
 }

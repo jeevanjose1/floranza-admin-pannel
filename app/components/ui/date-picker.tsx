@@ -1,5 +1,4 @@
 "use client";
-
 import * as React from "react";
 import { format, isValid } from "date-fns";
 import { CalendarIcon } from "lucide-react";
@@ -28,23 +27,26 @@ export function DatePicker({
   className?: string;
 } & React.HTMLAttributes<HTMLDivElement>) {
   // Initialize state based on picker type
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
+  const [date, setDate] = React.useState<Date | undefined>(
+    defaultDate && isValid(defaultDate) ? defaultDate : undefined
+  );
   const [dateRange, setDateRange] = React.useState<DateRange | undefined>(
     defaultDateRange && defaultDateRange.from ? defaultDateRange : undefined
   );
 
   // Update state when defaultDate or defaultDateRange changes
   React.useEffect(() => {
-    if (defaultDate && isValid(defaultDate) && defaultDate !== undefined) {
+    if (defaultDate && isValid(defaultDate)) {
+      setDate(defaultDate); // This line was missing!
     } else {
       setDate(undefined);
     }
   }, [defaultDate]);
 
   React.useEffect(() => {
-    if (defaultDateRange && defaultDateRange.from && defaultDateRange !== undefined) {
+    if (defaultDateRange && defaultDateRange.from) {
       setDateRange(defaultDateRange);
-    }else {
+    } else {
       setDateRange(undefined);
     }
   }, [defaultDateRange]);

@@ -55,6 +55,7 @@ type props = {
   is_previous: boolean;
   is_next: boolean;
   current_page: number;
+  total_page:number
 };
 
 export const columns: ColumnDef<Supplier>[] = [
@@ -163,6 +164,7 @@ export function SupplierTable({
   is_next,
   is_previous,
   current_page,
+  total_page
 }: props) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -257,6 +259,7 @@ export function SupplierTable({
           is_next={is_next}
           is_previous={is_previous}
           current_page={current_page}
+          total_pages={total_page}
         />
       </div>
     </div>

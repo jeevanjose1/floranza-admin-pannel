@@ -56,6 +56,8 @@ export default function Slider() {
           is_previous={slider_data?.data?.prev_page_url}
           table_data={filtred_brand}
           loading={isLoading || isFetching}
+          total_page={Math.ceil(slider_data?.data?.total / slider_data?.data?.per_page)}
+
         />
       </BgWrapper>
     </div>

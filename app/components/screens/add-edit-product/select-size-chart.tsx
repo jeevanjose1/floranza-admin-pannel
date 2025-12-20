@@ -24,9 +24,7 @@ export default function SelectSizeChart({ form }: Props) {
                 return (
                   <div className="w-full">
 
-                    <Label htmlFor="size_chart" className="text-[13px] mb-0">
-                      Size Chart
-                    </Label>
+                    
                     <Select value={field.value} onValueChange={(e) => field.onChange(e)}>
                       <SelectTrigger
                         size="sm"

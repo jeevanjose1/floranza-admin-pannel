@@ -62,6 +62,8 @@ export default function Supplier() {
           is_previous={supplier_data?.data?.prev_page_url}
           table_data={filtred_supplier}
           loading={isFetching || isLoading}
+          total_page={Math.ceil(supplier_data?.data?.total / supplier_data?.data?.per_page)}
+
         />
       </BgWrapper>
     </div>

@@ -7,7 +7,7 @@ import OrderTableHeader from "~/components/screens/orders/order-table-header";
 import { useState } from "react";
 import useQueryParams from "~/hooks/use-query-param";
 
-export const clientLoader = ()=> permission_loader('orders:view')
+export const clientLoader = () => permission_loader('orders:view')
 
 
 export default function Order() {
@@ -32,10 +32,13 @@ export default function Order() {
     keyword: query_params.search,
     start_date: query_params?.from,
     end_date: query_params?.to,
+    courier: query_params?.courier,
+    is_pre_order: query_params?.is_pre_order,
+    pre_order_date: query_params?.pre_order_date
   });
- 
- 
-  
+
+
+
   const filtred_order =
     order_list?.data?.data?.map((item: any) => {
       return {
@@ -52,7 +55,8 @@ export default function Order() {
         courier: item?.courier,
         is_reserved: params.order_menu === "reserved",
         is_all: params.order_menu === "all",
-        reserved_order:Boolean(item?.reserved_order)
+        reserved_order: Boolean(item?.reserved_order),
+        is_preorder: Boolean(item?.is_pre_order)
       };
     }) || [];
 
@@ -72,6 +76,7 @@ export default function Order() {
         is_next={order_list?.data?.next_page_url}
         current_page={order_list?.data?.current_page}
         is_previous={order_list?.data?.prev_page_url}
+        total_page={Math.ceil(order_list?.data?.total / order_list?.data?.per_page)}
         selected={selected}
         setSelected={setSelected}
         table_data={filtred_order}

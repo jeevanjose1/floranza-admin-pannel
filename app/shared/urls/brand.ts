@@ -3,5 +3,7 @@ export enum BRAND {
     CREATE='brand/create',
     UPDATE='brand/update/',
     DELETE='brand/delete/',
-    SHOW='brand/show/'
+    SHOW='brand/show/',
+      LIST_IN_PRODUCT='brands/productCreateView/list'
+
  } 

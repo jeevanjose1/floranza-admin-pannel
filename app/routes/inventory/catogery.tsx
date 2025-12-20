@@ -61,6 +61,8 @@ export default function Catogery() {
           is_previous={catogery_data?.data?.prev_page_url}
           loading={isFetching || isLoading}
           table_data={filterd_catogery}
+          total_page={Math.ceil(catogery_data?.data?.total / catogery_data?.data?.per_page)}
+
         />
       </BgWrapper>
     </div>

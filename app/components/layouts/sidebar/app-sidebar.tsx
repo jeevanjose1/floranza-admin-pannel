@@ -6,9 +6,9 @@ import {
   ImagePlay,
   ShoppingCart,
   SquareTerminal,
-  Users,
   Layers,
   History,
+  Proportions,
 } from "lucide-react";
 
 import {
@@ -29,9 +29,9 @@ import { useGetProfile } from "~/services/queries/auth";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: count } = useGlobalCount();
-  const {data:profile} = useGetProfile()
-  
-  const current_permission =profile?.data?.user?.permission ?JSON.parse(profile?.data?.user?.permission) :[]
+  const { data: profile } = useGetProfile()
+
+  const current_permission = profile?.data?.user?.permission ? JSON.parse(profile?.data?.user?.permission) : []
 
   const getFilteredNavItems = () => {
     const allNavItems = [
@@ -101,7 +101,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         url: "#",
         isActive: true,
         icon: ShoppingCart,
-        permission: PERMISSIONS.ORDER_MENU, 
+        permission: PERMISSIONS.ORDER_MENU,
         items: [
           {
             title: "Orders",
@@ -116,18 +116,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
         ],
       },
-      // {
-      //   title: "Analytics",
-      //   url: "#",
-      //   icon: ChartNetwork,
-      //   permission: PERMISSIONS.ANALATICS_VIEW,
-      // },
-      // {
-      //   title: "Customers",
-      //   url: "#",
-      //   icon: Users,
-      //   permission: PERMISSIONS.CUSTOMER_VIEW, 
-      // },
       {
         title: "Stock",
         url: "/stock-management",
@@ -142,12 +130,34 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         permission: PERMISSIONS.TRANSACTIONS_VIEW,
       },
       {
+        title: "Reports",
+        url: "#",
+        icon: Proportions,
+        permission: PERMISSIONS.TRANSACTIONS_VIEW,
+        items: [
+          {
+            title: "Order Report",
+            url: "/order-report",
+            permission: PERMISSIONS.ORDERS_VIEW,
+          },
+          {
+            title: "Top Selling Report",
+            url: "/top-selling-report",
+            permission: PERMISSIONS.ORDERS_CREATE,
+          },
+          {
+            title: "Pre Order Report",
+            url: "/pre-order-report",
+            permission: PERMISSIONS.ORDERS_CREATE,
+          },
+        ],
+      },
+      {
         title: "Others",
         url: "#",
         icon: Component,
-        permission: null, 
-                isActive: true,
-
+        permission: null,
+        isActive: true,
         items: [
           {
             title: "Slider",
@@ -167,7 +177,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       .map((item) => {
         if (item.items) {
           const allowedSubItems = item.items.filter((subItem) =>
-            has_permission(subItem.permission,current_permission)
+            has_permission(subItem.permission, current_permission)
           );
           if (allowedSubItems.length > 0) {
             return {
@@ -177,7 +187,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           }
           return null;
         }
-        if (item.permission && has_permission(item.permission,current_permission)) {
+        if (item.permission && has_permission(item.permission, current_permission)) {
           return item;
         }
         if (!item.permission) {

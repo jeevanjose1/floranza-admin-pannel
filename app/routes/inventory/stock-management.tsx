@@ -1,15 +1,18 @@
 import BgWrapper from "~/components/common/bg-wrapper";
 import PageHeader from "~/components/common/page-header";
 import { StockTable } from "~/components/screens/stock-management/stock-table";
+import useQueryParams from "~/hooks/use-query-param";
 import { permission_loader } from "~/lib/utils";
 import { useLowQtyProduct } from "~/services/queries/product";
-export const clientLoader = ()=> permission_loader('stock:view')
+export const clientLoader = () => permission_loader('stock:view')
 
 
 export default function StockManagement() {
-  const { data: list_product, isFetching, isLoading } = useLowQtyProduct({});
+  const { getAllParams } = useQueryParams();
+  const query_params = getAllParams();
+  const { data: list_product, isFetching, isLoading } = useLowQtyProduct({ page: query_params.page, });
   const filtred_list =
-    list_product?.data?.map((item: any) => {
+    list_product?.data?.data?.map((item: any) => {
       return {
         id: item?.id,
         sku: item?.sku,
@@ -36,6 +39,8 @@ export default function StockManagement() {
           is_previous={list_product?.data?.prev_page_url}
           table_data={filtred_list}
           loading={isFetching || isLoading}
+          total_page={Math.ceil(list_product?.data?.total / list_product?.data?.per_page)}
+
         />
       </BgWrapper>
     </div>

@@ -29,6 +29,7 @@ import { toast } from "sonner";
 import PermissionSelector from "./permission-selector";
 import { ScrollArea } from "~/components/ui/scroll-area";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
+import { images } from "~/shared/images/image";
 
 // Updated schema to include permissions
 const extended_admin_user_schema = admin_user_schema
@@ -56,7 +57,7 @@ export default function AddEditUser({ data, children }: Props) {
     reset,
     setValue,
 
-watch
+    watch
   } = useForm<UserFormData>({
     resolver: zodResolver(extended_admin_user_schema),
     values: {
@@ -70,13 +71,13 @@ watch
       role_name: data?.role_name || ""
     },
   });
- 
+
   const onSubmitForm = async (values: UserFormData) => {
     const form_data = new FormData();
     form_data.append("name", values.user_name);
     form_data.append("email", values.email);
-    if(values?.password !==''){
-    form_data.append("password", values.password as string);
+    if (values?.password !== '') {
+      form_data.append("password", values.password as string);
 
     }
     form_data.append("role", values.role);
@@ -97,6 +98,7 @@ watch
           onSuccess: () => {
             toast.success("User updated successfully");
             setOpen(false);
+
           },
           onError: (error: any) => {
             toast.error(error?.data?.message);
@@ -108,6 +110,7 @@ watch
         onSuccess: () => {
           toast.success("User added successfully");
           setOpen(false);
+          reset()
         },
         onError: (error: any) => {
           toast.error(error?.data?.message);
@@ -217,19 +220,35 @@ watch
                 control={control}
                 name="role"
                 render={({ field }) => (
-                  <RadioGroup onChange={(e:any)=>{
-                    field.onChange(e.target.value)
-                  }} defaultValue="2" >
+                  <RadioGroup onValueChange={(e) => field.onChange(e)} defaultValue={field.value} >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="2" id="staff" />
-                      <Label htmlFor="staff">Order Staff</Label>
+                      <img className="w-6 h-6" src={images.packing} alt="" />
+                      <Label className="mb-0" htmlFor="staff">Packing Staff</Label>
                     </div>
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="3" id="shipping" />
-                      <Label htmlFor="shipping">Shipping Staff</Label>
-                    </div><div className="flex items-center space-x-2">
+                      <img className="w-6 h-6" src={images.shipping} alt="" />
+
+                      <Label className="mb-0" htmlFor="shipping">Shipping Staff</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
                       <RadioGroupItem value="4" id="whatsapp" />
-                      <Label htmlFor="whatsapp">Whatsapp Order Staff</Label>
+                      <img className="w-6 h-6" src={images.whatsapp} alt="" />
+
+                      <Label className="mb-0" htmlFor="whatsapp">Whatsapp Order Staff</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="5" id="whatsapp_payment" />
+                      <img className="w-6 h-6" src={images.varify} alt="" />
+
+                      <Label className="mb-0" htmlFor="whatsapp_payment">Whatsapp Order Payment Verification</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="6" id="admin" />
+                      <img className="w-6 h-6" src={images.sub_admin} alt="" />
+
+                      <Label className="mb-0" htmlFor="admin">Sub Admin</Label>
                     </div>
                   </RadioGroup>
                 )}

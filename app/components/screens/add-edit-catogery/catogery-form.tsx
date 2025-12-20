@@ -68,7 +68,7 @@ export default function CategoryForm({ id }: Props) {
     form_data.append("meta_title", values.meta_title);
     form_data.append("meta_des", values.meta_description);
     form_data.append("status", values.status === "active" ? "1" : "0");
-    form_data.append("display_order", "1");
+    form_data.append("display_order", values.display_order);
     form_data.append("home_show", values.home_show ? "1" : "0");
     form_data.append("nav_active", values.nav_active ? "1" : "0");
     form_data.append("nav_order", values.nav_order as string);

@@ -20,6 +20,7 @@ import {
   ChevronDown,
   ChevronRight,
   Eye,
+
   MoreHorizontal,
 } from "lucide-react";
 import { Button } from "~/components/ui/button";
@@ -62,6 +63,7 @@ import {
 import dayjs from "dayjs";
 import Pagination from "~/components/common/pagination";
 import PermissionWrapper from "~/components/common/permission-wrapper";
+import History from "./history";
 
 type props = {
   table_data: Product[];
@@ -69,6 +71,7 @@ type props = {
   is_previous: boolean;
   is_next: boolean;
   current_page: number
+  total_page: number
 };
 
 // Updated type definition
@@ -88,11 +91,13 @@ export type Product = {
   prebook: boolean;
   sheduled_at: string;
   preorder_at: string;
+  is_variation: number;
   variations: {
     attribute_id: string;
     attribute_name: string;
     attribute_option_id: string;
     attribute_option_name: string;
+    prd_var_value_id?: string;
     reg_price: number;
     sale_price: number;
     qty: number;
@@ -134,7 +139,7 @@ export const columns: ColumnDef<Product>[] = [
     accessorKey: "name",
     header: "Product",
     cell: ({ row }) => (
-      <div className="font-medium text-[13px] whitespace-pre-wrap flex items-center gap-2">
+      <div className="font-medium text-[13px] whitespace-pre-wrap  min-w-50  flex items-center gap-2">
         <Avatar className="rounded-md">
           <AvatarImage src={row.original.image} />
           <AvatarFallback className="rounded-md">CS</AvatarFallback>
@@ -192,12 +197,23 @@ export const columns: ColumnDef<Product>[] = [
   {
     accessorKey: "stock",
     header: () => <div className="text-right ">Stocks</div>,
-    cell: ({ row }) =>
-      row.original.variations.length > 0 ? (
+    cell: ({ row }) => {
+      const variation = row.original?.variations
+      const qty = row.original.stock
+      const have_unlimited_qty = variation?.some((item: any) => item?.is_unlimited_qty)
+      const is_out_of_stock = Boolean(row?.original?.is_variation) ? variation?.every((item: any) => {
+        return item?.qty == 0
+      }) : qty == 0
+
+      if ((is_out_of_stock && !have_unlimited_qty)) return <div className="mt-1 text-xs animate-pulse italic font-bold text-error">Out of stock</div>
+
+
+      return row.original.variations.length > 0 ? (
         <div className="text-right font-medium text-[13px]">Variation</div>
       ) : (
         <div className="text-right text-[13px]">{row.getValue("stock")}</div>
-      ),
+      )
+    }
   },
 
   {
@@ -272,6 +288,7 @@ export const columns: ColumnDef<Product>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
 
+
       // Apply different styling based on status
       const statusStyles: Record<string, string> = {
         Active: "bg-green-200 border border-green-300 text-green-500",
@@ -281,9 +298,12 @@ export const columns: ColumnDef<Product>[] = [
       const style = statusStyles[status] || "";
 
       return (
-        <Badge variant={"default"} className={`${style} text-[13px]`}>
-          {status}
-        </Badge>
+        <>
+
+          <Badge variant={"default"} className={`${style} text-[13px]`}>
+            {status}
+          </Badge>
+        </>
       );
     },
   },
@@ -299,7 +319,7 @@ export const columns: ColumnDef<Product>[] = [
         toast.promise(delete_product(product_id), {
           success: "product deleted",
           loading: "Deleting product",
-          error:(error:any)=> error.data?.message
+          error: (error: any) => error.data?.message
 
         });
       };
@@ -308,63 +328,70 @@ export const columns: ColumnDef<Product>[] = [
         toast.promise(duplicate_product(product_id), {
           success: "product duplicated",
           loading: "Duplicating product",
-          error:(error:any)=>error.data?.message
-,
+          error: (error: any) => error.data?.message
+          ,
         });
       };
       return (
         <PermissionWrapper permission={'products:action'}>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
+          <div className="flex items-center gap-3">
+            {!row.original?.is_variation && <div className="flex items-center gap-2">
+              <History product_id={product_id} var_id={''} />
+              <Link to={`/product-analysis/${product_id}`} className="text-sm ">
+              <Button size={'sm'} variant={'secondary'}>Analysis </Button></Link>
+            </div>}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end">
-              <PermissionWrapper permission={'products:delete'}>
-                <>
+              <DropdownMenuContent align="end">
+                <PermissionWrapper permission={'products:delete'}>
+                  <>
+                    <PopConfirm
+                      action={handleDelete}
+                      description="Are you realy want to delete this product"
+                      title="Delete product"
+                    >
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        Delete
+                      </DropdownMenuItem>
+                    </PopConfirm>
+                    <DropdownMenuSeparator />
+                  </>
+                </PermissionWrapper>
+
+                <PermissionWrapper permission={'products:duplicate'}>
+
                   <PopConfirm
-                    action={handleDelete}
-                    description="Are you realy want to delete this product"
-                    title="Delete product"
+                    action={handleDuplicate}
+                    description="Are you realy want to duplicate this product"
+                    title="Duplicate product"
                   >
                     <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                      Delete
+                      Duplicate
                     </DropdownMenuItem>
                   </PopConfirm>
-                  <DropdownMenuSeparator />
-                </>
-              </PermissionWrapper>
-
-              <PermissionWrapper permission={'products:duplicate'}>
-
-                <PopConfirm
-                  action={handleDuplicate}
-                  description="Are you realy want to duplicate this product"
-                  title="Duplicate product"
-                >
-                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                    Duplicate
-                  </DropdownMenuItem>
-                </PopConfirm>
-              </PermissionWrapper>
-              <PermissionWrapper permission={'products:edit'}>
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem>
-                    <Link
-                      to={`/products/edit/${product_id}`}
-                      className="w-full h-full"
-                    >
-                      Edit
-                    </Link>
-                  </DropdownMenuItem>
-                </>
-              </PermissionWrapper>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                </PermissionWrapper>
+                <PermissionWrapper permission={'products:edit'}>
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                      <Link
+                        to={`/products/edit/${product_id}`}
+                        className="w-full h-full"
+                      >
+                        Edit
+                      </Link>
+                    </DropdownMenuItem>
+                  </>
+                </PermissionWrapper>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </PermissionWrapper>
 
       );
@@ -376,9 +403,11 @@ export const columns: ColumnDef<Product>[] = [
 const VariationRow = ({
   variation,
   columnCount,
+  product_id
 }: {
   variation: Product["variations"][0];
   columnCount: number;
+  product_id: string
 }) => {
   const formatted_reg_price = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -390,12 +419,13 @@ const VariationRow = ({
     currency: "INR",
   }).format(variation.sale_price);
 
+
   return (
     <TableRow className="bg-gray-50/50">
       <TableCell></TableCell> {/* Expander column */}
       <TableCell colSpan={columnCount - 1}>
         <div className="pl-6 py-2 ">
-          <div className="grid grid-cols-5 gap-4 text-sm">
+          <div className="grid grid-cols-6 gap-4 text-sm">
             <div>
               <span className="font-medium ">Attribute:</span>
               <p className="text-[13px]">{variation.attribute_name}</p>
@@ -416,6 +446,10 @@ const VariationRow = ({
               <span className="font-medium ">Quantity:</span>
               <p className="text-[13px]">{variation.qty}</p>
             </div>
+            <div className="flex items-center gap-3" >
+              <History variation={variation.attribute_option_name} product_id={product_id} var_id={variation?.prd_var_value_id as any} />
+              <Link to={`/product-analysis/${product_id}?prd_var_value_id=${variation?.prd_var_value_id}`} className="text-sm "> <Button size={'sm'} variant={'secondary'}>Analysis </Button></Link>
+            </div>
           </div>
         </div>
       </TableCell>
@@ -423,7 +457,7 @@ const VariationRow = ({
   );
 };
 
-export function ProductTable({ loading, table_data, is_next, is_previous, current_page }: props) {
+export function ProductTable({ loading, table_data, is_next, is_previous, current_page, total_page }: props) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -453,10 +487,7 @@ export function ProductTable({ loading, table_data, is_next, is_previous, curren
       columnVisibility,
       rowSelection,
       expanded,
-
     },
-
-
   });
 
   if (loading)
@@ -508,6 +539,7 @@ export function ProductTable({ loading, table_data, is_next, is_previous, curren
                       <>
                         {row.original.variations.map((variation, index) => (
                           <VariationRow
+                            product_id={row.original.id}
                             key={`${row.id}-variation-${index}`}
                             variation={variation}
                             columnCount={columns.length}
@@ -531,11 +563,8 @@ export function ProductTable({ loading, table_data, is_next, is_previous, curren
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 p-4">
-        {/* <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div> */}
-        <Pagination is_next={is_next} is_previous={is_previous} current_page={current_page} />
+
+        <Pagination total_pages={total_page} is_next={is_next} is_previous={is_previous} current_page={current_page} />
       </div>
     </div>
   );

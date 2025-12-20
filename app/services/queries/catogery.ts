@@ -13,6 +13,16 @@ const useListCatogery = (payload: COMMON_LIST_PAYLOAD) => {
       }),
   });
 };
+const useListCatogeryProduct = (payload: COMMON_LIST_PAYLOAD) => {
+  return useQuery({
+    queryKey: ["CATOGERY_LIST_PRODUCT", payload],
+    queryFn: () =>
+      fetcher({
+        url: `${CATOGERY.LIST_IN_PRODUCT}${queryFilter(payload)}`,
+        type: "get",
+      }),
+  });
+};
 const useCatogeryDetails = (payload: COMMON_MUTATION['id']) => {
   return useQuery({
     queryKey: ["CATOGERY_DETAILS", payload],
@@ -78,5 +88,6 @@ export {
   useListCatogery,
   useDeleteCatogery,
   useUpadteCatogery,
-  useCatogeryDetails
+  useCatogeryDetails,
+  useListCatogeryProduct
 };

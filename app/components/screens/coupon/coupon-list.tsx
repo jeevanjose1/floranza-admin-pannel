@@ -13,13 +13,12 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { MoreHorizontal } from "lucide-react";
+import { Megaphone, MoreHorizontal } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
 import {
@@ -33,13 +32,11 @@ import {
 import { Badge } from "~/components/ui/badge";
 import Loader from "~/components/ui/loader";
 import { PopConfirm } from "~/components/ui/pop-confirm";
-import { Link } from "react-router";
 import { toast } from "sonner";
-import { useDeleteSupplier } from "~/services/queries/supplier";
 import Pagination from "~/components/common/pagination";
 import { useDeleteCoupon } from "~/services/queries/coupon";
-import AddEditModal from "./add-edit-coupon";
 import PermissionWrapper from "~/components/common/permission-wrapper";
+import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
 
 export type Supplier = {
   id: string;
@@ -47,7 +44,9 @@ export type Supplier = {
   status: string;
   date: string;
   amount: string;
-
+  type: string
+  value:string
+  coupon_type:string
 };
 type props = {
   table_data: Supplier[];
@@ -55,6 +54,7 @@ type props = {
   is_previous: boolean;
   is_next: boolean;
   current_page: number;
+  total_page: number
 };
 
 export const columns: ColumnDef<Supplier>[] = [
@@ -65,15 +65,37 @@ export const columns: ColumnDef<Supplier>[] = [
     cell: ({ row }) => (
       <div className="font-medium text-[13px] flex items-center gap-2">
         {row.getValue("code")}
+        {row.original.coupon_type ==='promotion'&& <Tooltip>
+      <TooltipTrigger asChild>
+        <Megaphone size={20} color="orange" />
+      </TooltipTrigger>
+      <TooltipContent>
+        <p>Promotion</p>
+      </TooltipContent>
+    </Tooltip>}
       </div>
     ),
   },
 
   {
-    accessorKey: "amount",
-    header: () => <div className="text-right ">Amount</div>,
+    accessorKey: "value",
+    header: () => <div className="text-right ">Value</div>,
     cell: ({ row }) => (
-      <div className="text-right text-[13px]">{row.getValue("amount")}</div>
+      <div className="text-right text-[13px]">{row.getValue("value")}{row.original.type == 'percent' ? '%' : ' ₹'}</div>
+    ),
+  },
+  {
+    accessorKey: "balance",
+    header: () => <div className="text-right ">Balance</div>,
+    cell: ({ row }) => (row.original?.coupon_type !=='promotion' && row.original?.type !=='percent') ? 
+      <div className="text-right text-[13px]"> ₹ {row.getValue("balance")}</div> : <div className="text-right text-[13px]"> - </div>
+    
+  },
+   {
+    accessorKey: "used_count",
+    header: () => <div className="text-right ">Used Count</div>,
+    cell: ({ row }) => (
+      <div className="text-right text-[13px]">{row.getValue("used_count")}</div>
     ),
   },
   {
@@ -121,8 +143,8 @@ export const columns: ColumnDef<Supplier>[] = [
         toast.promise(delete_coupon(coupon_id), {
           success: "Coupon deleted",
           loading: "Deleting coupon",
-          error: (error:any)=> error.data?.message
-,
+          error: (error: any) => error.data?.message
+          ,
         });
       };
       return (
@@ -162,6 +184,7 @@ export function CouponList({
   is_next,
   is_previous,
   current_page,
+  total_page
 }: props) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -256,6 +279,7 @@ export function CouponList({
           is_next={is_next}
           is_previous={is_previous}
           current_page={current_page}
+          total_pages={total_page}
         />
       </div>
     </div>

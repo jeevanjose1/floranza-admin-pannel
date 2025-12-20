@@ -17,6 +17,9 @@ const product_form_schema = z
     media: z.array(z.any()).min(1, "Media is required"),
     sku: z.string().min(1, "SKU is required"),
     supplier: z.string().min(1, "HSN / Supplier is required"),
+    tax_below_999: z.string().min(1, "Tax is required"),
+    tax_above_1000: z.string().min(1, "Tax is required"),
+    // tax: z.string().min(1, "Tax is required"),
     brand: z.string().optional(),
     catogery: z.string().optional(),
     price: z.string().optional(),
@@ -32,7 +35,7 @@ const product_form_schema = z
     stock_notification: z.boolean().default(false),
     is_schedule: z.boolean().default(false),
     is_free_shipping: z.boolean().default(false),
-    size_chart : z.string().min(1,'Size chart is required'),
+    size_chart: z.string().optional(),
     is_prebook: z.boolean().default(false),
     shedule_date: z.string().optional(),
     shedule_time: z.string().optional(),
@@ -53,6 +56,12 @@ const product_form_schema = z
     order: z.any().optional(),
   })
   .superRefine((data, ctx) => {
+
+
+
+
+
+
     if (data?.is_schedule) {
       if (!data.shedule_date?.trim()) {
         ctx.addIssue({
@@ -89,14 +98,13 @@ const product_form_schema = z
       }
     }
     if (!data.is_variants) {
-      // Validate flat product
-      if (!data.price?.trim()) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "Price is required",
-          path: ["price"],
-        });
-      }
+      // if (!data.price?.trim()) {
+      //   ctx.addIssue({
+      //     code: z.ZodIssueCode.custom,
+      //     message: "Price is required",
+      //     path: ["price"],
+      //   });
+      // }
       if (!data.sale_price?.trim()) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
@@ -104,13 +112,13 @@ const product_form_schema = z
           path: ["sale_price"],
         });
       }
-      if (!data.quandity?.trim()) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "quantity is required",
-          path: ["quandity"],
-        });
-      }
+      // if (!data.quandity?.trim()) {
+      //   ctx.addIssue({
+      //     code: z.ZodIssueCode.custom,
+      //     message: "quantity is required",
+      //     path: ["quandity"],
+      //   });
+      // }
     } else {
       // Validate variant attributes
       if (!Array.isArray(data.attributes) || data.attributes.length === 0) {
@@ -137,7 +145,7 @@ const product_form_schema = z
 
 const qty_schema = z.object({
   qty: z.string().min(1, "Atleast one qty is required"),
-  qty_note:z.string().min(1, "Note is required"),
+  qty_note: z.string().min(1, "Note is required"),
 });
 
-export { product_form_schema ,qty_schema};
+export { product_form_schema, qty_schema };

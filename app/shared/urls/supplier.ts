@@ -3,5 +3,7 @@ export enum SUPPLIER {
     CREATE='supplier/create',
     UPDATE='supplier/update/',
     DELETE='supplier/delete/',
-    SHOW='supplier/show/'
+    SHOW='supplier/show/',
+      LIST_IN_PRODUCT='supplier/productCreateView/list'
+
  } 

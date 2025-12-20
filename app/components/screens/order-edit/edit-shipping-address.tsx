@@ -54,7 +54,7 @@ export default function EditBillingAddress({ defaultValues }: Props) {
       postcode: defaultValues?.address?.postcode || "",
       state: defaultValues?.address?.state || "",
       courier: defaultValues?.courier || "",
-      note: "",
+      note: defaultValues?.notes||"",
       email:  defaultValues?.address?.email|| "",
     },
   });
@@ -71,6 +71,7 @@ export default function EditBillingAddress({ defaultValues }: Props) {
     form_data.append("phone", data.phone);
     form_data.append("email", data.email as string);
     form_data.append("courier", data.courier);
+    form_data.append("notes", data.note as string);
 
     update(
       { id: defaultValues?.id, data: form_data },
@@ -260,7 +261,7 @@ export default function EditBillingAddress({ defaultValues }: Props) {
               name="note"
               control={control}
               render={({ field }) => (
-                <Textarea placeholder="Type your note..." />
+                <Textarea {...field} placeholder="Type your note..." />
               )}
             />
           </div>

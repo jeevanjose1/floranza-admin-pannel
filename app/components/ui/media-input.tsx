@@ -234,13 +234,17 @@ const MediaPickerModal = ({ children, form }: FormProps & { children: ReactNode 
 // Main media input component
 export default function MediaInput({ form }: FormProps) {
   const mediaItems = form.watch("media") || [];
-  
+
   // Remove a media item
   const removeMediaItem = (itemToRemove: MediaItem) => {
     const updatedMedia = mediaItems.filter(
       (item: MediaItem) => item.id !== itemToRemove.id
     );
-    form.setValue("media", updatedMedia);
+    const mediaFromApi =  mediaItems.filter(
+      (item: MediaItem) => item.file !== itemToRemove.file
+    );
+    
+    form.setValue("media", updatedMedia?.length === 0 ?mediaFromApi : updatedMedia);
   };
 
   // Render thumbnail for each media item

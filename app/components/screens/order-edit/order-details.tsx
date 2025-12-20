@@ -16,12 +16,10 @@ import BgWrapper from "~/components/common/bg-wrapper";
 import { useOrderItemDelete } from "~/services/queries/order";
 import { toast } from "sonner";
 import AddOrderItems from "./add-order-items";
-import { useParams } from "react-router";
 
 type Props = { data: any };
 
 export default function OrderDetails({ data }: Props) {
-  const params = useParams()
   const { mutateAsync: delete_item } = useOrderItemDelete()
   const order_item =
     data?.order_items?.map((item: any, index: number) => {
@@ -60,14 +58,14 @@ export default function OrderDetails({ data }: Props) {
   const amountPaid = Number(data?.price);
 
   const is_delete = () => {
-    if (String(data?.order_status) === '1' || String(data?.order_status) === '9' || String(data?.order_status) === '10') return true
+    if (String(data?.order_status) !== '4') return true
     else return false
   }
 
   return (
     <BgWrapper title={<div className="w-full flex items-center justify-between">
       <p>Order Details</p>
-      {String(data?.order_status) === '1' &&<AddOrderItems current_item={data?.order_items
+      {String(data?.order_status) !== '4' && <AddOrderItems current_item={data
       }><Button size={'sm'}>Add items</Button></AddOrderItems>}
     </div>}  >
       <div className=" mx-auto space-y-6">
@@ -121,13 +119,15 @@ export default function OrderDetails({ data }: Props) {
                     x {item.quantity}
                   </TableCell>
                   <TableCell className="text-right align-top py-3 font-medium">
-                    ₹{item.total.toFixed(2)}
+                    ₹{(item.cost * item.quantity)?.toFixed(2)}
                   </TableCell>
                   <TableCell className="text-right align-top py-3">
-                    ₹{item.cgst.toFixed(2)}
+                    ₹{(item.cgst * item.quantity / 2).toFixed(2)}
+
                   </TableCell>
                   <TableCell className="text-right align-top py-3">
-                    ₹{item.sgst.toFixed(2)}
+                    ₹{(item.sgst * item.quantity / 2).toFixed(2)}
+
                   </TableCell>
                   {is_delete() && <TableCell className="text-right align-top py-3">
                     <PopConfirm action={() => handleDelete(item?.item_id)} description="Are you really want to delete this item?" title="Delete item">
@@ -166,12 +166,14 @@ export default function OrderDetails({ data }: Props) {
 
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">CGST:</span>
-                  <span className="font-medium">₹{totalCGST.toFixed(2)}</span>
+                  <span className="font-medium">₹{(totalCGST / 2).toFixed(2)}
+                  </span>
                 </div>
 
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-gray-600">SGST:</span>
-                  <span className="font-medium">₹{totalSGST.toFixed(2)}</span>
+                  <span className="font-medium">₹{(totalSGST / 2).toFixed(2)}
+                  </span>
                 </div>
 
                 <Separator />

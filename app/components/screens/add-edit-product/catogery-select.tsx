@@ -5,12 +5,12 @@ import { Checkbox } from "~/components/ui/checkbox";
 import ErrorMessage from "~/components/ui/error-message";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { useListCatogery } from "~/services/queries";
+import { useListCatogeryProduct } from "~/services/queries/catogery";
 
 type Props = { form: UseFormReturn<any> };
 
 export default function CatogerySelect({ form }: Props) {
-  const { data: catogery } = useListCatogery({ page: 0 });
+  const { data: catogery } = useListCatogeryProduct({ page: 0 });
 
   const filtered_categories =
     catogery?.data?.data?.map((item: any) => ({

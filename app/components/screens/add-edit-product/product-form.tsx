@@ -16,6 +16,7 @@ import PreBook from "./pre-book";
 import { useSingleProduct, useUpdateProduct } from "~/services/queries/product";
 import { useParams } from "react-router";
 import SelectSizeChart from "./select-size-chart";
+import Tax from "./tax";
 
 type Props = {};
 type FormValues = z.infer<typeof product_form_schema>;
@@ -96,27 +97,27 @@ export default function ProductForm({ }: Props) {
       price: JSON.stringify(product?.reg_price) || "",
       sale_price: JSON.stringify(product?.sale_price) || "",
       quandity: JSON.stringify(product?.qty) || "",
-      is_schedule: product?.is_scheduled === 1 ? true : false || false,
-      is_prebook: product?.is_pre_order === 1 ? true : false || false,
+      is_schedule: product?.is_scheduled === 1 ? true : false ,
+      is_prebook: product?.is_pre_order === 1 ? true : false ,
       prebook_date: product?.pre_end_at?.split(" ")?.[0] || "",
       prebook_time: product?.pre_end_at?.split(" ")?.[1] || "",
       shedule_date: product?.scheduled_at?.split(" ")?.[0] || "",
       shedule_time: product?.scheduled_at?.split(" ")?.[1] || "",
       material: product?.material_id || "",
       weight: product?.ship_weight || "",
-      is_featured: product?.is_featured === 1 ? true : false || false,
-      is_free_shipping: product?.free_shipping === 1 ? true : false || false,
+      is_featured: product?.is_featured === 1 ? true : false ,
+      is_free_shipping: product?.free_shipping === 1 ? true : false ,
       length: product?.ship_length || "",
       width: product?.ship_width || "",
       height: product?.ship_height || "",
-      stock_notification: product?.notify_qty > 0 ? true : false || false,
+      stock_notification: product?.notify_qty > 0 ? true : false ,
       notification_qty: product?.notify_qty || "",
       page_title: product?.meta_title || "",
       page_description: product?.meta_des || "",
       status: JSON.stringify(product?.status) || "",
       categories: catogeries || [],
       catogery_search: "",
-      is_variants: product?.is_variation === 1 ? true : false || false,
+      is_variants: product?.is_variation === 1 ? true : false ,
       attributes: attribute() || [
         {
           name: "",
@@ -126,6 +127,9 @@ export default function ProductForm({ }: Props) {
       ],
       attribute_items: [],
       variations: variations || [],
+      tax_below_999: product?.gstlow999,
+      tax_above_1000: product?.gstup1000,
+      // tax: product?.gst_slab
     },
     resolver: zodResolver(product_form_schema as any),
   });
@@ -152,7 +156,15 @@ export default function ProductForm({ }: Props) {
     form_data.append("status", values.status as string);
     form_data.append(`category`, JSON.stringify(values.categories));
     form_data.append("free_shipping", values.is_free_shipping ? "1" : "0");
-    form_data.append("size_chart_id", values.size_chart);
+    form_data.append("size_chart_id", values.size_chart as string);
+    
+    
+      // form_data.append("gst_slab", values.tax as string);
+    
+      form_data.append("gstlow999", values.tax_below_999 as string);
+    
+      form_data.append("gstup1000", values.tax_above_1000 as string);
+    
 
     form_data.append("is_variation", values.is_variants ? "1" : "0");
 
@@ -262,6 +274,7 @@ export default function ProductForm({ }: Props) {
           <CatogerySelect form={form} />
           <SelectSizeChart form={form} />
           <PreBook form={form} />
+          <Tax form={form} />
         </div>
       </form>
     </div>

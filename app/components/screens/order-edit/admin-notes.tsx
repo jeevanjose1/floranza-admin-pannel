@@ -1,4 +1,4 @@
-import { FileWarning, X } from 'lucide-react'
+import { CalendarClock, FileWarning, X } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import BgWrapper from '~/components/common/bg-wrapper'
@@ -25,7 +25,14 @@ const NoteCard = ({ data }: NoteCardProp) => {
     }
     return <div className='bg-muted/30 p-3 pt-5 relative not-last:mb-2 rounded-b-md rounded-tr-md'>
         <Button disabled={deletePending} onClick={() => handleRemove(data?.id)} size={'icon'} className='rounded-full w-4 h-4 absolute top-1 right-1' variant={'destructive'}>{deletePending ? <Loader /> : <X />}</Button>
+        <div>
+            <div className='flex items-center gap-2 text-xs font-semibold mb-2'>
+                <CalendarClock className='size-4' />
+                <p>{data?.date}</p>
+            </div>
         <p className='text-[13px] whitespace-pre-wrap break-all'>{data?.note}</p>
+
+        </div>
     </div>
 }
 

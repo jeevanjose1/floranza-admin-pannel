@@ -22,7 +22,7 @@ const useTransactionList = (payload: COMMON_LIST_PAYLOAD) => {
     queryKey: ["TRANSACTION_LIST", payload],
     queryFn: () =>
       fetcher({
-        url: `${COMMON.TRANSACTION}`,
+        url: `${COMMON.TRANSACTION}/${queryFilter(payload)}`,
         type: "get",
       }),
   });
@@ -289,6 +289,45 @@ const useAddOrderItems = () => {
   });
 };
 
+const useWalletRefund = () => {
+  const query = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: any) =>
+      fetcher({
+        url: `${ORDER.WALLET_REFUND}/${payload}`,
+        type: "get",
+
+      }),
+    onSuccess: (response) => {
+      query.invalidateQueries({ queryKey: ["ORDER_LIST"] });
+      query.invalidateQueries({ queryKey: ["ORDER_VIEW"] });
+      return response;
+    },
+    onError: (error) => {
+      return error;
+    },
+  });
+};
+
+const useWalletPaid = () => {
+  const query = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: any) =>
+      fetcher({
+        url: `${ORDER.WALLET_PAID}/${payload}`,
+        type: "get",
+      }),
+    onSuccess: (response) => {
+      query.invalidateQueries({ queryKey: ["ORDER_LIST"] });
+      query.invalidateQueries({ queryKey: ["ORDER_VIEW"] });
+      return response;
+    },
+    onError: (error) => {
+      return error;
+    },
+  });
+};
+
 export {
   useOrderList,
   useOrderMenuList,
@@ -305,5 +344,7 @@ export {
   useOrderNoteDelete,
   useAddOrderNote,
   useOrderItemDelete,
-  useAddOrderItems
+  useAddOrderItems,
+  useWalletRefund,
+  useWalletPaid
 };

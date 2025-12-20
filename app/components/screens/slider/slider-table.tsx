@@ -56,31 +56,11 @@ type props = {
   is_previous: boolean;
   is_next: boolean;
   current_page: number;
+  total_page:number
 };
 
 export const columns: ColumnDef<Slider>[] = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && "indeterminate")
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
+
   {
     accessorKey: "title",
     header: "Title",
@@ -174,7 +154,7 @@ export const columns: ColumnDef<Slider>[] = [
   },
 ];
 
-export function SliderTable({ loading, table_data, is_next,
+export function SliderTable({ loading, table_data, is_next,total_page,
   is_previous,
   current_page, }: props) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
@@ -265,14 +245,12 @@ export function SliderTable({ loading, table_data, is_next,
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2  p-4">
-        {/* <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div> */}
+      
         <Pagination
           is_next={is_next}
           is_previous={is_previous}
           current_page={current_page}
+          total_pages={total_page}
         />
       </div>
     </div>

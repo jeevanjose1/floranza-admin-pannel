@@ -8,6 +8,8 @@ import { PRODUCT } from "./products";
 import { SLIDER } from "./slider";
 import { ADMIN_USERS } from "./admin-users";
 import { COUPON } from "./coupon";
+import { REPORT } from "./report";
+
 
 export {
   AUTH,
@@ -19,5 +21,6 @@ export {
   PRODUCT,
   SLIDER,
   ADMIN_USERS,
-  COUPON
+  COUPON,
+  REPORT
 };

@@ -57,10 +57,11 @@ export type Order = {
   order_via: string;
   paid_status: string;
   pre_order_date: string;
+  is_preorder: Boolean;
   courier: string;
   is_reserved: boolean;
   is_all: boolean;
-  reserved_order:boolean
+  reserved_order: boolean
 };
 type props = {
   table_data: Order[];
@@ -70,6 +71,7 @@ type props = {
   is_previous: boolean;
   is_next: boolean;
   current_page: number;
+  total_page: number
 };
 
 export const columns: ColumnDef<Order>[] = [
@@ -115,11 +117,11 @@ export const columns: ColumnDef<Order>[] = [
         <div className="flex flex-col">
           <div className="flex items-center gap-1">
 
-          {row.original.reserved_order && <img src={images.whatsapp} className="w-5" alt="whatsapp" />}
-          <span className="font-semibold text-[13px] text-gray-900">
-            #{row.original.order_no}
-          </span>
-           </div>
+            {row.original.reserved_order && <img src={images.whatsapp} className="w-5" alt="whatsapp" />}
+            <span className="font-semibold text-[13px] text-gray-900">
+              #{row.original.order_no}
+            </span>
+          </div>
           <span className="text-xs text-gray-500 mt-0.5">
             {row.original.name}
           </span>
@@ -171,44 +173,58 @@ export const columns: ColumnDef<Order>[] = [
         currency: "INR",
         maximumSignificantDigits: 3,
       }).format(row.getValue("total"));
+      const is_paid = Boolean(row.original.paid_status)
+   
 
       return (
-        <div className="py-3">
-          <span className="text-[13px] font-semibold text-gray-900">
-            {total}
-          </span>
-        </div>
+
+        <div className="flex flex-col gap-1 py-2">
+        <span className="text-sm font-semibold text-gray-900">
+          {total}
+        </span>
+        {!is_paid && (
+          <Badge variant="destructive" className="w-fit text-xs">
+            Not Paid
+          </Badge>
+        )}
+      </div>
       );
     },
   },
   {
     accessorKey: "pre_order_date",
-    header: () => <div className="text-left font-medium">Pre Order Date</div>,
-    cell: ({ row }) => (
-      <div className="py-3">
-        <span className=" text-[13px] text-gray-600">
-          {row.getValue("pre_order_date") || "—"}
-        </span>
+    header: () => (
+      <div className="text-left font-semibold text-slate-900">
+        Pre Order Date
       </div>
     ),
+    cell: ({ row }) => {
+      const isPreorder = row.original?.is_preorder;
+
+      return (
+        <div className="flex  flex-col gap-2 ">
+          {/* Modern Date Display */}
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-slate-900">
+              {row.getValue("pre_order_date") || "-"}
+            </span>
+
+          </div>
+
+          {/* Modern Pre-order Indicator */}
+          {isPreorder && (
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full animate-pulse"></div>
+              <span className="text-xs font-medium text-violet-600 tracking-wide uppercase">
+                Pre-order
+              </span>
+            </div>
+          )}
+        </div>
+      );
+    },
   },
 
-  // {
-  //   accessorKey: "download",
-  //   header: () => <div className="text-left font-medium">Download Label</div>,
-  //   cell: () => {
-  //     return (
-  //       <div className="py-3">
-  //         <Badge
-  //           variant="secondary"
-  //           className="h-7 px-3 text-xs bg-gray-100 text-gray-600 border-gray-200 rounded-full"
-  //         >
-  //           Not Synced
-  //         </Badge>
-  //       </div>
-  //     );
-  //   },
-  // },
   {
     accessorKey: "track_id",
     header: () => <div className="text-left font-medium">Tracking Details</div>,
@@ -280,6 +296,7 @@ export function OrderTable({
   is_next,
   is_previous,
   current_page,
+  total_page
 }: props) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -326,7 +343,7 @@ export function OrderTable({
     );
 
   return (
-    <div className="w-full max-w-screen tablet-lg:max-w-[calc(100vw-266px)]">
+    <div className="w-full ">
       <div className="flex items-center justify-end   p-4 ">
         {params.order_menu !== "all" && <div className="flex-1  text-[13px] text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
@@ -336,6 +353,7 @@ export function OrderTable({
           is_next={is_next}
           is_previous={is_previous}
           current_page={current_page}
+          total_pages={total_page}
         />
       </div>
       <div>
@@ -399,6 +417,7 @@ export function OrderTable({
           is_next={is_next}
           is_previous={is_previous}
           current_page={current_page}
+          total_pages={total_page}
         />
       </div>
     </div>

@@ -21,7 +21,7 @@ export default function Transaction() {
     end_date: query_params?.to,
   });
   const filtred_data =
-    transaction_list?.data?.map((item: any) => {
+    transaction_list?.data?.data?.map((item: any) => {
       return {
         id: item?.id,
         order_id: item?.order_no,
@@ -43,11 +43,13 @@ export default function Transaction() {
       <BgWrapper>
         <TransactionTableHeader />
         <TransactionTable
-          is_next={transaction_list?.data?.next_page_url}
+         is_next={transaction_list?.data?.next_page_url}
           current_page={transaction_list?.data?.current_page}
           is_previous={transaction_list?.data?.prev_page_url}
           loading={isFetching || isLoading}
           table_data={filtred_data}
+          total_page={Math.ceil(transaction_list?.data?.total / transaction_list?.data?.per_page)}
+
         />
       </BgWrapper>
     </div>

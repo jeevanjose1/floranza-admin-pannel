@@ -113,7 +113,7 @@ export default function PrivateLayout({ }: Props) {
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">{capitalize_first_letters(current_page)?.replace('-', ' ')}</BreadcrumbLink>
+                  <BreadcrumbLink href="#">{capitalize_first_letters(current_page)?.replaceAll('-', ' ')}</BreadcrumbLink>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
@@ -163,7 +163,7 @@ export default function PrivateLayout({ }: Props) {
             </DropdownMenu>
           </div>
         </header>
-        <div className="p-4 w-full ">
+        <div className=" w-full p-4 max-w-screen  tablet-lg:max-w-[calc(100vw-240px)]">
           <AnimatedOutlet />
         </div>
       </SidebarInset>

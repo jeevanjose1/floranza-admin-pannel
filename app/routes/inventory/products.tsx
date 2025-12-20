@@ -39,7 +39,7 @@ export default function Products() {
         sku: item?.sku,
         catogery: item?.product_categories,
         brand: item?.hsn,
-        price: item?.reg_price,
+        price: item?.sale_price,
         status: item?.status === 1 ? "Active" : "Inactive",
         date: item?.publishedAt,
         stock: item?.qty,
@@ -49,6 +49,8 @@ export default function Products() {
         sheduled_at: item?.scheduled_at,
         prebook: item?.is_pre_order,
         preorder_at: item?.pre_end_at,
+        is_variation:item?.is_variation,
+        
       };
     }) || [];
 
@@ -74,6 +76,8 @@ export default function Products() {
           loading={isFetching || isLoading}
           is_next={product_data?.data?.next_page_url}
           is_previous={product_data?.data?.prev_page_url}
+          total_page={Math.ceil(product_data?.data?.total / product_data?.data?.per_page)}
+
         />
       </BgWrapper>
     </div>

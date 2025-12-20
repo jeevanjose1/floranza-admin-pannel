@@ -9,7 +9,7 @@ import useQueryParams from "~/hooks/use-query-param";
 import { permission_loader } from "~/lib/utils";
 import { useListBrand } from "~/services/queries";
 
-export const clientLoader = ()=> permission_loader('brands:view')
+export const clientLoader = () => permission_loader('brands:view')
 
 
 export default function Brand() {
@@ -60,6 +60,8 @@ export default function Brand() {
           is_previous={brand_data?.data?.prev_page_url}
           table_data={filtred_brand}
           loading={isFetching || isLoading}
+          total_page={Math.ceil(brand_data?.data?.total / brand_data?.data?.per_page)}
+
         />
       </BgWrapper>
     </div>

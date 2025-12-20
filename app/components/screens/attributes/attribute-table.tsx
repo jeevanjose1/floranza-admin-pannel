@@ -146,6 +146,7 @@ type props = {
   is_previous: boolean;
   is_next: boolean;
   current_page: number;
+  total_page:number
 };
 
 export function AttributeTable({
@@ -154,6 +155,7 @@ export function AttributeTable({
   is_next,
   is_previous,
   current_page,
+  total_page
 }: props) {
   const [data, setData] = useState<Attribute[]>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -182,29 +184,7 @@ export function AttributeTable({
       ),
       size: 60,
     },
-    // {
-    //   id: "select",
-    //   header: ({ table }) => (
-    //     <Checkbox
-    //       checked={
-    //         table.getIsAllPageRowsSelected() ||
-    //         (table.getIsSomePageRowsSelected() && "indeterminate")
-    //       }
-    //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-    //       aria-label="Select all"
-    //     />
-    //   ),
-    //   size: 40, // Set fixed width for checkbox column
-    //   cell: ({ row }) => (
-    //     <Checkbox
-    //       checked={row.getIsSelected()}
-    //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-    //       aria-label="Select row"
-    //     />
-    //   ),
-    //   enableSorting: false,
-    //   enableHiding: false,
-    // },
+    
     {
       accessorKey: "name",
       header: "Attribute",
@@ -464,6 +444,7 @@ export function AttributeTable({
           is_next={is_next}
           is_previous={is_previous}
           current_page={current_page}
+          total_pages={total_page}
         />
       </div>
     </div>

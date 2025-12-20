@@ -59,6 +59,8 @@ export default function Material() {
           is_previous={material_data?.data?.prev_page_url}
           loading={isFetching || isLoading}
           table_data={filtred_material}
+          total_page={Math.ceil(material_data?.data?.total / material_data?.data?.per_page)}
+
         />
       </BgWrapper>
     </div>

@@ -1,6 +1,7 @@
 import { Copy, Edit, Eye, Trash } from 'lucide-react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
+import Pagination from '~/components/common/pagination';
 import PermissionWrapper from '~/components/common/permission-wrapper';
 import { Badge } from '~/components/ui/badge';
 import { Button } from '~/components/ui/button';
@@ -8,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import Loader from '~/components/ui/loader';
 import { PopConfirm } from '~/components/ui/pop-confirm';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '~/components/ui/table';
+import useQueryParams from '~/hooks/use-query-param';
 import { useCloneChart, useDeleteChart, useListChart } from '~/services/queries/size-chart';
 
 type CardProps = { data: any }
@@ -177,7 +179,11 @@ const ChartCard = ({ data }: CardProps) => {
 }
 
 export default function SizeChartList() {
-    const { data: size_chart, isLoading } = useListChart({})
+      const { getAllParams } = useQueryParams();
+    
+      const query_params = getAllParams();
+
+    const { data: size_chart, isLoading } = useListChart({    page: query_params.page,})
     const chart_data = size_chart?.data?.data || []
     if (!Boolean(chart_data?.length)) {
         return <div className="p-6 w-full h-50 flex items-center justify-center">
@@ -194,6 +200,16 @@ export default function SizeChartList() {
                     <ChartCard key={item?.id} data={item} />
                 ))}
             </div>}
+            <div className='w-full flex justify-end'>
+<Pagination
+                      is_next={size_chart?.data?.next_page_url}
+                      is_previous={size_chart?.data?.prev_page_url}
+                      current_page={size_chart?.data?.current_page}
+                                total_pages={Math.ceil(size_chart?.data?.total / size_chart?.data?.per_page)}
+
+                    />
+            </div>
+             
         </div>
     )
 }

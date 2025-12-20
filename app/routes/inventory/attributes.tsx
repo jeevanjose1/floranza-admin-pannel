@@ -54,6 +54,8 @@ export default function Attributes() {
           is_previous={attribute_data?.data?.prev_page_url}
           table_data={filtred_attribute}
           loading={isLoading}
+          total_page={Math.ceil(attribute_data?.data?.total / attribute_data?.data?.per_page)}
+
         />
       </BgWrapper>
     </div>

@@ -20,7 +20,7 @@ type SelectOption = { value: string; label: string; is_hsn?: boolean };
 const promiseOptionsBrand = async () => {
   try {
     const response = await fetcher({
-      url: `${BRAND.LIST}${queryFilter({ page: 1 })}`,
+      url: `${BRAND.LIST_IN_PRODUCT}${queryFilter({ page: 1 })}`,
       type: "get",
     });
 
@@ -36,7 +36,7 @@ const promiseOptionsBrand = async () => {
 const promiseOptionsHsn = async () => {
   try {
     const response = await fetcher({
-      url: `${SUPPLIER.LIST}${queryFilter({ page: 1 })}`,
+      url: `${SUPPLIER.LIST_IN_PRODUCT}${queryFilter({ page: 1 })}`,
       type: "get",
     });
 

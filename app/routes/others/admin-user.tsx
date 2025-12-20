@@ -62,6 +62,8 @@ export default function AdminUser() {
           is_previous={list_user?.data?.prev_page_url}
           table_data={filtred_list}
           loading={isFetching || isLoading}
+          total_page={Math.ceil(list_user?.data?.total / list_user?.data?.per_page)}
+
         />
       </BgWrapper>
     </div>

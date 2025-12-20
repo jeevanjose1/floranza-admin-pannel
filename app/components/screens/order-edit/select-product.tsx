@@ -10,14 +10,15 @@ import { useAddOrderItems } from "~/services/queries/order";
 import { useSearchProduct } from "~/services/queries/product";
 import { calculate_product_price } from "~/shared/others/others";
 
-type Props = { current_item: any };
+type Props = { current_item: any ,setOpen:any};
 
 type ProductCardProps = {
   data: any;
   current_item: any;
+  setOpen:any
 };
 
-const ProductCard = ({ data, current_item }: ProductCardProps) => {
+const ProductCard = ({ data, current_item,setOpen }: ProductCardProps) => {
 
   const price = calculate_product_price(data);
   const [variation, setVariation] = useState<any>(false);
@@ -28,24 +29,21 @@ const ProductCard = ({ data, current_item }: ProductCardProps) => {
   const params = useParams()
   const handleAddProduct = () => {
     const current_products = current_item || [];
-    const is_prebook_product = current_products.find(
-      (item: any) => item.is_prebook
-    );
-     const is_same_product = ()=>{
-    return current_products?.find((item:any)=>item?.product_id===data?.id)
-  }
-  
-    if ((is_pre_order&&!is_same_product() )&& (Boolean(current_products?.length))) {
+    const is_prebook_product = Boolean(current_products?.is_pre_order)
+   
+    if (is_pre_order && !is_prebook_product) {
       toast.warning(
         "Select product is pre order item, remove the current selected product"
       );
-    } else if (is_prebook_product&&!is_same_product()) {
-      toast.warning("Pre order product in the selected items");
+    }else if(!is_pre_order && is_prebook_product){
+      toast.warning(
+        "Select product is pre order item, remove the current selected product"
+      );
     } else {
 
       const form_data = new FormData()
       form_data.append('product_id', data?.id),
-        form_data.append('prd_var_value_id', variation?.prd_var_value_id ? variation?.prd_var_value_id : null)
+      form_data.append('prd_var_value_id', variation?.prd_var_value_id ? variation?.prd_var_value_id : null)
       form_data.append('qty', qty as any),
 
         add({
@@ -54,8 +52,9 @@ const ProductCard = ({ data, current_item }: ProductCardProps) => {
         }, {
           onSuccess: () => {
             toast.success('Item added')
+            setOpen(false)
           },
-          onError: (error:any) => {
+          onError: (error: any) => {
             toast.error(error.data?.message);
           }
         })
@@ -116,7 +115,7 @@ const ProductCard = ({ data, current_item }: ProductCardProps) => {
           <div className="font-medium max-w-100 mb-2">{data?.name}</div>
           <div className="text-sm text-muted-foreground mb-3">
             ₹{Math.round(Number(price.min)).toLocaleString("en-IN")}
-            {price.max >0 && (
+            {price.max > 0 && (
               <>
                 {" - "}
                 <span className="line-through text-muted-foreground/50">
@@ -134,22 +133,22 @@ const ProductCard = ({ data, current_item }: ProductCardProps) => {
 
           {/* Variations Section */}
           <div className="flex flex-wrap gap-2">
-            {data?.variations?.map((sizeInfo: any, index: number) => (
+            {data?.variations?.map((sizeInfo: any) => (
               <Badge
                 key={sizeInfo.prd_var_value_id}
                 onClick={() => handleVariation(sizeInfo)}
                 disabled={
-                  sizeInfo?.qty === 0 || !sizeInfo.attribute_option_name
+                 (!sizeInfo?.is_unlimited_qty && sizeInfo?.qty === 0) || !sizeInfo.attribute_option_name
                 }
                 className={`text-xs px-2 rounded-sm cursor-pointer transition-colors ${variation?.prd_var_value_id === sizeInfo.prd_var_value_id
                   ? "hover:bg-main/90 bg-primary/100 text-white"
                   : ""
-                  } ${sizeInfo?.qty === 0 ? "opacity-50 cursor-not-allowed" : ""
+                  } ${ !sizeInfo?.is_unlimited_qty  &&sizeInfo?.qty === 0 ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                 variant={"outline"}
               >
                 {sizeInfo.attribute_option_name}
-                {sizeInfo?.qty === 0 && " (Out of Stock)"}
+                {!sizeInfo?.is_unlimited_qty  &&sizeInfo?.qty === 0 && " (Out of Stock)"}
               </Badge>
             ))}
           </div>
@@ -207,7 +206,7 @@ const ProductCard = ({ data, current_item }: ProductCardProps) => {
   );
 };
 
-export default function SelectProduct({ current_item }: Props) {
+export default function SelectProduct({ current_item, setOpen}: Props) {
   const { mutate: search_produst, isPending, data } = useSearchProduct();
   const [search, setSearch] = useState("");
   const handleSearch = () => {
@@ -236,7 +235,7 @@ export default function SelectProduct({ current_item }: Props) {
         {data && <h1 className="text-sm font-medium mb-2">Search result</h1>}
         <ScrollArea className="max-h-100 overflow-y-auto">
           {data?.data?.map((item: any) => {
-            return <ProductCard current_item={current_item} key={item?.id} data={item} />;
+            return <ProductCard setOpen={setOpen} current_item={current_item} key={item?.id} data={item} />;
           })}
           <ScrollBar orientation="horizontal" />
         </ScrollArea>

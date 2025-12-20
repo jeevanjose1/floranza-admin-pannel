@@ -14,6 +14,16 @@ const useListProduct = (payload: COMMON_LIST_PAYLOAD) => {
       }),
   });
 };
+const useAnalysis = (payload: COMMON_LIST_PAYLOAD) => {
+  return useQuery({
+    queryKey: ["PRODUCT_ANALYSIS", payload],
+    queryFn: () =>
+      fetcher({
+        url: `${PRODUCT.ANALYSIS}/${payload?.product_id}/${queryFilter(payload?.filter)}`,
+        type: "get",
+      }),
+  });
+};
 const useLowQtyProduct = (payload: COMMON_LIST_PAYLOAD) => {
   return useQuery({
     queryKey: ["LOW_QTY_PRODUCT_LIST", payload],
@@ -24,7 +34,18 @@ const useLowQtyProduct = (payload: COMMON_LIST_PAYLOAD) => {
       }),
   });
 };
+const useListHistory = (payload: any) => {
+  return useQuery({
+    queryKey: ["LOW_QTY_PRODUCT_LIST", payload],
+    queryFn: () =>
+      fetcher({
+        url: `${PRODUCT.HISTORY}/${payload?.product_id}${queryFilter(payload?.filter)}`,
+        type: "get",
 
+      }),
+    enabled: payload?.disabled
+  });
+};
 const useGlobalCount = () => {
   return useQuery({
     queryKey: ["GLOBAL_COUNT"],
@@ -33,8 +54,8 @@ const useGlobalCount = () => {
         url: `${COMMON.GLOBAL_COUNT}`,
         type: "get",
       }),
-      refetchOnMount:false,
-      refetchOnWindowFocus:false
+    refetchOnMount: false,
+    refetchOnWindowFocus: false
   });
 };
 
@@ -115,7 +136,7 @@ const useUpdateQtyProduct = () => {
       query.invalidateQueries({ queryKey: ["LOW_QTY_PRODUCT_LIST"] });
       query.invalidateQueries({ queryKey: ["GLOBAL_COUNT"] });
 
-      
+
       return response;
     },
     onError: (error) => error,
@@ -132,7 +153,7 @@ const useUpdateStock = () => {
         data: payload?.data,
       }),
     onSuccess: (response) => {
-      query.invalidateQueries({ queryKey: ["PRODUCT_DETAILS"] });
+      // query.invalidateQueries({ queryKey: ["PRODUCT_DETAILS"] });
       query.invalidateQueries({ queryKey: ["GLOBAL_COUNT"] });
       query.invalidateQueries({ queryKey: ["LOW_QTY_PRODUCT_LIST"] });
 
@@ -183,5 +204,7 @@ export {
   useLowQtyProduct,
   useUpdateQtyProduct,
   useGlobalCount,
-  useUpdateStock
+  useUpdateStock,
+  useListHistory,
+  useAnalysis
 };

@@ -16,14 +16,17 @@ import { Input } from "~/components/ui/input";
 import { Separator } from "~/components/ui/separator";
 import { useBulkInvoice, useBulkStatus } from "~/services/queries/order";
 import { toast } from "sonner";
-import { download_pdf } from "~/lib/utils";
+import { download_pdf, queryFilter } from "~/lib/utils";
 import dayjs from "dayjs";
-import { Link, useParams } from "react-router";
+import { useParams } from "react-router";
 import { base_url } from "~/services/instance";
 import { COMMON } from "~/shared/urls/common";
 import useQueryParams from "~/hooks/use-query-param";
 import _ from "lodash";
 import { PopConfirm } from "~/components/ui/pop-confirm";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import { Checkbox } from "~/components/ui/checkbox";
+import { Label } from "~/components/ui/label";
 
 type Props = { selected: string[]; setSelected: any };
 const containerVariants = {
@@ -63,7 +66,7 @@ const containerVariants = {
   },
 };
 const Filter = ({ onClearAll }: { onClearAll: () => void }) => {
-  const { updateUrl, getParam } = useQueryParams();
+  const { updateUrl, getParam, replaceParams } = useQueryParams();
   const handleFilter = (type: string, value: string) => {
     updateUrl({
       [type]: value,
@@ -74,6 +77,10 @@ const Filter = ({ onClearAll }: { onClearAll: () => void }) => {
     ? new Date(getParam("from")!)
     : undefined;
   const toDateValue = getParam("to") ? new Date(getParam("to")!) : undefined;
+  const preOrderDate = getParam("pre_order_date") ? new Date(getParam("pre_order_date")!) : undefined;
+
+  const courier = getParam("courier") ? getParam("courier") : ''
+  const isPreorder = getParam("is_pre_order") ? getParam("is_pre_order") : false;
 
   return (
     <div className="px-4 pb-4 flex items-center gap-3">
@@ -94,6 +101,38 @@ const Filter = ({ onClearAll }: { onClearAll: () => void }) => {
           pickerType="range"
         />
       </div>
+      <div>
+        <DatePicker
+          defaultDate={preOrderDate}
+          onChange={(e: any) => {
+            handleFilter("pre_order_date", dayjs(e).format("YYYY-MM-DD"));
+          }}
+          pickerType="single"
+        />
+      </div>
+
+      <div>
+        <Select
+          value={courier as string}
+          onValueChange={(e) => handleFilter("courier", e)}
+        >
+          <SelectTrigger size="sm" className="">
+            <SelectValue placeholder="Courier" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="DTDC">DTDC</SelectItem>
+              <SelectItem value="INDIA_POST">INDIA POST</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+      <div className="flex items-center gap-3">
+        <Checkbox checked={isPreorder === '1' ? true : false} id="preload" onCheckedChange={(e) => {
+          handleFilter("is_pre_order", e ? '1' : '');
+        }} />
+        <Label htmlFor="preload" className="!mb-0">Is Preload</Label>
+      </div>
       <Button onClick={onClearAll} size={"sm"}>
         Clear
       </Button>
@@ -107,8 +146,9 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
   const handleToggle = () => setFilterOpen((pre) => !pre);
   const { mutateAsync: change } = useBulkStatus();
   const { mutateAsync: download } = useBulkInvoice();
-  const { replaceParams, clearParams, getParam } = useQueryParams();
+  const { replaceParams, clearParams, getParam, getAllParams } = useQueryParams();
   const searchInputRef = useRef<HTMLInputElement>(null);
+  const query_params = getAllParams();
 
   const handleDownloadInvoice = useCallback(() => {
     const formData = new FormData();
@@ -152,6 +192,14 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
       case "processing":
         return (
           <>
+            <DropdownMenuLabel className="text-xs text-accent-foreground/50">
+              Bulk Actions
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleDownloadInvoice}>
+              Download Invoice
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuLabel className="text-xs text-accent-foreground/50">
               Change Status
             </DropdownMenuLabel>
@@ -278,6 +326,18 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
             <DropdownMenuItem onClick={handleDownloadInvoice}>
               Download Invoice
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+
+            <PopConfirm
+              type="warning"
+              description="Are you realy want to change the status"
+              title="Change status"
+              action={() => handleChangeStatus("7")}
+            >
+              <DropdownMenuItem onSelect={handleSelect}>
+                Canceled
+              </DropdownMenuItem>
+            </PopConfirm>
           </>
         );
       case "hold":
@@ -331,9 +391,18 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
           </>
         );
       case "canceled":
-        return null;
+        return (
+          <>
+            <DropdownMenuLabel className="text-xs text-accent-foreground/50">
+              Bulk Actions
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleDownloadInvoice}>
+              Download Invoice
+            </DropdownMenuItem>
+          </>
+        );
       case "pre-order":
-      case "reserved":
         return (
           <>
             <DropdownMenuLabel className="text-xs text-accent-foreground/50">
@@ -367,6 +436,41 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
             >
               <DropdownMenuItem onSelect={handleSelect}>Hold</DropdownMenuItem>
             </PopConfirm>
+            <PopConfirm
+              type="warning"
+              description="Are you realy want to change the status"
+              title="Change status"
+              action={() => handleChangeStatus("3")}
+            >
+              <DropdownMenuItem onSelect={handleSelect}>Packing</DropdownMenuItem>
+            </PopConfirm>
+          </>
+        );
+      case "reserved":
+        return (
+          <>
+            <DropdownMenuLabel className="text-xs text-accent-foreground/50">
+              Bulk Actions
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleDownloadInvoice}>
+              Download Invoice
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+
+            <DropdownMenuLabel className="text-xs text-accent-foreground/50">
+              Change Status
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+
+            <PopConfirm
+              type="warning"
+              description="Are you realy want to change the status"
+              title="Change status"
+              action={() => handleChangeStatus("5")}
+            >
+              <DropdownMenuItem onSelect={handleSelect}>Hold</DropdownMenuItem>
+            </PopConfirm>
           </>
         );
       default:
@@ -390,23 +494,46 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
     }
     clearParams();
   };
+ const handleClearSearch = () => {
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+            replaceParams({ search: '' });
 
+    }
+  };
   const searchValue = getParam("search") || "";
 
   return (
     <>
       <div className="w-full flex items-center gap-3 pt-4 pb-3 px-4 justify-end">
-        <Input
+        <div className="flex items-center gap-2 justify-start flex-1">
+<Input
           ref={searchInputRef}
           defaultValue={searchValue}
           onChange={handleSearch}
           placeholder="Search here..."
-          className="max-w-96 mr-auto"
+          className="max-w-96"
         />
+        <Button size={'sm'} onClick={handleClearSearch} className="rounded-sm" variant={'secondary'}>Clear</Button>
+        </div>
+        
         {params?.order_menu === "shipping" && (
-          <Link to={`${base_url}${COMMON.EXCEL_DOWNLOAD}`} download>
+          <a href={`${base_url}${COMMON.EXCEL_DOWNLOAD}`} download>
             <Button size={"sm"}>Excel Download</Button>
-          </Link>
+          </a>
+        )}
+        {params?.order_menu === "pre-order" && (
+          <a href={`${base_url}${COMMON.PRE_ORDER_PDF}${queryFilter({
+            page: query_params.page,
+            keyword: query_params.search,
+            start_date: query_params?.from,
+            end_date: query_params?.to,
+            courier: query_params?.courier,
+            is_pre_order: query_params?.is_pre_order,
+            pre_order_date: query_params?.pre_order_date
+          })}`} download>
+            <Button size={"sm"}>Download PDF</Button>
+          </a>
         )}
         <Button
           onClick={handleToggle}
@@ -416,7 +543,7 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
         >
           <FilterIcon size={10} />{" "}
         </Button>
-        {selected?.length > 0  && menu_render() && (
+        {selected?.length > 0 && menu_render() && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size={"sm"} title="Bulk Action" variant={"secondary"}>

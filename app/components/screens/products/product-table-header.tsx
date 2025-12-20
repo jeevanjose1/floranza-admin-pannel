@@ -18,6 +18,7 @@ import useQueryParams from "~/hooks/use-query-param";
 import _ from "lodash";
 import { useListCatogery } from "~/services/queries";
 import dayjs from "dayjs";
+import { useListCatogeryProduct } from "~/services/queries/catogery";
 const containerVariants = {
   hidden: {
     height: 0,
@@ -58,14 +59,14 @@ type Props = {};
 
 const Filter = ({ onClearAll }: { onClearAll: () => void }) => {
   const { updateUrl, getAllParams } = useQueryParams();
-  const { data: catogery_list } = useListCatogery({});
-  const { status, catogery, date } = getAllParams();
-  const filterd_catogery = catogery_list?.data?.data?.map((item: any) => {
-    return {
-      label: item?.name,
+ const { data: catogeres } = useListCatogeryProduct({ page: 0 });
+
+  const filterd_catogery =
+    catogeres?.data?.data?.map((item: any) => ({
       value: item?.id,
-    };
-  });
+      label: item?.name,
+    })) || [];  const { status, catogery, date } = getAllParams();
+ 
   const statusValue = status || "";
   const dateValue = date ? new Date(date!) : undefined;
   const catogeryValue = catogery || "";

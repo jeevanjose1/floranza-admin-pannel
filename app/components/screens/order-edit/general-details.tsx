@@ -19,6 +19,7 @@ import {
   Clock,
   ListOrdered,
   Package,
+  NotebookPen,
 } from "lucide-react";
 import EditShippingAddress from "./edit-shipping-address";
 import { status_filter, status_options } from "~/shared/others/others";
@@ -112,6 +113,10 @@ export default function GeneralDetails({ data }: Props) {
     currentStatus?.color || "bg-gray-50 text-gray-500 border-gray-300";
 
   const promo_amount = data?.promo_discount ? Number(data?.promo_discount) : false;
+  const is_address_edit = () => {
+    if (data?.order_status !== 6 && data?.order_status !== 7 && data?.order_status !== 4) return true
+    else return false
+  }
 
   return (
     <div className="p-4 space-y-4 ">
@@ -146,7 +151,7 @@ export default function GeneralDetails({ data }: Props) {
                 <div className="text-sm text-muted-foreground space-y-1">
                   <p className="flex items-center gap-2">
                     <CreditCard className="w-4 h-4" />
-                    {data?.payment_gateway}
+                    {data?.payment_gateway} - {data?.pg_payment_id}
                   </p>
                   <p className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" />
@@ -173,9 +178,20 @@ export default function GeneralDetails({ data }: Props) {
 
                 </div>
               }
-              {Boolean(promo_amount)&& <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-600">Coupon code used - ₹{promo_amount}</span>
-                </div>}
+              {Boolean(promo_amount) && <div className="flex justify-between items-center">
+                <span className="text-sm text-gray-600">Coupon code used - ₹{promo_amount}</span>
+              </div>}
+
+              {data?.notes && <div className="  text-sm gap-2">
+                <p className="flex items-center gap-2 mb-2">
+
+                  <NotebookPen className="min-w-4 max-w-4 min-h-4 max-h-4 text-sm" />
+                  Notes:
+                </p>
+                <p>                {data?.notes}
+                </p>
+
+              </div>}
             </div>
           </div>
           <div className="flex  gap-3">
@@ -349,7 +365,7 @@ export default function GeneralDetails({ data }: Props) {
                 <Truck className="w-4.5 h-4.5 " />
                 Shipping
               </CardTitle>
-              <EditShippingAddress defaultValues={data} />
+              {is_address_edit() && <EditShippingAddress defaultValues={data} />}
             </div>
           </CardHeader>
           <CardContent className="space-y-4">

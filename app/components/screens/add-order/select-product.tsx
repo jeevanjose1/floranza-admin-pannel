@@ -18,17 +18,17 @@ type ProductCardProps = {
 };
 
 const ProductCard = ({ data, form }: ProductCardProps) => {
-      const current_products = form.getValues("products") || [];
+  const current_products = form.getValues("products") || [];
 
   const price = calculate_product_price(data);
   const [variation, setVariation] = useState<any>(false);
   const is_variation = Boolean(data?.is_variation);
   const is_pre_order = Boolean(data?.is_pre_order);
 
-  const is_same_product = ()=>{
-    return current_products?.find((item:any)=>item?.product_id===data?.id)
+  const is_same_product = () => {
+    return current_products?.find((item: any) => item?.product_id === data?.id)
   }
-  
+
   const [qty, setQty] = useState<number>(1);
 
   const handleAddProduct = () => {
@@ -36,11 +36,11 @@ const ProductCard = ({ data, form }: ProductCardProps) => {
       (item: any) => item.is_prebook
     );
 
-    if ((is_pre_order&&!is_same_product() )&& (Boolean(current_products?.length)) ) {
+    if ((is_pre_order && !is_same_product()) && (Boolean(current_products?.length))) {
       toast.warning(
         "Select product is pre order item, remove the current selected product"
       );
-    } else if (is_prebook_product&&!is_same_product()) {
+    } else if (is_prebook_product && !is_same_product()) {
       toast.warning("Pre order product in the selected items");
     } else {
       const product_data = {
@@ -88,6 +88,8 @@ const ProductCard = ({ data, form }: ProductCardProps) => {
     return data?.qty || "Select Size";
   };
 
+
+
   const availableStock = getAvailableStock();
 
   const handleVariation = (item: any) => {
@@ -96,7 +98,7 @@ const ProductCard = ({ data, form }: ProductCardProps) => {
   };
 
   const addQty = () => {
-    if (qty < availableStock) {
+    if ((is_variation && variation?.is_unlimited_qty) || (qty < availableStock)) {
       setQty((prev) => prev + 1);
     }
   };
@@ -152,24 +154,25 @@ const ProductCard = ({ data, form }: ProductCardProps) => {
 
           {/* Variations Section */}
           <div className="flex flex-wrap gap-2">
-            {data?.variations?.map((sizeInfo: any, index: number) => (
-              <Badge
+            {data?.variations?.map((sizeInfo: any, index: number) => {
+              return <Badge
                 key={sizeInfo.prd_var_value_id}
                 onClick={() => handleVariation(sizeInfo)}
                 disabled={
-                  sizeInfo?.qty === 0 || !sizeInfo.attribute_option_name
+                  !sizeInfo?.is_unlimited_qty && (sizeInfo?.qty === 0 || !sizeInfo.attribute_option_name)
                 }
                 className={`text-xs px-2 rounded-sm cursor-pointer transition-colors ${variation?.prd_var_value_id === sizeInfo.prd_var_value_id
                   ? "hover:bg-main/90 bg-primary/100 text-white"
                   : ""
-                  } ${sizeInfo?.qty === 0 ? "opacity-50 cursor-not-allowed" : ""
+                  } ${!sizeInfo?.is_unlimited_qty && sizeInfo?.qty === 0 ? "opacity-50 cursor-not-allowed" : ""
                   }`}
                 variant={"outline"}
               >
                 {sizeInfo.attribute_option_name}
-                {sizeInfo?.qty === 0 && " (Out of Stock)"}
+                {!sizeInfo?.is_unlimited_qty && sizeInfo?.qty === 0 && " (Out of Stock)"}
               </Badge>
-            ))}
+
+            })}
           </div>
         </div>
       </div>
@@ -198,7 +201,7 @@ const ProductCard = ({ data, form }: ProductCardProps) => {
         />
 
         <Button
-          disabled={qty >= availableStock || availableStock === 0}
+          disabled={(is_variation && !variation.is_unlimited_qty) && (qty >= availableStock || availableStock === 0)}
           onClick={addQty}
           variant={"outline"}
           size="sm"

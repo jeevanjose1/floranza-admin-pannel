@@ -3,6 +3,7 @@ export enum CATOGERY {
     CREATE='category/create',
     UPDATE='category/update/',
     DELETE='categories/delete/',
-    SHOW='category/show/'
+    SHOW='category/show/',
+    LIST_IN_PRODUCT='category/productCreateView/list'
 
  }

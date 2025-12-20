@@ -89,7 +89,7 @@ function ProductVariationsTable({ form }: Props) {
         (variation: Variation) =>
           variation.prd_var_value_id && variation.prd_var_value_id !== ""
       );
-
+  
       setVariations(apiVariations);
       form.setValue("variations", apiVariations);
 
@@ -306,7 +306,7 @@ function ProductVariationsTable({ form }: Props) {
       );
     }
   };
-
+  
   const toggleEditMode = (index: number) => {
     const newVariations = [...variations];
     newVariations[index].isEditing = !newVariations[index].isEditing;
@@ -355,10 +355,13 @@ function ProductVariationsTable({ form }: Props) {
     } else {
       updatedQuantity = Math.max(0, currentQty - newQty);
     }
-
+  
     const form_data = new FormData()
     form_data.append('qty', String(newQty))
+    if( variation.prd_var_value_id){
     form_data.append('prd_var_value_id', variation.prd_var_value_id)
+
+    }
     form_data.append('stock_type', variation.action_type === 'add' ? 'ADD' : 'SUBTRACT')
     form_data.append('note', String(variation.note))
 
@@ -367,8 +370,7 @@ function ProductVariationsTable({ form }: Props) {
       data: form_data
     }, {
       onSuccess: (response) => {
-                toast.success(response?.message)
-
+        toast.success(response?.message)
         const newVariations = [...variations];
         newVariations[index].quantity = updatedQuantity.toString();
         newVariations[index].new_quantity = "";
@@ -441,7 +443,7 @@ function ProductVariationsTable({ form }: Props) {
               onClick={() => toggleExpandVariation(variation.id)}
             >
               <div className="flex items-center gap-2 flex-1 min-w-0">
-                {variation.isEditing ? (
+                {(variation.isEditing )  ? (
                   <div className="flex items-center gap-1 w-full">
                     <div className="font-medium text-xs text-muted-foreground/60 truncate ">
                       {variation.name}
@@ -590,7 +592,7 @@ function ProductVariationsTable({ form }: Props) {
                         />
                       </div>
 
-                      {isEdit ? (
+                      {isEdit && variation?.prd_var_value_id  ? (
                         <div className="col-span-2 p-3 rounded-md bg-white">
                           <div>
                             <h2 className="text-[13px] mb-1">Current quantity</h2>

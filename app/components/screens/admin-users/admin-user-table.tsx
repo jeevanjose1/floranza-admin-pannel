@@ -36,6 +36,7 @@ import { Badge } from "~/components/ui/badge";
 import AddEditUser from "./add-edit-user";
 import Pagination from "~/components/common/pagination";
 import PermissionWrapper from "~/components/common/permission-wrapper";
+import { images } from "~/shared/images/image";
 
 export type Brand = {
   id: string;
@@ -51,55 +52,77 @@ type props = {
   is_previous: boolean;
   is_next: boolean;
   current_page: number;
+  total_page:number
 };
 
 export const columns: ColumnDef<Brand>[] = [
-  // {
-  //   id: "select",
-  //   header: ({ table }) => (
-  //     <Checkbox
-  //       checked={
-  //         table.getIsAllPageRowsSelected() ||
-  //         (table.getIsSomePageRowsSelected() && "indeterminate")
-  //       }
-  //       onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-  //       aria-label="Select all"
-  //     />
-  //   ),
-  //   cell: ({ row }) => (
-  //     <Checkbox
-  //       checked={row.getIsSelected()}
-  //       onCheckedChange={(value) => row.toggleSelected(!!value)}
-  //       aria-label="Select row"
-  //     />
-  //   ),
-  //   enableSorting: false,
-  //   enableHiding: false,
-  // },
-
   {
     accessorKey: "name",
     header: "Name",
+    cell: ({ row }) => {
+      const icons = () => {
+        switch (row.getValue("role")) {
+          case 2:
+            return images.packing
+          case 3:
+            return images.shipping
+          case 4:
+            return images.whatsapp
+            case 5:
+            return images.varify
+             case 6:
+            return images.sub_admin
+
+         
+
+          default:
+            return images.avatar
+        }
+      }
+      return (
+        <div className="text-[13px] flex gap-2 items-center">
+          <img  className="w-6 h-6" src={icons()} alt="icons" />
+          {row.getValue("name")}</div>
+      )
+    },
+  },
+  {
+    accessorKey: "email",
+    header: () => <div className="text-left ">Email</div>,
     cell: ({ row }) => (
-      <div className="text-[13px]">{row.getValue("name")}</div>
+      <div className="text-left text-[13px]">{row.getValue("email")}</div>
     ),
   },
   {
     accessorKey: "role",
     header: "Role",
-    cell: ({ row }) => (
-      <div className="text-[13px]">
-        {row.getValue("role") === 2 ? "Packing Staff" : "Shipping Staff"}
-      </div>
-    ),
+    cell: ({ row }) => {
+      const staff_name = () => {
+        switch (row.getValue("role")) {
+          case 2:
+            return "Packing Staff"
+          case 3:
+            return "Shipping Staff"
+          case 4:
+            return "Whatsapp Order Staff"
+             case 6:
+            return "Whatsapp Order Payment Verification"
+
+          case 7:
+            return "Sub Admin"
+
+          default:
+            break;
+        }
+      }
+      return (
+        <div className="text-[13px]">
+          {staff_name()}
+        </div>
+      )
+    },
   },
-  {
-    accessorKey: "email",
-    header: () => <div className="text-right ">Email</div>,
-    cell: ({ row }) => (
-      <div className="text-right text-[13px]">{row.getValue("email")}</div>
-    ),
-  },
+
   {
     accessorKey: "date",
     header: () => <div className="text-right ">Date</div>,
@@ -163,6 +186,7 @@ export function AdminUsersTable({
   is_next,
   is_previous,
   current_page,
+  total_page
 }: props) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -252,14 +276,12 @@ export function AdminUsersTable({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2  p-4">
-        {/* <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div> */}
+        
         <Pagination
           is_next={is_next}
           is_previous={is_previous}
           current_page={current_page}
+          total_pages={total_page}
         />
       </div>
     </div>

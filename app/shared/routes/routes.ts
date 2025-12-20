@@ -9,7 +9,7 @@ export const routes = [
                 path: '/',
                 component: "routes/home.tsx",
                 permission: PERMISSIONS.HOME_VIEW,
-                isIndex: true 
+                isIndex: true
             },
             {
                 path: '/products',
@@ -166,6 +166,30 @@ export const routes = [
             {
                 path: '/transaction-history',
                 component: "routes/others/transaction.tsx",
+                permission: PERMISSIONS.TRANSACTIONS_VIEW
+            },
+
+            {
+                path: '/order-report',
+                component: "routes/others/reports.tsx",
+                permission: PERMISSIONS.ORDERS_VIEW,
+                id:'order-report'
+            },
+            {
+                path: '/top-selling-report',
+                component: "routes/others/reports.tsx",
+                permission: PERMISSIONS.ORDERS_VIEW,
+                id:'top-selling-report'
+            },
+            {
+                path: '/pre-order-report',
+                component: "routes/others/reports.tsx",
+                permission: PERMISSIONS.ORDERS_VIEW,
+                id:'pre-order-report'
+            },
+            {
+                path: '/product-analysis/:product_id',
+                component: "routes/inventory/analysis.tsx",
                 permission: PERMISSIONS.TRANSACTIONS_VIEW
             }
         ]
