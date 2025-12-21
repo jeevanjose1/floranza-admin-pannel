@@ -29,9 +29,11 @@ import { useGetProfile } from "~/services/queries/auth";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: count } = useGlobalCount();
-  const { data: profile } = useGetProfile()
+  const { data: profile } = useGetProfile();
 
-  const current_permission = profile?.data?.user?.permission ? JSON.parse(profile?.data?.user?.permission) : []
+  const current_permission = profile?.data?.user?.permission
+    ? JSON.parse(profile?.data?.user?.permission)
+    : [];
 
   const getFilteredNavItems = () => {
     const allNavItems = [
@@ -133,6 +135,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         title: "Reports",
         url: "#",
         icon: Proportions,
+        isActive: true,
         permission: PERMISSIONS.TRANSACTIONS_VIEW,
         items: [
           {
@@ -187,7 +190,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           }
           return null;
         }
-        if (item.permission && has_permission(item.permission, current_permission)) {
+        if (
+          item.permission &&
+          has_permission(item.permission, current_permission)
+        ) {
           return item;
         }
         if (!item.permission) {

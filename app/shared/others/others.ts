@@ -64,12 +64,19 @@ type StatusRule = {
   invoice: boolean;
 };
 
-export const status_filter = (current_status: string) => {
+export const status_filter = (
+  current_status: string,
+  is_pre_order?: boolean,
+  is_reserved?: boolean
+) => {
   const rules: Record<StatusKey, StatusRule> = {
     "1": {
       updates: [
         { value: "2", label: "Action Taken" },
         { value: "5", label: "Hold" },
+        { value: "7", label: "Canceled" },
+        ...(is_pre_order ? [{ value: "9", label: "Pre-Order" }] : []),
+        ...(is_reserved ? [{ value: "10", label: "Reserved" }] : []),
       ],
       invoice: true,
     },
@@ -78,6 +85,9 @@ export const status_filter = (current_status: string) => {
         { value: "1", label: "Processing" },
         { value: "7", label: "Canceled" },
         { value: "5", label: "Hold" },
+        ...(is_pre_order ? [{ value: "9", label: "Pre-Order" }] : []),
+
+        { value: "6", label: "Refund" },
       ],
       invoice: true,
     },
@@ -91,8 +101,8 @@ export const status_filter = (current_status: string) => {
     },
 
     "4": {
-      updates: [{ value: "7", label: "Cancel" },
-      ], invoice: true
+      updates: [{ value: "7", label: "Cancel" }],
+      invoice: true,
     },
     "5": {
       updates: [
@@ -103,8 +113,8 @@ export const status_filter = (current_status: string) => {
     },
     "6": { updates: [], invoice: true },
     "7": {
-      updates: [{ value: "6", label: "Refund" },
-      ], invoice: false
+      updates: [{ value: "6", label: "Refund" }],
+      invoice: false,
     },
     "8": { updates: [], invoice: false },
     "9": {
@@ -112,13 +122,14 @@ export const status_filter = (current_status: string) => {
         { value: "2", label: "Action Taken" },
         { value: "5", label: "Hold" },
         { value: "3", label: "Packing" },
-
       ],
       invoice: true,
     },
     "10": {
       updates: [
-        // { value: "1", label: "Processing" },
+        { value: "5", label: "Hold" },
+        { value: "1", label: "Processing" },
+        { value: "2", label: "Action Taken" },
         { value: "5", label: "Hold" },
       ],
       invoice: true,
@@ -194,6 +205,52 @@ export const status_options = [
   },
 ];
 
+export const type = [
+  {
+    value: "1",
+    label: "Processing",
+  },
+  {
+    value: "2",
+    label: "Action Taken",
+  },
+  {
+    value: "3",
+    label: "Packing",
+  },
+  {
+    value: "33",
+    label: "Shipping",
+  },
+  {
+    value: "4",
+    label: "Completed",
+  },
+  {
+    value: "5",
+    label: "Hold",
+  },
+  {
+    value: "6",
+    label: "Refund",
+  },
+  {
+    value: "7",
+    label: "Canceled",
+  },
+  {
+    value: "8",
+    label: "Failed",
+  },
+  {
+    value: "9",
+    label: "Pre-Order",
+  },
+  {
+    value: "10",
+    label: "Reserved",
+  },
+];
 
 export const courier = [
   {
@@ -232,7 +289,6 @@ export const calculate_product_price = (item: any, index?: number) => {
       min: salePrice,
       max: regPrice,
     };
-
   } else {
     const salePrice = Number(item?.sale_price) || 0;
     const regPrice = Number(item?.reg_price) || 0;
@@ -257,99 +313,98 @@ export const calculate_product_price = (item: any, index?: number) => {
 };
 
 export const PERMISSIONS = {
+  HOME_VIEW: "home:view",
+  INVENTORY_VIEW: "inventory:view",
+  PRODUCTS_VIEW: "products:view",
+  PRODUCTS_CREATE: "products:create",
+  PRODUCTS_EDIT: "products:edit",
+  PRODUCTS_DELETE: "products:delete",
+  PRODUCTS_DUPLICATE: "products:duplicate",
+  PRODUCTS_ACTION: "products:action",
 
-  HOME_VIEW: 'home:view',
-  INVENTORY_VIEW: 'inventory:view',
-  PRODUCTS_VIEW: 'products:view',
-  PRODUCTS_CREATE: 'products:create',
-  PRODUCTS_EDIT: 'products:edit',
-  PRODUCTS_DELETE: 'products:delete',
-  PRODUCTS_DUPLICATE: 'products:duplicate',
-  PRODUCTS_ACTION: 'products:action',
+  CATEGORIES_VIEW: "categories:view",
+  CATEGORIES_CREATE: "categories:create",
+  CATEGORIES_EDIT: "categories:edit",
+  CATEGORIES_DELETE: "categories:delete",
+  CATEGORIES_ACTION: "categories:action",
 
-  CATEGORIES_VIEW: 'categories:view',
-  CATEGORIES_CREATE: 'categories:create',
-  CATEGORIES_EDIT: 'categories:edit',
-  CATEGORIES_DELETE: 'categories:delete',
-  CATEGORIES_ACTION: 'categories:action',
+  BRANDS_VIEW: "brands:view",
+  BRANDS_CREATE: "brands:create",
+  BRANDS_EDIT: "brands:edit",
+  BRANDS_DELETE: "brands:delete",
+  BRAND_ACTION: "brand:action",
 
-  BRANDS_VIEW: 'brands:view',
-  BRANDS_CREATE: 'brands:create',
-  BRANDS_EDIT: 'brands:edit',
-  BRANDS_DELETE: 'brands:delete',
-  BRAND_ACTION: 'brand:action',
+  SUPPLIERS_VIEW: "suppliers:view",
+  SUPPLIERS_CREATE: "suppliers:create",
+  SUPPLIERS_EDIT: "suppliers:edit",
+  SUPPLIERS_DELETE: "suppliers:delete",
+  SUPPLIERS_ACTION: "suppliers:action",
 
-  SUPPLIERS_VIEW: 'suppliers:view',
-  SUPPLIERS_CREATE: 'suppliers:create',
-  SUPPLIERS_EDIT: 'suppliers:edit',
-  SUPPLIERS_DELETE: 'suppliers:delete',
-  SUPPLIERS_ACTION: 'suppliers:action',
+  MATERIALS_VIEW: "materials:view",
+  MATERIALS_CREATE: "materials:create",
+  MATERIALS_EDIT: "materials:edit",
+  MATERIALS_DELETE: "materials:delete",
+  MATERIALS_ACTION: "materials:action",
 
-  MATERIALS_VIEW: 'materials:view',
-  MATERIALS_CREATE: 'materials:create',
-  MATERIALS_EDIT: 'materials:edit',
-  MATERIALS_DELETE: 'materials:delete',
-  MATERIALS_ACTION: 'materials:action',
+  SIZE_CHARTS_VIEW: "size_charts:view",
+  SIZE_CHARTS_CREATE: "size_charts:create",
+  SIZE_CHARTS_CLONE: "size_charts:clone",
 
-  SIZE_CHARTS_VIEW: 'size_charts:view',
-  SIZE_CHARTS_CREATE: 'size_charts:create',
-  SIZE_CHARTS_CLONE: 'size_charts:clone',
+  SIZE_CHARTS_EDIT: "size_charts:edit",
+  SIZE_CHARTS_DELETE: "size_charts:delete",
+  SIZE_CHARTS_ACTION: "size_charts:action",
 
-  SIZE_CHARTS_EDIT: 'size_charts:edit',
-  SIZE_CHARTS_DELETE: 'size_charts:delete',
-  SIZE_CHARTS_ACTION: 'size_charts:action',
+  MEDIA_VIEW: "media:view",
+  MEDIA_CREATE: "media:create",
+  MEDIA_DELETE: "media:delete",
+  MEDIA_ACTION: "media:action",
 
-  MEDIA_VIEW: 'media:view',
-  MEDIA_CREATE: 'media:create',
-  MEDIA_DELETE: 'media:delete',
-  MEDIA_ACTION: 'media:action',
+  ATTRIBUTES_ACTION: "attributes:action",
+  ATTRIBUTES_VIEW: "attributes:view",
+  ATTRIBUTES_CREATE: "attributes:create",
+  ATTRIBUTES_EDIT: "attributes:edit",
+  ATTRIBUTES_DELETE: "attributes:delete",
+  ATTRIBUTES_ITEM_DELETE: "attributes_item:delete",
+  ATTRIBUTES_ITEM_ACTION: "attributes_item:action",
 
-  ATTRIBUTES_ACTION: 'attributes:action',
-  ATTRIBUTES_VIEW: 'attributes:view',
-  ATTRIBUTES_CREATE: 'attributes:create',
-  ATTRIBUTES_EDIT: 'attributes:edit',
-  ATTRIBUTES_DELETE: 'attributes:delete',
-  ATTRIBUTES_ITEM_DELETE: 'attributes_item:delete',
-  ATTRIBUTES_ITEM_ACTION: 'attributes_item:action',
+  COUPONS_VIEW: "coupons:view",
+  COUPONS_CREATE: "coupons:create",
+  COUPONS_DELETE: "coupons:delete",
+  COUPONS_ACTION: "coupons:action",
 
-  COUPONS_VIEW: 'coupons:view',
-  COUPONS_CREATE: 'coupons:create',
-  COUPONS_DELETE: 'coupons:delete',
-  COUPONS_ACTION: 'coupons:action',
+  ORDER_MENU: "orders:menu",
+  ORDERS_VIEW: "orders:view",
+  ORDERS_CREATE: "orders:create",
+  ORDERS_EDIT: "orders:edit",
+  ORDERS_CHANGE_STATUS: "orders:change-status",
+  ORDERS_DOWNLOAD_INVOICE: "orders:download-invoice",
+  ORDERS_ADD_ITEM: "orders:add-item",
+  ORDERS_MARK_AS_PAID: "orders:mark-as-paid",
+  ORDERS_ADD_NOTE: "orders:add-note",
+  ORDERS_CHANGE_ADDRESS: "orders:change-address",
+  ORDERS_ACTION: "orders:action",
 
-  ORDER_MENU: 'orders:menu',
-  ORDERS_VIEW: 'orders:view',
-  ORDERS_CREATE: 'orders:create',
-  ORDERS_EDIT: 'orders:edit',
-  ORDERS_CHANGE_STATUS: 'orders:change-status',
-  ORDERS_DOWNLOAD_INVOICE: 'orders:download-invoice',
-  ORDERS_ADD_ITEM: 'orders:add-item',
-  ORDERS_MARK_AS_PAID: 'orders:mark-as-paid',
-  ORDERS_ADD_NOTE: 'orders:add-note',
-  ORDERS_CHANGE_ADDRESS: 'orders:change-address',
-  ORDERS_ACTION: 'orders:action',
+  STOCK_VIEW: "stock:view",
+  STOCK_UPDATE: "stock:update",
+  STOCK_ACTION: "stock:action",
 
-  STOCK_VIEW: 'stock:view',
-  STOCK_UPDATE: 'stock:update',
-  STOCK_ACTION: 'stock:action',
+  ADMIN_USERS_VIEW: "admin_users:view",
+  ADMIN_USERS_CREATE: "admin_users:create",
 
-  ADMIN_USERS_VIEW: 'admin_users:view',
-  ADMIN_USERS_CREATE: 'admin_users:create',
+  ADMIN_USERS_EDIT: "admin_users:edit",
+  ADMIN_USERS_ACTION: "admin_users:action",
 
-  ADMIN_USERS_EDIT: 'admin_users:edit',
-  ADMIN_USERS_ACTION: 'admin_users:action',
+  SLIDER_CREATE: "slider:create",
+  SLIDER_VIEW: "slider:view",
+  SLIDER_DELETE: "slider:delete",
+  SLIDER_ACTION: "slider:action",
+  SLIDER_EDIT: "slider:edit",
 
-  SLIDER_CREATE: 'slider:create',
-  SLIDER_VIEW: 'slider:view',
-  SLIDER_DELETE: 'slider:delete',
-  SLIDER_ACTION: 'slider:action',
-  SLIDER_EDIT: 'slider:edit',
+  TRANSACTIONS_VIEW: "transactions:view",
 
-  TRANSACTIONS_VIEW: 'transactions:view',
+  REPORT_VIEW: "report:view",
+  REPORT_ACTION: "report:action",
 
-  REPORT_VIEW: 'report:view',
-  REPORT_ACTION: 'report:action',
-
-  ANALATICS_VIEW: 'analatics:view',
-  CUSTOMER_VIEW: 'customer:view'
+  ANALATICS_VIEW: "analatics:view",
+  CUSTOMER_VIEW: "customer:view",
 } as const;

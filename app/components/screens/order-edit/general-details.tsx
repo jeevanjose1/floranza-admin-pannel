@@ -35,7 +35,11 @@ import { PopConfirm } from "~/components/ui/pop-confirm";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { images } from "~/shared/images/image";
-import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
 
 type Props = { data: any };
 
@@ -112,11 +116,20 @@ export default function GeneralDetails({ data }: Props) {
   const statusColor =
     currentStatus?.color || "bg-gray-50 text-gray-500 border-gray-300";
 
-  const promo_amount = data?.promo_discount ? Number(data?.promo_discount) : false;
+  const promo_amount = data?.promo_discount
+    ? Number(data?.promo_discount)
+    : false;
   const is_address_edit = () => {
-    if (data?.order_status !== 6 && data?.order_status !== 7 && data?.order_status !== 4) return true
-    else return false
-  }
+    if (
+      data?.order_status !== 6 &&
+      data?.order_status !== 7 &&
+      data?.order_status !== 4
+    )
+      return true;
+    else return false;
+  };
+
+  console.log("status_filter", data);
 
   return (
     <div className="p-4 space-y-4 ">
@@ -171,27 +184,31 @@ export default function GeneralDetails({ data }: Props) {
                 </div>
               )}
 
-              {
-                Boolean(data?.reserved_order) && <div className="text-sm text-muted-foreground">
+              {Boolean(data?.reserved_order) && (
+                <div className="text-sm text-muted-foreground">
                   <p>Reserved order taken by : </p>
-                  <p className="font-semibold">{data?.reservedOrderTakeUser} </p>
-
+                  <p className="font-semibold">
+                    {data?.reservedOrderTakeUser}{" "}
+                  </p>
                 </div>
-              }
-              {Boolean(promo_amount) && <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">Coupon code used - ₹{promo_amount}</span>
-              </div>}
+              )}
+              {Boolean(promo_amount) && (
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">
+                    Coupon code used - ₹{promo_amount}
+                  </span>
+                </div>
+              )}
 
-              {data?.notes && <div className="  text-sm gap-2">
-                <p className="flex items-center gap-2 mb-2">
-
-                  <NotebookPen className="min-w-4 max-w-4 min-h-4 max-h-4 text-sm" />
-                  Notes:
-                </p>
-                <p>                {data?.notes}
-                </p>
-
-              </div>}
+              {data?.notes && (
+                <div className="  text-sm gap-2">
+                  <p className="flex items-center gap-2 mb-2">
+                    <NotebookPen className="min-w-4 max-w-4 min-h-4 max-h-4 text-sm" />
+                    Notes:
+                  </p>
+                  <p> {data?.notes}</p>
+                </div>
+              )}
             </div>
           </div>
           <div className="flex  gap-3">
@@ -242,18 +259,21 @@ export default function GeneralDetails({ data }: Props) {
                     >
                       {statusName}
                     </Badge>
-                    {
-                      data?.order_status === 10 && <Tooltip>
+                    {data?.order_status === 10 && (
+                      <Tooltip>
                         <TooltipTrigger asChild>
-                          <img src={images.whatsapp} className="w-8" alt="whatsapp" /></TooltipTrigger>
+                          <img
+                            src={images.whatsapp}
+                            className="w-8"
+                            alt="whatsapp"
+                          />
+                        </TooltipTrigger>
                         <TooltipContent>
                           <p>Order through whatsapp</p>
                         </TooltipContent>
-
                       </Tooltip>
-                    }
+                    )}
                   </div>
-
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="status">Change Status</Label>
@@ -262,18 +282,20 @@ export default function GeneralDetails({ data }: Props) {
                       <SelectValue placeholder="Select status" />
                     </SelectTrigger>
                     <SelectContent>
-                      {status_filter(String(data?.order_status)).updates?.map(
-                        (item: any) => {
-                          return (
-                            <SelectItem key={item.value} value={item.value}>
-                              <div className="flex items-center gap-2">
-                                <div className="w-2 h-2 bg-blue-500 rounded-full" />
-                                {item.label}
-                              </div>
-                            </SelectItem>
-                          );
-                        }
-                      )}
+                      {status_filter(
+                        String(data?.order_status),
+                        Boolean(data?.is_pre_order),
+                        Boolean(data?.reserved_order)
+                      ).updates?.map((item: any) => {
+                        return (
+                          <SelectItem key={item.value} value={item.value}>
+                            <div className="flex items-center gap-2">
+                              <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                              {item.label}
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
                     </SelectContent>
                   </Select>
                 </div>
@@ -365,7 +387,9 @@ export default function GeneralDetails({ data }: Props) {
                 <Truck className="w-4.5 h-4.5 " />
                 Shipping
               </CardTitle>
-              {is_address_edit() && <EditShippingAddress defaultValues={data} />}
+              {is_address_edit() && (
+                <EditShippingAddress defaultValues={data} />
+              )}
             </div>
           </CardHeader>
           <CardContent className="space-y-4">

@@ -15,6 +15,14 @@ import {
   useDownloadTopSellingReport,
   useDownloadPreOrderReport,
 } from "~/services/queries/report";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
+import { type } from "~/shared/others/others";
 
 type Props = {};
 
@@ -90,6 +98,31 @@ const Filter = ({ onClearAll }: { onClearAll: () => void }) => {
           pickerType="single"
         />
       </div>
+      <div className="flex items-center gap-2">
+        <label className="text-sm font-medium text-muted-foreground">
+          Type
+        </label>
+        <Select
+          value={(getParam("type") as any) || ""}
+          onValueChange={(value) => handleFilter("type", value)}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select status" />
+          </SelectTrigger>
+          <SelectContent>
+            {type?.map((item: any) => {
+              return (
+                <SelectItem key={item.value} value={item.value}>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full" />
+                    {item.label}
+                  </div>
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
+      </div>
       <Button onClick={onClearAll} size={"sm"}>
         Clear
       </Button>
@@ -98,7 +131,7 @@ const Filter = ({ onClearAll }: { onClearAll: () => void }) => {
 };
 
 export default function ReportTableHeader({}: Props) {
-  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterOpen, setFilterOpen] = useState(true);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const handleToggle = () => setFilterOpen((pre) => !pre);
   const { replaceParams, clearParams, getParam, getAllParams } =

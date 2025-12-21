@@ -43,6 +43,7 @@ export type TopSellingReportData = {
   image: string;
   is_variation: number;
   image_url: string;
+  sku: string;
 };
 
 type SummaryStats = {
@@ -99,18 +100,25 @@ export const columns: ColumnDef<TopSellingReportData>[] = [
                 ₹{parseFloat(row.original.total_revenue).toLocaleString()}
               </p>
             )}
+            <div className="flex items-center gap-2">
+              <p className="text-xs text-muted-foreground">
+                SKU: {row.original.sku}
+              </p>
+              {isVariation && (
+                <>
+                  <Badge
+                    variant="outline"
+                    className="bg-purple-50 text-purple-600 border-purple-200 text-[10px] px-1.5 py-0.5"
+                  >
+                    Has Variations
+                  </Badge>
+                </>
+              )}
+            </div>
             {isVariation && (
-              <>
-                <Badge
-                  variant="outline"
-                  className="bg-purple-50 text-purple-600 border-purple-200 text-[10px] px-1.5 py-0.5"
-                >
-                  Has Variations
-                </Badge>
-                <p className="text-xs mt-1 italic text-blue-600 cursor-pointer hover:underline">
-                  Click to view more details
-                </p>
-              </>
+              <p className="text-xs mt-1 italic text-blue-600 cursor-pointer hover:underline">
+                Click to view more details
+              </p>
             )}
           </div>
         </div>

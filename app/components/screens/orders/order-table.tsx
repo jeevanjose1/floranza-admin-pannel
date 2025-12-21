@@ -61,7 +61,7 @@ export type Order = {
   courier: string;
   is_reserved: boolean;
   is_all: boolean;
-  reserved_order: boolean
+  reserved_order: boolean;
 };
 type props = {
   table_data: Order[];
@@ -71,7 +71,7 @@ type props = {
   is_previous: boolean;
   is_next: boolean;
   current_page: number;
-  total_page: number
+  total_page: number;
 };
 
 export const columns: ColumnDef<Order>[] = [
@@ -116,8 +116,9 @@ export const columns: ColumnDef<Order>[] = [
       <div className="flex items-center gap-3 py-3">
         <div className="flex flex-col">
           <div className="flex items-center gap-1">
-
-            {row.original.reserved_order && <img src={images.whatsapp} className="w-5" alt="whatsapp" />}
+            {row.original.reserved_order && (
+              <img src={images.whatsapp} className="w-5" alt="whatsapp" />
+            )}
             <span className="font-semibold text-[13px] text-gray-900">
               #{row.original.order_no}
             </span>
@@ -171,23 +172,18 @@ export const columns: ColumnDef<Order>[] = [
       const total = new Intl.NumberFormat("en-IN", {
         style: "currency",
         currency: "INR",
-        maximumSignificantDigits: 3,
       }).format(row.getValue("total"));
-      const is_paid = Boolean(row.original.paid_status)
-   
+      const is_paid = Boolean(row.original.paid_status);
 
       return (
-
         <div className="flex flex-col gap-1 py-2">
-        <span className="text-sm font-semibold text-gray-900">
-          {total}
-        </span>
-        {!is_paid && (
-          <Badge variant="destructive" className="w-fit text-xs">
-            Not Paid
-          </Badge>
-        )}
-      </div>
+          <span className="text-sm font-semibold text-gray-900">{total}</span>
+          {!is_paid && (
+            <Badge variant="destructive" className="w-fit text-xs">
+              Not Paid
+            </Badge>
+          )}
+        </div>
       );
     },
   },
@@ -208,7 +204,6 @@ export const columns: ColumnDef<Order>[] = [
             <span className="text-sm font-medium text-slate-900">
               {row.getValue("pre_order_date") || "-"}
             </span>
-
           </div>
 
           {/* Modern Pre-order Indicator */}
@@ -249,8 +244,7 @@ export const columns: ColumnDef<Order>[] = [
         toast.promise(delete_order(order_id), {
           success: "Order deleted",
           loading: "Deleting order",
-          error: (error: any) => error?.data?.message
-          ,
+          error: (error: any) => error?.data?.message,
         });
       };
 
@@ -296,13 +290,13 @@ export function OrderTable({
   is_next,
   is_previous,
   current_page,
-  total_page
+  total_page,
 }: props) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   );
-  const params = useParams()
+  const params = useParams();
   const navigate = useNavigate();
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -345,10 +339,12 @@ export function OrderTable({
   return (
     <div className="w-full ">
       <div className="flex items-center justify-end   p-4 ">
-        {params.order_menu !== "all" && <div className="flex-1  text-[13px] text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>}
+        {params.order_menu !== "all" && (
+          <div className="flex-1  text-[13px] text-muted-foreground">
+            {table.getFilteredSelectedRowModel().rows.length} of{" "}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
+          </div>
+        )}
         <Pagination
           is_next={is_next}
           is_previous={is_previous}
@@ -367,9 +363,9 @@ export function OrderTable({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                     </TableHead>
                   );
                 })}
@@ -409,10 +405,12 @@ export function OrderTable({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2  p-4">
-        {params.order_menu !== "all" && <div className="flex-1  text-[13px] text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} row(s) selected.
-        </div>}
+        {params.order_menu !== "all" && (
+          <div className="flex-1  text-[13px] text-muted-foreground">
+            {table.getFilteredSelectedRowModel().rows.length} of{" "}
+            {table.getFilteredRowModel().rows.length} row(s) selected.
+          </div>
+        )}
         <Pagination
           is_next={is_next}
           is_previous={is_previous}

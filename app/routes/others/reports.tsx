@@ -53,6 +53,7 @@ export default function Reports() {
       keyword: query_params.search,
       start_date: query_params?.from,
       end_date: query_params?.to,
+      type: query_params?.type,
     },
     type: getType(),
   });
@@ -62,7 +63,6 @@ export default function Reports() {
   const pagination = report_list?.data || {};
   const summary = report_list?.data || {};
   const orderSummary = report_list?.data?.order || {};
-  console.log("tableData", pagination);
 
   return (
     <div>

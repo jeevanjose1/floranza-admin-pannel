@@ -24,7 +24,14 @@ import { COMMON } from "~/shared/urls/common";
 import useQueryParams from "~/hooks/use-query-param";
 import _ from "lodash";
 import { PopConfirm } from "~/components/ui/pop-confirm";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { Checkbox } from "~/components/ui/checkbox";
 import { Label } from "~/components/ui/label";
 
@@ -77,13 +84,17 @@ const Filter = ({ onClearAll }: { onClearAll: () => void }) => {
     ? new Date(getParam("from")!)
     : undefined;
   const toDateValue = getParam("to") ? new Date(getParam("to")!) : undefined;
-  const preOrderDate = getParam("pre_order_date") ? new Date(getParam("pre_order_date")!) : undefined;
+  const preOrderDate = getParam("pre_order_date")
+    ? new Date(getParam("pre_order_date")!)
+    : undefined;
 
-  const courier = getParam("courier") ? getParam("courier") : ''
-  const isPreorder = getParam("is_pre_order") ? getParam("is_pre_order") : false;
+  const courier = getParam("courier") ? getParam("courier") : "";
+  const isPreorder = getParam("is_pre_order")
+    ? getParam("is_pre_order")
+    : false;
 
   return (
-    <div className="px-4 pb-4 flex items-center gap-3">
+    <div className="px-4 pb-4 flex gap-3">
       <div>
         <DatePicker
           defaultDateRange={{
@@ -109,6 +120,9 @@ const Filter = ({ onClearAll }: { onClearAll: () => void }) => {
           }}
           pickerType="single"
         />
+        <Label className="text-xs! mt-2 italic opacity-70">
+          Pre Order Date
+        </Label>
       </div>
 
       <div>
@@ -127,11 +141,17 @@ const Filter = ({ onClearAll }: { onClearAll: () => void }) => {
           </SelectContent>
         </Select>
       </div>
-      <div className="flex items-center gap-3">
-        <Checkbox checked={isPreorder === '1' ? true : false} id="preload" onCheckedChange={(e) => {
-          handleFilter("is_pre_order", e ? '1' : '');
-        }} />
-        <Label htmlFor="preload" className="!mb-0">Is Preload</Label>
+      <div className="flex h-full py-2 items-center gap-3">
+        <Checkbox
+          checked={isPreorder === "1" ? true : false}
+          id="preload"
+          onCheckedChange={(e) => {
+            handleFilter("is_pre_order", e ? "1" : "");
+          }}
+        />
+        <Label htmlFor="preload" className="!mb-0">
+          Is Preload
+        </Label>
       </div>
       <Button onClick={onClearAll} size={"sm"}>
         Clear
@@ -146,7 +166,8 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
   const handleToggle = () => setFilterOpen((pre) => !pre);
   const { mutateAsync: change } = useBulkStatus();
   const { mutateAsync: download } = useBulkInvoice();
-  const { replaceParams, clearParams, getParam, getAllParams } = useQueryParams();
+  const { replaceParams, clearParams, getParam, getAllParams } =
+    useQueryParams();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const query_params = getAllParams();
 
@@ -176,8 +197,7 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
           setSelected({});
           return "Status changed";
         },
-        error: (error: any) => error.data?.message
-        ,
+        error: (error: any) => error.data?.message,
       }
     );
   };
@@ -442,7 +462,9 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
               title="Change status"
               action={() => handleChangeStatus("3")}
             >
-              <DropdownMenuItem onSelect={handleSelect}>Packing</DropdownMenuItem>
+              <DropdownMenuItem onSelect={handleSelect}>
+                Packing
+              </DropdownMenuItem>
             </PopConfirm>
           </>
         );
@@ -494,11 +516,10 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
     }
     clearParams();
   };
- const handleClearSearch = () => {
+  const handleClearSearch = () => {
     if (searchInputRef.current) {
       searchInputRef.current.value = "";
-            replaceParams({ search: '' });
-
+      replaceParams({ search: "" });
     }
   };
   const searchValue = getParam("search") || "";
@@ -507,32 +528,42 @@ export default function OrderTableHeader({ selected, setSelected }: Props) {
     <>
       <div className="w-full flex items-center gap-3 pt-4 pb-3 px-4 justify-end">
         <div className="flex items-center gap-2 justify-start flex-1">
-<Input
-          ref={searchInputRef}
-          defaultValue={searchValue}
-          onChange={handleSearch}
-          placeholder="Search here..."
-          className="max-w-96"
-        />
-        <Button size={'sm'} onClick={handleClearSearch} className="rounded-sm" variant={'secondary'}>Clear</Button>
+          <Input
+            ref={searchInputRef}
+            defaultValue={searchValue}
+            onChange={handleSearch}
+            placeholder="Search here..."
+            className="max-w-96"
+          />
+          <Button
+            size={"sm"}
+            onClick={handleClearSearch}
+            className="rounded-sm"
+            variant={"secondary"}
+          >
+            Clear
+          </Button>
         </div>
-        
+
         {params?.order_menu === "shipping" && (
           <a href={`${base_url}${COMMON.EXCEL_DOWNLOAD}`} download>
             <Button size={"sm"}>Excel Download</Button>
           </a>
         )}
         {params?.order_menu === "pre-order" && (
-          <a href={`${base_url}${COMMON.PRE_ORDER_PDF}${queryFilter({
-            page: query_params.page,
-            keyword: query_params.search,
-            start_date: query_params?.from,
-            end_date: query_params?.to,
-            courier: query_params?.courier,
-            is_pre_order: query_params?.is_pre_order,
-            pre_order_date: query_params?.pre_order_date
-          })}`} download>
-            <Button size={"sm"}>Download PDF</Button>
+          <a
+            href={`${base_url}${COMMON.PRE_ORDER_PDF}${queryFilter({
+              page: query_params.page,
+              keyword: query_params.search,
+              start_date: query_params?.from,
+              end_date: query_params?.to,
+              courier: query_params?.courier,
+              is_pre_order: query_params?.is_pre_order,
+              pre_order_date: query_params?.pre_order_date,
+            })}`}
+            download
+          >
+            <Button size={"sm"}>Download Excel</Button>
           </a>
         )}
         <Button
