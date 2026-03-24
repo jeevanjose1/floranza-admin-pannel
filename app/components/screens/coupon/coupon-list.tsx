@@ -36,7 +36,12 @@ import { toast } from "sonner";
 import Pagination from "~/components/common/pagination";
 import { useDeleteCoupon } from "~/services/queries/coupon";
 import PermissionWrapper from "~/components/common/permission-wrapper";
-import { Tooltip, TooltipContent, TooltipTrigger } from "~/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
+import AddEditModal from "./add-edit-coupon";
 
 export type Supplier = {
   id: string;
@@ -44,9 +49,10 @@ export type Supplier = {
   status: string;
   date: string;
   amount: string;
-  type: string
-  value:string
-  coupon_type:string
+  type: string;
+  value: string;
+  coupon_type: string;
+  min_amount: string;
 };
 type props = {
   table_data: Supplier[];
@@ -54,25 +60,32 @@ type props = {
   is_previous: boolean;
   is_next: boolean;
   current_page: number;
-  total_page: number
+  total_page: number;
 };
 
 export const columns: ColumnDef<Supplier>[] = [
-
   {
     accessorKey: "code",
     header: "Coupon Code",
     cell: ({ row }) => (
-      <div className="font-medium text-[13px] flex items-center gap-2">
-        {row.getValue("code")}
-        {row.original.coupon_type ==='promotion'&& <Tooltip>
-      <TooltipTrigger asChild>
-        <Megaphone size={20} color="orange" />
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>Promotion</p>
-      </TooltipContent>
-    </Tooltip>}
+      <div className="font-medium text-[13px] flex flex-col gap-2">
+        <div className="flex items-center gap-2">
+          {row.getValue("code")}
+          {row.original.coupon_type === "promotion" && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Megaphone size={20} color="orange" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Promotion</p>
+              </TooltipContent>
+            </Tooltip>
+          )}
+        </div>
+
+        {row.original.coupon_type === "promotion" && (
+          <p>Min Amount: {row.original.min_amount}</p>
+        )}
       </div>
     ),
   },
@@ -81,17 +94,27 @@ export const columns: ColumnDef<Supplier>[] = [
     accessorKey: "value",
     header: () => <div className="text-right ">Value</div>,
     cell: ({ row }) => (
-      <div className="text-right text-[13px]">{row.getValue("value")}{row.original.type == 'percent' ? '%' : ' ₹'}</div>
+      <div className="text-right text-[13px]">
+        {row.getValue("value")}
+        {row.original.type == "percent" ? "%" : " ₹"}
+      </div>
     ),
   },
   {
     accessorKey: "balance",
     header: () => <div className="text-right ">Balance</div>,
-    cell: ({ row }) => (row.original?.coupon_type !=='promotion' && row.original?.type !=='percent') ? 
-      <div className="text-right text-[13px]"> ₹ {row.getValue("balance")}</div> : <div className="text-right text-[13px]"> - </div>
-    
+    cell: ({ row }) =>
+      row.original?.coupon_type !== "promotion" &&
+      row.original?.type !== "percent" ? (
+        <div className="text-right text-[13px]">
+          {" "}
+          ₹ {row.getValue("balance")}
+        </div>
+      ) : (
+        <div className="text-right text-[13px]"> - </div>
+      ),
   },
-   {
+  {
     accessorKey: "used_count",
     header: () => <div className="text-right ">Used Count</div>,
     cell: ({ row }) => (
@@ -109,7 +132,9 @@ export const columns: ColumnDef<Supplier>[] = [
     accessorKey: "is_used",
     header: () => <div className="text-right ">Used</div>,
     cell: ({ row }) => (
-      <div className="text-right text-[13px]">{row.getValue("is_used") === 1 ? 'Yes' : 'No'}</div>
+      <div className="text-right text-[13px]">
+        {row.getValue("is_used") === 1 ? "Yes" : "No"}
+      </div>
     ),
   },
   {
@@ -143,13 +168,11 @@ export const columns: ColumnDef<Supplier>[] = [
         toast.promise(delete_coupon(coupon_id), {
           success: "Coupon deleted",
           loading: "Deleting coupon",
-          error: (error: any) => error.data?.message
-          ,
+          error: (error: any) => error.data?.message,
         });
       };
       return (
         <PermissionWrapper permission="coupons:action">
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
@@ -169,10 +192,16 @@ export const columns: ColumnDef<Supplier>[] = [
                   </DropdownMenuItem>
                 </PopConfirm>
               </PermissionWrapper>
+              <PermissionWrapper permission="coupons:action">
+                <AddEditModal data={row.original}>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                    Edit
+                  </DropdownMenuItem>
+                </AddEditModal>
+              </PermissionWrapper>
             </DropdownMenuContent>
           </DropdownMenu>
         </PermissionWrapper>
-
       );
     },
   },
@@ -184,11 +213,11 @@ export function CouponList({
   is_next,
   is_previous,
   current_page,
-  total_page
+  total_page,
 }: props) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
@@ -233,9 +262,9 @@ export function CouponList({
                       {header.isPlaceholder
                         ? null
                         : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                            header.column.columnDef.header,
+                            header.getContext(),
+                          )}
                     </TableHead>
                   );
                 })}
@@ -254,7 +283,7 @@ export function CouponList({
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -274,7 +303,6 @@ export function CouponList({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2  p-4">
-
         <Pagination
           is_next={is_next}
           is_previous={is_previous}

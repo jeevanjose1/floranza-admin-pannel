@@ -6,10 +6,13 @@ export const coupone_schema = z
     type: z.string().optional(),
     coupon_type: z.string().optional(),
     end_date: z.string().optional(),
-    value: z.coerce.number({
-      required_error: "Coupon value is required",
-      invalid_type_error: "Coupon value must be a number",
-    }).min(1, "Coupon value must be greater than 0"),
+    min_amount: z.string().optional(),
+    value: z.coerce
+      .number({
+        required_error: "Coupon value is required",
+        invalid_type_error: "Coupon value must be a number",
+      })
+      .min(1, "Coupon value must be greater than 0"),
   })
   .superRefine((data, ctx) => {
     if (data.type === "percent" && data.value >= 90) {
@@ -20,11 +23,24 @@ export const coupone_schema = z
       });
     }
 
-    if (data.coupon_type === "promotion" && (!data.end_date || data.end_date.trim().length === 0)) {
+    if (
+      data.coupon_type === "promotion" &&
+      (!data.end_date || data.end_date.trim().length === 0)
+    ) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "End date is required for promotion type",
         path: ["end_date"],
+      });
+    }
+    if (
+      data.coupon_type === "promotion" &&
+      (!data.min_amount || data.min_amount.trim().length === 0)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Min amount is required for promotion type",
+        path: ["min_amount"],
       });
     }
   });

@@ -10,7 +10,7 @@ import useQueryParams from "~/hooks/use-query-param";
 import { permission_loader } from "~/lib/utils";
 import { useListCoupon } from "~/services/queries/coupon";
 
-export const clientLoader = () => permission_loader('coupons:view')
+export const clientLoader = () => permission_loader("coupons:view");
 
 export default function Coupon() {
   const { getAllParams } = useQueryParams();
@@ -24,7 +24,7 @@ export default function Coupon() {
     keyword: query_params.search,
     status: query_params.status,
     date: query_params.date,
-    per_page: 10
+    per_page: 10,
   });
 
   const filtred_supplier =
@@ -36,12 +36,12 @@ export default function Coupon() {
         status: item?.status === 1 ? "Active" : "Inactive",
         date: item?.expiry_date,
         is_used: item?.is_used,
-        type:item?.discount_type,
-        value:item?.value,
-        coupon_type:item?.type,
-        balance:item?.balance,
-        used_count:item?.used_count
-
+        type: item?.discount_type,
+        value: item?.value,
+        coupon_type: item?.type,
+        balance: item?.balance,
+        used_count: item?.used_count,
+        min_amount: item?.min_amount,
       };
     }) || [];
 
@@ -57,7 +57,6 @@ export default function Coupon() {
             </AddEditModal>
           </div>
         </PermissionWrapper>
-
       </PageHeader>
       <BgWrapper>
         <CouponListHeader />
@@ -67,8 +66,9 @@ export default function Coupon() {
           is_previous={coupon_data?.data?.prev_page_url}
           table_data={filtred_supplier}
           loading={isFetching || isLoading}
-          total_page={Math.ceil(coupon_data?.data?.total / coupon_data?.data?.per_page)}
-
+          total_page={Math.ceil(
+            coupon_data?.data?.total / coupon_data?.data?.per_page,
+          )}
         />
       </BgWrapper>
     </div>
