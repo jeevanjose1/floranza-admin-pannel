@@ -140,7 +140,7 @@ export const columns: ColumnDef<Customer>[] = [
       const customer_id = row.original.id;
       return (
         <PermissionWrapper permission="orders:view">
-          <Link to={`/customers/orders/${customer_id}`}>
+          <Link to={`/customers/customer-orders/${customer_id}`}>
             <Button size={"sm"} variant={"outline"}>
               View Orders
             </Button>

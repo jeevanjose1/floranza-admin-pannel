@@ -198,7 +198,7 @@ export const routes = [
                 permission: PERMISSIONS.TRANSACTIONS_VIEW
             },
             {
-                path: '/customers/orders/:customer_id',
+                path: '/customers/customer-orders/:customer_id',
                 component: "routes/others/customer-order-report.tsx",
                 permission: PERMISSIONS.ORDERS_VIEW,
                 id: 'customer-order-report'
