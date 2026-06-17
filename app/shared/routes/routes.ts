@@ -46,6 +46,11 @@ export const routes = [
                 permission: PERMISSIONS.CATEGORIES_EDIT
             },
             {
+                path: '/customers',
+                component: "routes/others/customers.tsx",
+                permission: PERMISSIONS.CATEGORIES_VIEW
+            },
+            {
                 path: '/brands',
                 component: "routes/inventory/brand.tsx",
                 permission: PERMISSIONS.BRANDS_VIEW
@@ -191,6 +196,12 @@ export const routes = [
                 path: '/product-analysis/:product_id',
                 component: "routes/inventory/analysis.tsx",
                 permission: PERMISSIONS.TRANSACTIONS_VIEW
+            },
+            {
+                path: '/customers/orders/:customer_id',
+                component: "routes/others/customer-order-report.tsx",
+                permission: PERMISSIONS.ORDERS_VIEW,
+                id: 'customer-order-report'
             }
         ]
     }

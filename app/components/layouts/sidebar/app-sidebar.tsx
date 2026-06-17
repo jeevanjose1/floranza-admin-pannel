@@ -26,6 +26,7 @@ import { useGlobalCount } from "~/services/queries/product";
 import { has_permission } from "~/lib/utils";
 import { PERMISSIONS } from "~/shared/others/others";
 import { useGetProfile } from "~/services/queries/auth";
+import { Users } from "lucide-react";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: count } = useGlobalCount();
@@ -119,6 +120,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         ],
       },
       {
+        title: "Customers",
+        url: "/customers",
+        icon: Users,
+        permission: PERMISSIONS.TRANSACTIONS_VIEW,
+      },
+      {
         title: "Stock",
         url: "/stock-management",
         icon: Layers,
@@ -131,6 +138,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         icon: History,
         permission: PERMISSIONS.TRANSACTIONS_VIEW,
       },
+
       {
         title: "Reports",
         url: "#",

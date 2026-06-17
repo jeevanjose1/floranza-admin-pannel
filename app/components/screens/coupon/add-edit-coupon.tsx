@@ -40,7 +40,7 @@ export default function AddEditModal({ children, data }: Props) {
         code: data?.code || "",
         value: data?.value || 0,
         type: data?.type || "flat",
-        coupon_type: String(data?.coupon_type) || "normal",
+        coupon_type: data?.type ? String(data?.coupon_type) : "normal",
         end_date: data?.date || "",
         min_amount: String(data?.min_amount) || "",
       },

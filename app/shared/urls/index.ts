@@ -9,6 +9,7 @@ import { SLIDER } from "./slider";
 import { ADMIN_USERS } from "./admin-users";
 import { COUPON } from "./coupon";
 import { REPORT } from "./report";
+import  { CUSTOMER } from "./customers";
 
 
 export {
@@ -22,5 +23,6 @@ export {
   SLIDER,
   ADMIN_USERS,
   COUPON,
-  REPORT
+  REPORT,
+  CUSTOMER  
 };

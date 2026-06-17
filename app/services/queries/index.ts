@@ -33,10 +33,18 @@ import {
   useUpadtePositionValue
 } from "./attribute";
 
+
 import {
  useCreateProduct,
  useListProduct
 } from "./product";
+
+import {
+  useListCustomer,
+  useCustomerOrderList,
+  useCustomerExportAll,
+  useCustomerExportGuest
+} from "./customers";
 
 export {
   useLogin,
@@ -67,5 +75,9 @@ export {
   useUpadtePositionAttribute,
   useUpadtePositionValue,
   useCreateProduct,
-  useListProduct
+  useListProduct,
+  useListCustomer,
+  useCustomerOrderList,
+  useCustomerExportAll,
+  useCustomerExportGuest
 };
