@@ -129,7 +129,6 @@ export default function GeneralDetails({ data }: Props) {
     else return false;
   };
 
-  console.log("status_filter", data);
 
   return (
     <div className="p-4 space-y-4 ">
